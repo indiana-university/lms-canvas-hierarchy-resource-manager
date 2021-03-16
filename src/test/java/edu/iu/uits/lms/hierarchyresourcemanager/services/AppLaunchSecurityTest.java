@@ -1,9 +1,9 @@
-package edu.iu.uits.lms.microservicestemplate.services;
+package edu.iu.uits.lms.hierarchyresourcemanager.services;
 
 import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
-import edu.iu.uits.lms.microservicestemplate.config.ToolConfig;
-import edu.iu.uits.lms.microservicestemplate.controller.ToolController;
+import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
+import edu.iu.uits.lms.hierarchyresourcemanager.controller.ToolController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

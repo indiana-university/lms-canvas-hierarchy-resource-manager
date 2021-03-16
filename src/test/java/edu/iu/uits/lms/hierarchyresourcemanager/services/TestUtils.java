@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.microservicestemplate.services;
+package edu.iu.uits.lms.hierarchyresourcemanager.services;
 
 public class TestUtils {
     public static String defaultUseragent() {

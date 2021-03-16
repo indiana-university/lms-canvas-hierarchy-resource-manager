@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.microservicestemplate.controller;
+package edu.iu.uits.lms.hierarchyresourcemanager.controller;
 
 import canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.lti.LTIConstants;
@@ -76,7 +76,7 @@ public class MicroservicesTemplateLtiController extends LtiController {
 
     @Override
     protected String getToolContext() {
-        return "microservices-template";
+        return "hierarchyresourcemanager";
     }
 
     @Override

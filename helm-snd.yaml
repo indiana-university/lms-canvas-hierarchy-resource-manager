@@ -12,5 +12,5 @@ env:
 ingress:
   enabled: true
   hosts:
-    - host: "microservices-template-snd.apps-snd.iu.edu"
+    - host: "hierarchyresourcemanager-snd.apps-snd.iu.edu"
       paths: []

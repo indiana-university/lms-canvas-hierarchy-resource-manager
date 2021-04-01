@@ -1,0 +1,261 @@
+package edu.iu.uits.lms.hierarchyresourcemanager.services;
+
+import canvas.client.generated.api.AccountsApi;
+import canvas.client.generated.api.CanvasApi;
+import canvas.client.generated.api.CoursesApi;
+import canvas.client.generated.model.Account;
+import canvas.client.generated.model.Course;
+import canvas.helpers.CourseHelper;
+import edu.iu.uits.lms.hierarchyresourcemanager.amqp.ApplyCourseTemplateMessage;
+import edu.iu.uits.lms.hierarchyresourcemanager.amqp.ApplyCourseTemplateMessageSender;
+import edu.iu.uits.lms.hierarchyresourcemanager.model.CourseTemplatesWrapper;
+import edu.iu.uits.lms.hierarchyresourcemanager.model.DecoratedSyllabus;
+import edu.iu.uits.lms.hierarchyresourcemanager.model.HierarchyResource;
+import edu.iu.uits.lms.hierarchyresourcemanager.model.StoredFile;
+import edu.iu.uits.lms.hierarchyresourcemanager.model.SyllabusSupplement;
+import edu.iu.uits.lms.hierarchyresourcemanager.repository.HierarchyResourceRepository;
+import edu.iu.uits.lms.hierarchyresourcemanager.repository.SyllabusSupplementRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class NodeManagerService {
+
+   @Autowired
+   private HierarchyResourceRepository hierarchyResourceRepository;
+
+   @Autowired
+   private SyllabusSupplementRepository syllabusSupplementRepository;
+
+   @Autowired
+   @Qualifier("coursesApiViaAnonymous")
+   private CoursesApi coursesApi;
+
+   @Autowired
+   @Qualifier("accountsApiViaAnonymous")
+   private AccountsApi accountsApi;
+
+   @Autowired
+   private CanvasApi canvasApi;
+
+   @Autowired
+   private ApplyCourseTemplateMessageSender applyCourseTemplateMessageSender;
+
+   public HierarchyResource getTemplate(Long templateId) throws HierarchyResourceException {
+      HierarchyResource hierarchyResource = hierarchyResourceRepository.findById(templateId).orElse(null);
+      if (hierarchyResource == null) {
+         throw new HierarchyResourceException("Could not find template with id " + templateId);
+      }
+      return hierarchyResource;
+   }
+
+   public CourseTemplatesWrapper getAvailableTemplatesForSisCourse(String sisCourseId) throws HierarchyResourceException {
+      Course course = coursesApi.getCourse("sis_course_id:" + sisCourseId);
+      return getAvailableTemplatesForCourse(course);
+   }
+
+   public CourseTemplatesWrapper getAvailableTemplatesForCanvasCourse(String canvasCourseId) throws HierarchyResourceException {
+      Course course = coursesApi.getCourse(canvasCourseId);
+      return getAvailableTemplatesForCourse(course);
+   }
+
+   private CourseTemplatesWrapper getAvailableTemplatesForCourse(Course course) throws HierarchyResourceException {
+      String bodyText = "";
+      CourseTemplatesWrapper courseTemplatesWrapper = new CourseTemplatesWrapper();
+      List<HierarchyResource> hierarchyResources = new ArrayList<>();
+      if (course != null) {
+         Account account = accountsApi.getAccount(course.getAccountId());
+         if (account != null) {
+            // specific account doesn't exist in our table, let's see if there's a parent
+            List<String> relatedAccountNames = new ArrayList<>();
+            accountsApi.getParentAccounts(account.getId()).forEach(parentAccount -> relatedAccountNames.add(parentAccount.getName()));
+            Collections.reverse(relatedAccountNames);
+
+            for (String accountName : relatedAccountNames) {
+               List<HierarchyResource> parentHierarchyResources = hierarchyResourceRepository.findByNode(accountName);
+               if (parentHierarchyResources != null) {
+                  hierarchyResources.addAll(parentHierarchyResources);
+               }
+            }
+
+            List<HierarchyResource> hierarchyResourcesForNode = hierarchyResourceRepository.findByNode(account.getName());
+            if (hierarchyResourcesForNode != null) {
+               hierarchyResources.addAll(hierarchyResourcesForNode);
+            }
+
+            if (!hierarchyResources.isEmpty()) {
+               courseTemplatesWrapper.setTemplates(hierarchyResources);
+               courseTemplatesWrapper.setCourseId(course.getId());
+               courseTemplatesWrapper.setCoursePublished(CourseHelper.isPublished(course));
+               return courseTemplatesWrapper;
+            }
+
+            // if we're here, could not find a record in our table
+            bodyText = "No node found for " + course.getId() + " (" + course.getSisCourseId() + ")";
+         } else {
+            bodyText = "Could not find account!";
+         }
+      } else {
+         bodyText = "Course does not exist!";
+      }
+
+      // if we made it here, it did not find something along the way
+      throw new HierarchyResourceException(bodyText);
+   }
+
+   public ResponseEntity applyTemplateToCourse(String canvasCourseId, Long templateId) {
+      //Make sure our params are good
+      if (canvasCourseId == null || canvasCourseId.isEmpty()) {
+         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Canvas Course ID is required but was not provided");
+      }
+
+      if (templateId == null) {
+         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Template ID is required but was not provided");
+      }
+
+      //Make sure we have a course
+      Course course = coursesApi.getCourse(canvasCourseId);
+      if (course == null) {
+         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found: " + canvasCourseId);
+      }
+
+      //Make sure it is unpublished
+      if (CourseHelper.isPublished(course)) {
+         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Canvas Course must be unpublished");
+      }
+
+      //Trigger a content migration, which will setup the course from the template
+      ApplyCourseTemplateMessage ctm = new ApplyCourseTemplateMessage(canvasCourseId, course.getTerm().getSisTermId(),
+            course.getAccountId(), course.getSisCourseId(), true, templateId);
+      applyCourseTemplateMessageSender.send(ctm);
+      return ResponseEntity.status(HttpStatus.OK).body("Request has been sent for template processing");
+   }
+
+   public HierarchyResource getClosestDefaultTemplateForCanvasCourse(String canvasCourseId) throws HierarchyResourceException {
+      Course course = coursesApi.getCourse(canvasCourseId);
+      return getClosestDefaultTemplateForCourse(course);
+   }
+
+   public HierarchyResource getClosestDefaultTemplateForSisCourse(String sisCourseId) throws HierarchyResourceException {
+      Course course = coursesApi.getCourse("sis_course_id:" + sisCourseId);
+      return getClosestDefaultTemplateForCourse(course);
+   }
+
+   /**
+    * Get the closest template that is marked as a default
+    * @param course
+    * @return
+    * @throws HierarchyResourceException
+    */
+   private HierarchyResource getClosestDefaultTemplateForCourse(Course course) throws HierarchyResourceException {
+      String bodyText = "";
+      if (course!=null) {
+         Account account = accountsApi.getAccount(course.getAccountId());
+         if (account!=null) {
+            List<HierarchyResource> hierarchyResources = hierarchyResourceRepository.findByNodeAndDefaultTemplateTrue(account.getName());
+            if (hierarchyResources != null && hierarchyResources.size() == 1) {
+               return hierarchyResources.get(0);
+            } else {
+               // specific account doesn't exist in our table, let's see if there's a parent
+               List<String> relatedAccountNames = new ArrayList<>();
+               accountsApi.getParentAccounts(account.getId()).forEach(parentAccount -> relatedAccountNames.add(parentAccount.getName()));
+
+               for (String accountName : relatedAccountNames) {
+                  List<HierarchyResource> parentHierarchyResources = hierarchyResourceRepository.findByNodeAndDefaultTemplateTrue(accountName);
+                  if (parentHierarchyResources != null && parentHierarchyResources.size() == 1) {
+                     return parentHierarchyResources.get(0);
+                  }
+               }
+            }
+
+            // if we're here, could not find a record in our table
+            bodyText = "No node found for " + course.getId() + " (" + course.getSisCourseId() + ")";
+         } else {
+            bodyText = "Could not find account!";
+         }
+      } else {
+         bodyText = "Course does not exist!";
+      }
+
+      // if we made it here, it did not find something along the way
+      throw new HierarchyResourceException(bodyText);
+   }
+
+   public String getUrlToFile(StoredFile storedFile) {
+      return "/rest/file/download/" + storedFile.getId() + "/" + storedFile.getDisplayName();
+   }
+
+   public List<HierarchyResource> getTemplatesForNode(String nodeName) {
+      List<HierarchyResource> hierarchyResource = hierarchyResourceRepository.findByNode(nodeName);
+      return hierarchyResource;
+   }
+
+   public HierarchyResource saveTemplate(HierarchyResource resource) {
+      return hierarchyResourceRepository.save(resource);
+   }
+
+   public void deleteTemplate(HierarchyResource resource) {
+      hierarchyResourceRepository.delete(resource);
+   }
+
+   public SyllabusSupplement getSyllabusSupplementForNode(String node) {
+      return syllabusSupplementRepository.findByNode(node);
+   }
+
+   public SyllabusSupplement saveSyllabusSupplement(SyllabusSupplement syllabusSupplement) {
+      return syllabusSupplementRepository.save(syllabusSupplement);
+   }
+
+   public void deleteSyllabusSupplement(SyllabusSupplement syllabusSupplement) {
+      syllabusSupplementRepository.delete(syllabusSupplement);
+   }
+
+   public List<DecoratedSyllabus> getSyllabusDataForCourse(String courseId) {
+      List<DecoratedSyllabus> decoratedSyllabi = new ArrayList<>();
+      Course course = coursesApi.getCourse(courseId);
+      if (course != null) {
+         Account account = accountsApi.getAccount(course.getAccountId());
+
+         List<String> relatedAccountNames = new ArrayList<>();
+         relatedAccountNames.add(account.getName());
+
+         accountsApi.getParentAccounts(account.getId()).forEach(parentAccount -> relatedAccountNames.add(parentAccount.getName()));
+
+         List<SyllabusSupplement> items = syllabusSupplementRepository.findByNodeIn(relatedAccountNames);
+
+         decoratedSyllabi = items.stream().map(DecoratedSyllabus::new).collect(Collectors.toList());
+
+         decoratedSyllabi.sort(Comparator.comparing(item -> relatedAccountNames.indexOf(item.getNodeName())));
+      }
+      return decoratedSyllabi;
+   }
+
+   public void templateDefaultChange(String templateId, boolean isEnablingDefault) throws HierarchyResourceException {
+      try {
+         HierarchyResource baseHierarchyResource = getTemplate(Long.parseLong(templateId));
+
+         if (isEnablingDefault) {
+            // check to see if there's another template in the node that is set to default
+            List<HierarchyResource> siblingHierarchyResources = hierarchyResourceRepository.findByNodeAndDefaultTemplateTrue(baseHierarchyResource.getNode());
+            if (!siblingHierarchyResources.isEmpty()) {
+               // if we're here, disable default on the sibling template
+               // should only be one HierarchyResource in the list
+               HierarchyResource hierarchyResourceWithDefault = siblingHierarchyResources.get(0);
+               hierarchyResourceRepository.changeTemplateDefaultStatus(hierarchyResourceWithDefault.getId(), false);
+            }
+         }
+         hierarchyResourceRepository.changeTemplateDefaultStatus(baseHierarchyResource.getId(), isEnablingDefault);
+      } catch (HierarchyResourceException e) {
+         throw new HierarchyResourceException("uh oh");
+      }
+   }
+}

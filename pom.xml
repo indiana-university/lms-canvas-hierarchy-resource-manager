@@ -21,7 +21,7 @@
         <docker_tag>stable</docker_tag>
         <helm_service_name>hierarchyresourcemanager</helm_service_name>
         <jquery.version>3.5.1</jquery.version>
-        <lms-bom.version>4.0.1</lms-bom.version>
+        <lms-bom.version>4.0.3-SNAPSHOT</lms-bom.version>
     </properties>
 
     <dependencyManagement>
@@ -52,6 +52,14 @@
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
+            <artifactId>lms-email-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>edu.iu.uits.lms</groupId>
+            <artifactId>lms-iuonly-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-lti-web</artifactId>
         </dependency>
         <dependency>
@@ -74,6 +82,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -129,6 +141,43 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>js-install-node-and-npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+                    <execution>
+                        <id>js-process</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                    </execution>
+<!--                    <execution>-->
+<!--                        <id>js-test</id>-->
+<!--                        <phase>test</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>npm</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <arguments>test</arguments>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+                    <execution>
+                        <id>js-package</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>webpack</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>dockerfile-maven-plugin</artifactId>
                 <configuration>
@@ -166,6 +215,22 @@
                     </packages>
 <!--                    <persistenceXml>src/main/webapp/META-INF/canvasnotifier-persistence.xml</persistenceXml>-->
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.hibernate.orm.tooling</groupId>
+                <artifactId>hibernate-enhance-maven-plugin</artifactId>
+                <version>${hibernate.version}</version>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <failOnError>true</failOnError>
+                            <enableLazyInitialization>true</enableLazyInitialization>
+                        </configuration>
+                        <goals>
+                            <goal>enhance</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
         <resources>

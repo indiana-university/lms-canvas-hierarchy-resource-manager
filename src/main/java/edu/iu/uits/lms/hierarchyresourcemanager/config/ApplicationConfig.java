@@ -1,8 +1,11 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
+import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -25,5 +28,32 @@ public class ApplicationConfig implements WebMvcConfigurer {
       registry.addResourceHandler("/app/webjars/**").addResourceLocations("/webjars/").resourceChain(true);
       registry.addResourceHandler("/app/jsreact/**").addResourceLocations("classpath:/META-INF/resources/jsreact/").resourceChain(true);
       registry.addResourceHandler("/app/jsrivet/**").addResourceLocations("classpath:/META-INF/resources/jsrivet/").resourceChain(true);
+   }
+
+//   @Override
+//   public void addInterceptors(InterceptorRegistry registry) {
+//      List<HttpMethod> allowedMethodList = new ArrayList<HttpMethod>();
+//      allowedMethodList.add(HttpMethod.GET);
+//
+//      try {
+//         registry.addInterceptor(new LmsCorsInterceptor("/rest/syllabus/",
+//                 "*",
+//                 allowedMethodList,
+//                 null));
+//         registry.addInterceptor(new LmsCorsInterceptor("/rest/hrm/canvasCourseId/",
+//                 "*",
+//                 allowedMethodList,
+//                 null));
+//      } catch (Exception e) {
+//         log.error("uh oh", e);
+//      }
+//   }
+
+   /**
+    * Uses an x-auth-token header value instead of a cookie for tracking the session
+    */
+   @Bean
+   public HttpSessionIdResolver httpSessionIdResolver() {
+      return HeaderHttpSessionIdResolver.xAuthToken();
    }
 }

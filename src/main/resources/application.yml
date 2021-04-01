@@ -29,9 +29,25 @@ spring:
     url: ${lms.db.url}
     username: ${lms.db.user}
     password: ${lms.db.password}
+  rabbitmq:
+    host: ${lms.rabbitmq.host.${app.env}}
+    port: ${lms.rabbitmq.port.${app.env}}
+    username: ${lms.rabbitmq.username.${app.env}}
+    password: ${lms.rabbitmq.password.${app.env}}
+    virtualHost: ${lms.rabbitmq.virtualHost.${app.env}}
+    listener.simple.retry:
+      enabled: true
+      initial-interval: 3s
+      max-attempts: 3
+      max-interval: 10s
+      multiplier: 2
 hierarchyresourcemanager:
   version: @app.version@
   env: ${app.env}
+  applyCourseTemplateQueueName: applycoursetemplate_${app.env}
+  contentMigrationStatusUpdateQueueName: contentmigrationstatusupdate_${app.env}
+  courseTemplateQueueName: coursetemplate_${app.env}
+
 
 server:
   error:

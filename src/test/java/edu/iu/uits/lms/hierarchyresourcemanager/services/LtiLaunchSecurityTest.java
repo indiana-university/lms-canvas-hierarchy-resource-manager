@@ -1,7 +1,8 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.services;
 
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
-import edu.iu.uits.lms.hierarchyresourcemanager.controller.MicroservicesTemplateLtiController;
+import edu.iu.uits.lms.hierarchyresourcemanager.controller.HierarchyResourceManagerLtiController;
+import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
 import lti.client.generated.api.LtiAuthApi;
 import lti.client.generated.api.LtiPropsApi;
 import lti.client.generated.model.LmsLtiAuthz;
@@ -40,7 +41,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(MicroservicesTemplateLtiController.class)
+@WebMvcTest(HierarchyResourceManagerLtiController.class)
 @Import(ToolConfig.class)
 @ActiveProfiles("none")
 public class LtiLaunchSecurityTest {
@@ -53,6 +54,9 @@ public class LtiLaunchSecurityTest {
 
    @MockBean
    private LtiPropsApi ltiPropsApi;
+
+   @MockBean
+   private UserRepository userRepository;
 
    @Test
    public void ltiLaunch() throws Exception {

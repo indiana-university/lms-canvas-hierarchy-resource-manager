@@ -1,0 +1,46 @@
+{
+  "name": "lms-lti-hierarchyresourcemanager",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --open",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.14",
+    "@babel/plugin-proposal-class-properties": "^7.12.14",
+    "@babel/preset-env": "^7.12.14",
+    "@babel/preset-react": "^7.12.14",
+    "@babel/runtime": "^7.12.14",
+    "babel-loader": "^8.2.2",
+    "copy-webpack-plugin": "^8.1.1",
+    "css-loader": "^5.2.0",
+    "file-loader": "^6.2.0",
+    "imports-loader": "^2.0.0",
+    "path": "^0.12.7",
+    "style-loader": "^2.0.0",
+    "webpack": "^5.31.0",
+    "webpack-dev-server": "^3.11.2",
+    "webpack-cli": "^4.6.0"
+  },
+  "dependencies": {
+    "@tinymce/tinymce-react": "^3.12.2",
+    "axios": "^0.21.1",
+    "core-js": "^3.10.0",
+    "lodash": "^4.17.21",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scroll-up-button": "^1.6.4",
+    "react-select": "^4.3.0",
+    "regenerator-runtime": "^0.13.7",
+    "rivet-icons": "0.4.0",
+    "rivet-react": "^1.5.0",
+    "rivet-uits": "1.7.2",
+    "rivet-collapsible": "^0.2.5",
+    "styled-components": "^5.2.3",
+    "tinymce": "^5.7.1"
+  },
+  "comments": {
+    "dependencies": {}
+  }
+}

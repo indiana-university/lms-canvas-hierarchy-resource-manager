@@ -1,13 +1,16 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.services;
 
+import edu.iu.uits.lms.hierarchyresourcemanager.controller.HierarchyResourceManagerController;
+import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
+import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
-import edu.iu.uits.lms.hierarchyresourcemanager.controller.ToolController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(ToolController.class)
+@WebMvcTest(HierarchyResourceManagerController.class)
 @Import(ToolConfig.class)
 @ActiveProfiles("none")
 public class AppLaunchSecurityTest {
@@ -31,10 +34,19 @@ public class AppLaunchSecurityTest {
    @Autowired
    private MockMvc mvc;
 
+   @MockBean
+   private UserRepository userRepository;
+
+   @MockBean
+   private NodeHierarchyService nodeHierarchyService;
+
+   @MockBean
+   private NodeManagerService nodeManagerService;
+
    @Test
    public void appNoAuthnLaunch() throws Exception {
       //This is a secured endpoint and should not not allow access without authn
-      mvc.perform(get("/app/index/1234")
+      mvc.perform(get("/app/manager")
             .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
@@ -50,7 +62,7 @@ public class AppLaunchSecurityTest {
       SecurityContextHolder.getContext().setAuthentication(token);
 
       //This is a secured endpoint and should not not allow access without authn
-      ResultActions mockMvcAction = mvc.perform(get("/app/index/1234")
+      ResultActions mockMvcAction = mvc.perform(get("/app/template/1234")
               .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
               .contentType(MediaType.APPLICATION_JSON));
 
@@ -63,13 +75,13 @@ public class AppLaunchSecurityTest {
    public void appAuthnLaunch() throws Exception {
       LtiAuthenticationToken token = new LtiAuthenticationToken("userId",
             "1234", "systemId",
-            AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, "authority"),
+            AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, "authority", LTIConstants.INSTRUCTOR_AUTHORITY),
             "unit_test");
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
       //This is a secured endpoint and should not not allow access without authn
-      mvc.perform(get("/app/index/1234")
+      mvc.perform(get("/app/manager")
             .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());

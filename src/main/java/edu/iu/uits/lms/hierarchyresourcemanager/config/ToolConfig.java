@@ -10,7 +10,9 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 public class ToolConfig {
-
    private String version;
    private String env;
+   private String applyCourseTemplateQueueName;
+   private String contentMigrationStatusUpdateQueueName;
+   private String courseTemplateQueueName;
 }

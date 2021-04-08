@@ -7,48 +7,40 @@
     "test": "jest"
   },
   "devDependencies": {
-    "autoprefixer": "9.6.0",
-    "babel-core": "6.26.3",
-    "babel-loader": "7.1.5",
-    "babel-preset-env": "1.7.0",
-    "babel-preset-react": "6.24.1",
-    "babel-preset-stage-2": "6.24.1",
-    "copy-webpack-plugin": "^4.6.0",
-    "css-loader": "2.1.1",
-    "exports-loader": "^0.7.0",
-    "file-loader": "3.0.1",
-    "imports-loader": "^0.8.0",
-    "less": "3.9.0",
-    "less-loader": "5.0.0",
-    "path": "0.12.7",
-    "postcss-loader": "3.0.0",
-    "postcss-preset-env": "6.6.0",
-    "style-loader": "^0.23.1",
-    "webpack": "3.8.1",
-    "webpack-dev-server": "3.1.11"
+    "@babel/core": "^7.12.14",
+    "@babel/plugin-proposal-class-properties": "^7.12.14",
+    "@babel/preset-env": "^7.12.14",
+    "@babel/preset-react": "^7.12.14",
+    "@babel/runtime": "^7.12.14",
+    "babel-loader": "^8.2.2",
+    "copy-webpack-plugin": "^8.1.1",
+    "css-loader": "^5.2.0",
+    "file-loader": "^6.2.0",
+    "imports-loader": "^2.0.0",
+    "path": "^0.12.7",
+    "style-loader": "^2.0.0",
+    "webpack": "^5.31.0",
+    "webpack-dev-server": "^3.11.2",
+    "webpack-cli": "^4.6.0"
   },
   "dependencies": {
-    "@tinymce/tinymce-react": "^3.10.1",
+    "@tinymce/tinymce-react": "^3.12.2",
     "axios": "^0.21.1",
-    "babel-polyfill": "^6.26.0",
-    "classnames": "^2.2.6",
-    "lodash": "^4.17.11",
-    "react": "16.8.6",
-    "react-dom": "16.8.6",
+    "core-js": "^3.10.0",
+    "lodash": "^4.17.21",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-scroll-up-button": "^1.6.4",
-    "react-select": "^3.0.4",
-    "rest": "^2.0.0",
+    "react-select": "^4.3.0",
+    "regenerator-runtime": "^0.13.7",
     "rivet-icons": "0.4.0",
-    "rivet-react": "1.5.0",
+    "rivet-react": "^1.5.0",
     "rivet-uits": "1.7.2",
     "rivet-collapsible": "^0.2.5",
-    "rxjs": "^6.5.2",
-    "styled-components": "^4.2.1",
-    "tinymce": "5.6.2"
+    "styled-components": "^5.2.3",
+    "tinymce": "^5.7.1"
   },
   "comments": {
-    "dependencies": {
-      "rivet-uits": "Needs to stay at 1.1.0 until rivet-react supports newer stuff"
-    }
+    "dependencies": {}
   }
 }

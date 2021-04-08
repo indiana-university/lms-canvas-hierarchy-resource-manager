@@ -3,7 +3,7 @@ package edu.iu.uits.lms.hierarchyresourcemanager.rest;
 import canvas.client.generated.api.CoursesApi;
 import canvas.client.generated.model.Course;
 import canvas.helpers.CourseHelper;
-import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessage;
+import edu.iu.uits.lms.common.coursetemplates.CourseTemplateMessage;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessageSender;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.HierarchyResource;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.StoredFile;

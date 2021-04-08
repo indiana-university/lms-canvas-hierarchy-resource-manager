@@ -1,5 +1,6 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.amqp;
 
+import edu.iu.uits.lms.common.coursetemplates.CourseTemplateMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

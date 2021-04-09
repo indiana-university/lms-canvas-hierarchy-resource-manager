@@ -1,7 +1,7 @@
 
 projectedSecret:
   - secret:
-      name: "properties-2021-01-28"
+      name: "properties-2021-03-18"
 
 image:
   tag: unstable-reg

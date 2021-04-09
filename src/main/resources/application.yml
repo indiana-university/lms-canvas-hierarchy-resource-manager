@@ -29,6 +29,7 @@ spring:
     url: ${lms.db.url}
     username: ${lms.db.user}
     password: ${lms.db.password}
+    type: org.springframework.jdbc.datasource.DriverManagerDataSource
   rabbitmq:
     host: ${lms.rabbitmq.host.${app.env}}
     port: ${lms.rabbitmq.port.${app.env}}

@@ -25,7 +25,7 @@ public class SecurityConfig {
                   .and()
                   .authorizeRequests()
                   .antMatchers("/lti").permitAll()
-                  .antMatchers("/app/**").hasRole(LtiAuthenticationProvider.LTI_USER);
+                  .antMatchers("/app/**").permitAll();
 
             //Need to disable csrf so that we can use POST via REST
             http.csrf().disable();

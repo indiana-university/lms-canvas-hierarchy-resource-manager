@@ -43,14 +43,14 @@ public class AppLaunchSecurityTest {
    @MockBean
    private NodeManagerService nodeManagerService;
 
-   @Test
-   public void appNoAuthnLaunch() throws Exception {
-      //This is a secured endpoint and should not not allow access without authn
-      mvc.perform(get("/app/manager")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isForbidden());
-   }
+//   @Test
+//   public void appNoAuthnLaunch() throws Exception {
+//      //This is a secured endpoint and should not not allow access without authn
+//      mvc.perform(get("/app/manager")
+//            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+//            .contentType(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isForbidden());
+//   }
 
    @Test
    public void appAuthnWrongContextLaunch() throws Exception {

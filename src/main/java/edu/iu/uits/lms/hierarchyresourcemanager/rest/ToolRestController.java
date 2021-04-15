@@ -45,6 +45,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
 
    @GetMapping("/hierarchy")
    public List<HierarchyOption> getNodes() {
+       log.info("Hey!!!!!!!!!");
       getTokenWithoutContext();
 
       List<String> hierarchy = nodeHierarchyService.getFlattenedHierarchy();

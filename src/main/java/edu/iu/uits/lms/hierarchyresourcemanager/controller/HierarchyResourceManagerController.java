@@ -9,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
 @Slf4j
 @RequestMapping("/app")
@@ -16,15 +18,19 @@ public class HierarchyResourceManagerController extends LtiAuthenticationTokenAw
 
     @RequestMapping(value = "/manager")
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
-    public String index(Model model) {
+    public String index(Model model, HttpSession httpSession) {
         getTokenWithoutContext();
+        //For session tracking
+        model.addAttribute("customId", httpSession.getId());
         return "react";
     }
 
     @RequestMapping(value = "/template/{context}")
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
-    public String templates(@PathVariable("context") String context, Model model) {
+    public String templates(@PathVariable("context") String context, Model model, HttpSession httpSession) {
         getValidatedToken(context);
+        //For session tracking
+        model.addAttribute("customId", httpSession.getId());
         model.addAttribute("courseId", context);
         return "react";
     }

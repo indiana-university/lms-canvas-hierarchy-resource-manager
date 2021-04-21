@@ -48,6 +48,20 @@ hierarchyresourcemanager:
   contentMigrationStatusUpdateQueueName: contentmigrationstatusupdate_${app.env}
   courseTemplateQueueName: coursetemplate_${app.env}
 
+  prd:
+    templateUrl: https://hierarchyresourcemanager.apps.iu.edu
+  stg:
+    templateUrl: https://hierarchyresourcemanager-stg.apps-test.iu.edu
+  reg:
+    templateUrl: https://hierarchyresourcemanager-reg.apps-test.iu.edu
+  snd:
+    templateUrl: https://hierarchyresourcemanager-snd.apps-snd.iu.edu
+  dev:
+    templateUrl: http://localhost:8081
+  ci:
+    templateUrl: http://localhost:8081
+
+  templateUrl: ${hierarchyresourcemanager.${app.env}.templateUrl}
 
 server:
   error:

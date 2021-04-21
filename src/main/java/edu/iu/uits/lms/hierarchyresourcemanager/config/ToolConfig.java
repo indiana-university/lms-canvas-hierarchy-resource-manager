@@ -15,4 +15,5 @@ public class ToolConfig {
    private String applyCourseTemplateQueueName;
    private String contentMigrationStatusUpdateQueueName;
    private String courseTemplateQueueName;
+   private String templateUrl;
 }

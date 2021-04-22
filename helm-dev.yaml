@@ -1,5 +1,5 @@
 namespace: default
-bootstrapSecret: "properties-2021-01-28"
+bootstrapSecret: "properties-2021-03-18"
 
 image:
   repository: localhost:5000/hierarchyresourcemanager

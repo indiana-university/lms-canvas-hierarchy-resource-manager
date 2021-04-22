@@ -6,8 +6,10 @@ import canvas.client.generated.api.CoursesApi;
 import canvas.client.generated.model.Account;
 import canvas.client.generated.model.Course;
 import canvas.helpers.CourseHelper;
+import edu.iu.uits.lms.common.coursetemplates.CourseTemplateMessage;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.ApplyCourseTemplateMessage;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.ApplyCourseTemplateMessageSender;
+import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessageSender;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.CourseTemplatesWrapper;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.DecoratedSyllabus;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,6 +56,9 @@ public class NodeManagerService {
 
    @Autowired
    private ToolConfig toolConfig;
+  
+   @Autowired
+   private CourseTemplateMessageSender courseTemplateMessageSender;
 
    public HierarchyResource getTemplate(Long templateId) throws HierarchyResourceException {
       HierarchyResource hierarchyResource = hierarchyResourceRepository.findById(templateId).orElse(null);
@@ -141,6 +147,32 @@ public class NodeManagerService {
       ApplyCourseTemplateMessage ctm = new ApplyCourseTemplateMessage(canvasCourseId, course.getTerm().getSisTermId(),
             course.getAccountId(), course.getSisCourseId(), true, templateId);
       applyCourseTemplateMessageSender.send(ctm);
+      return ResponseEntity.status(HttpStatus.OK).body("Request has been sent for template processing");
+   }
+
+   public ResponseEntity<String> applyTemplateToCourse(@PathVariable String canvasCourseId) {
+      //Make sure our params are good
+      if (canvasCourseId == null || canvasCourseId.isEmpty()) {
+         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Canvas Course ID is required but was not provided");
+      }
+
+      //Make sure we have a course
+      Course course = coursesApi.getCourse(canvasCourseId);
+      if (course == null) {
+         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found: " + canvasCourseId);
+      }
+
+      //Make sure it is unpublished
+      if (CourseHelper.isPublished(course)) {
+         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Canvas Course must be unpublished");
+      }
+
+      //Trigger a content migration, which will setup the course from the template
+      CourseTemplateMessage ctm = new CourseTemplateMessage(canvasCourseId, course.getTerm().getSisTermId(),
+            course.getAccountId(), course.getSisCourseId(), true);
+
+      courseTemplateMessageSender.send(ctm);
+
       return ResponseEntity.status(HttpStatus.OK).body("Request has been sent for template processing");
    }
 

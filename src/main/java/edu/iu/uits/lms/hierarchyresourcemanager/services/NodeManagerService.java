@@ -195,7 +195,7 @@ public class NodeManagerService {
    }
 
    public String getUrlToFile(StoredFile storedFile) {
-      return toolConfig.getTemplateUrl() + "/rest/file/download/" + storedFile.getId() + "/" + storedFile.getDisplayName();
+      return toolConfig.getAppBaseUrl() + "/rest/file/download/" + storedFile.getId() + "/" + storedFile.getDisplayName();
    }
 
    public List<HierarchyResource> getTemplatesForNode(String nodeName) {

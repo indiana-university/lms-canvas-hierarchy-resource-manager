@@ -1,9 +1,6 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.rest;
 
 import canvas.client.generated.api.CoursesApi;
-import canvas.client.generated.model.Course;
-import canvas.helpers.CourseHelper;
-import edu.iu.uits.lms.common.coursetemplates.CourseTemplateMessage;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessageSender;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.HierarchyResource;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.StoredFile;
@@ -97,29 +94,7 @@ public class HierarchyResourceManagerRestController {
 
     @PostMapping("/canvasCourseId/{canvasCourseId}")
     public ResponseEntity applyTemplateToCourse(@PathVariable String canvasCourseId) {
-        //Make sure our params are good
-        if (canvasCourseId == null || canvasCourseId.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Canvas Course ID is required but was not provided");
-        }
-
-        //Make sure we have a course
-        Course course = courseService.getCourse(canvasCourseId);
-        if (course == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found: " + canvasCourseId);
-        }
-
-        //Make sure it is unpublished
-        if (CourseHelper.isPublished(course)) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Canvas Course must be unpublished");
-        }
-
-        //Trigger a content migration, which will setup the course from the template
-        CourseTemplateMessage ctm = new CourseTemplateMessage(canvasCourseId, course.getTerm().getSisTermId(),
-              course.getAccountId(), course.getSisCourseId(), true);
-
-        courseTemplateMessageSender.send(ctm);
-
-        return ResponseEntity.status(HttpStatus.OK).body("Request has been sent for template processing");
+        return hierarchyResourceService.applyTemplateToCourse(canvasCourseId);
     }
 
     @RequestMapping(value="/upload", method=RequestMethod.POST)

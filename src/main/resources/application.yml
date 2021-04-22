@@ -49,6 +49,20 @@ hierarchyresourcemanager:
   contentMigrationStatusUpdateQueueName: contentmigrationstatusupdate_${app.env}
   courseTemplateQueueName: coursetemplate_${app.env}
 
+  prd:
+    appBaseUrl: https://hierarchyresourcemanager.apps.iu.edu
+  stg:
+    appBaseUrl: https://hierarchyresourcemanager-stg.apps-test.iu.edu
+  reg:
+    appBaseUrl: https://hierarchyresourcemanager-reg.apps-test.iu.edu
+  snd:
+    appBaseUrl: https://hierarchyresourcemanager-snd.apps-snd.iu.edu
+  dev:
+    appBaseUrl: http://localhost:8081
+  ci:
+    appBaseUrl: http://localhost:8081
+
+  appBaseUrl: ${hierarchyresourcemanager.${app.env}.appBaseUrl}
 
 server:
   error:

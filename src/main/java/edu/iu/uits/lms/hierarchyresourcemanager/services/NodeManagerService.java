@@ -10,6 +10,7 @@ import edu.iu.uits.lms.common.coursetemplates.CourseTemplateMessage;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.ApplyCourseTemplateMessage;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.ApplyCourseTemplateMessageSender;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessageSender;
+import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.CourseTemplatesWrapper;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.DecoratedSyllabus;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.HierarchyResource;
@@ -53,6 +54,9 @@ public class NodeManagerService {
    @Autowired
    private ApplyCourseTemplateMessageSender applyCourseTemplateMessageSender;
 
+   @Autowired
+   private ToolConfig toolConfig;
+  
    @Autowired
    private CourseTemplateMessageSender courseTemplateMessageSender;
 
@@ -223,7 +227,7 @@ public class NodeManagerService {
    }
 
    public String getUrlToFile(StoredFile storedFile) {
-      return "/rest/file/download/" + storedFile.getId() + "/" + storedFile.getDisplayName();
+      return toolConfig.getAppBaseUrl() + "/rest/file/download/" + storedFile.getId() + "/" + storedFile.getDisplayName();
    }
 
    public List<HierarchyResource> getTemplatesForNode(String nodeName) {

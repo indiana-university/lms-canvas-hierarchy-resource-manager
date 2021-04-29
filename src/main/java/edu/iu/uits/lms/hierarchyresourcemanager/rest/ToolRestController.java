@@ -9,9 +9,9 @@ import edu.iu.uits.lms.hierarchyresourcemanager.model.StoredFile;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.SyllabusSupplement;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.form.SyllabusSupplementForm;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.HierarchyResourceException;
-import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeHierarchyService;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
+import iuonly.client.generated.api.NodeHierarchyApi;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,13 +41,13 @@ public class ToolRestController extends HierarchyResourceManagerController {
    private NodeManagerService nodeManagerService;
 
    @Autowired
-   private NodeHierarchyService nodeHierarchyService;
+   private NodeHierarchyApi nodeHierarchyApi;
 
    @GetMapping("/hierarchy")
    public List<HierarchyOption> getNodes() {
       getTokenWithoutContext();
 
-      List<String> hierarchy = nodeHierarchyService.getFlattenedHierarchy();
+      List<String> hierarchy = nodeHierarchyApi.getFlattenedHierarchy();
       List<HierarchyOption> results = hierarchy.stream().map(HierarchyOption::new).collect(Collectors.toList());
       return results;
    }

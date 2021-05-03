@@ -60,12 +60,22 @@ module.exports = {
            {loader: 'css-loader'}
          ]
        }, {
-        test: /\.(html|gif|jpg|png|svg)$/,
+        test: /\.(html|gif|jpg|png)$/,
         loader: 'file-loader',
         options: {
           name: 'media/[name].[ext]'
         }
       }, {
+        test: /\.(svg)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]'
+            }
+          }
+        ]
+       }, {
         test: require.resolve('tinymce/tinymce'),
         use: [{
           loader: 'imports-loader',

@@ -1,11 +1,11 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.services;
 
+import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.controller.HierarchyResourceManagerController;
 import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
-import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +36,6 @@ public class AppLaunchSecurityTest {
 
    @MockBean
    private UserRepository userRepository;
-
-   @MockBean
-   private NodeHierarchyService nodeHierarchyService;
 
    @MockBean
    private NodeManagerService nodeManagerService;

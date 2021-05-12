@@ -5,6 +5,7 @@ import edu.iu.uits.lms.common.samesite.EnableCookieFilter;
 import edu.iu.uits.lms.common.server.GitRepositoryState;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.server.ServerUtils;
+import edu.iu.uits.lms.coursetemplating.EnableCourseTemplatingService;
 import edu.iu.uits.lms.email.EnableEmailClient;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.lti.config.EnableGlobalErrorHandler;
@@ -36,6 +37,7 @@ import java.util.Date;
 @EnableCanvasClient
 @EnableIuOnlyClient
 @EnableEmailClient
+@EnableCourseTemplatingService
 @EnableConfigurationProperties(GitRepositoryState.class)
 public class WebApplication {
 

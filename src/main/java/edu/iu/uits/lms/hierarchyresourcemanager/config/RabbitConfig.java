@@ -16,11 +16,6 @@ public class RabbitConfig {
       return new Queue(toolConfig.getApplyCourseTemplateQueueName());
    }
 
-   @Bean(name = "contentMigrationStatusUpdateQueue")
-   Queue contentMigrationStatusUpdateQueue() {
-      return new Queue(toolConfig.getContentMigrationStatusUpdateQueueName());
-   }
-
    @Bean(name = "courseTemplateQueue")
    Queue courseTemplateQueue() {
       return new Queue(toolConfig.getCourseTemplateQueueName());

@@ -1,7 +1,7 @@
 
 projectedSecret:
   - secret:
-      name: "properties-2021-03-18"
+      name: "properties-2021-05-10"
   - secret:
       name: "lms-security-properties-20201014"
 

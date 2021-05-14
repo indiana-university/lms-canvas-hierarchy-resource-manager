@@ -46,7 +46,6 @@ hierarchyresourcemanager:
   version: @app.version@
   env: ${app.env}
   applyCourseTemplateQueueName: applycoursetemplate_${app.env}
-  contentMigrationStatusUpdateQueueName: contentmigrationstatusupdate_${app.env}
   courseTemplateQueueName: coursetemplate_${app.env}
 
   prd:

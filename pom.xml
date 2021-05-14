@@ -21,7 +21,7 @@
         <docker_tag>stable</docker_tag>
         <helm_service_name>hierarchyresourcemanager</helm_service_name>
         <jquery.version>3.5.1</jquery.version>
-        <lms-bom.version>4.0.13</lms-bom.version>
+        <lms-bom.version>4.0.14</lms-bom.version>
     </properties>
 
     <dependencyManagement>
@@ -68,6 +68,10 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>redis-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>edu.iu.uits.lms</groupId>
+            <artifactId>course-templating-service</artifactId>
         </dependency>
         <dependency>
             <groupId>nz.net.ultraq.thymeleaf</groupId>

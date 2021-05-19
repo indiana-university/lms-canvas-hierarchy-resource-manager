@@ -7,10 +7,9 @@ import canvas.client.generated.model.Account;
 import canvas.client.generated.model.Course;
 import canvas.helpers.CourseHelper;
 import edu.iu.uits.lms.common.coursetemplates.CourseTemplateMessage;
-import edu.iu.uits.lms.hierarchyresourcemanager.amqp.ApplyCourseTemplateMessage;
-import edu.iu.uits.lms.hierarchyresourcemanager.amqp.ApplyCourseTemplateMessageSender;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessageSender;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
+import edu.iu.uits.lms.hierarchyresourcemanager.handler.ApplyCourseTemplateMessageHandler;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.CourseTemplatesWrapper;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.DecoratedSyllabus;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.HierarchyResource;
@@ -52,7 +51,7 @@ public class NodeManagerService {
    private CanvasApi canvasApi;
 
    @Autowired
-   private ApplyCourseTemplateMessageSender applyCourseTemplateMessageSender;
+   private ApplyCourseTemplateMessageHandler applyCourseTemplateMessageHandler;
 
    @Autowired
    private ToolConfig toolConfig;
@@ -144,10 +143,13 @@ public class NodeManagerService {
       }
 
       //Trigger a content migration, which will setup the course from the template
-      ApplyCourseTemplateMessage ctm = new ApplyCourseTemplateMessage(canvasCourseId, course.getTerm().getSisTermId(),
+      boolean result = applyCourseTemplateMessageHandler.handleMessage(canvasCourseId, course.getTerm().getSisTermId(),
             course.getAccountId(), course.getSisCourseId(), true, templateId);
-      applyCourseTemplateMessageSender.send(ctm);
-      return ResponseEntity.status(HttpStatus.OK).body("Request has been sent for template processing");
+      if (result) {
+         return ResponseEntity.status(HttpStatus.OK).body("Request has been sent for template processing");
+      } else {
+         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something bad happened");
+      }
    }
 
    public ResponseEntity<String> applyTemplateToCourse(@PathVariable String canvasCourseId) {

@@ -11,11 +11,6 @@ public class RabbitConfig {
    @Autowired
    private ToolConfig toolConfig = null;
 
-   @Bean(name = "applyCourseTemplateQueue")
-   Queue applyCourseTemplateQueue() {
-      return new Queue(toolConfig.getApplyCourseTemplateQueueName());
-   }
-
    @Bean(name = "courseTemplateQueue")
    Queue courseTemplateQueue() {
       return new Queue(toolConfig.getCourseTemplateQueueName());

@@ -1,17 +1,14 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.handler;
 
-import edu.iu.uits.lms.hierarchyresourcemanager.amqp.ApplyCourseTemplateMessage;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.HierarchyResource;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.HierarchyResourceException;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
 import iuonly.coursetemplating.CourseTemplatingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
-
-@Component
+@Service
 @Slf4j
 public class ApplyCourseTemplateMessageHandler {
 
@@ -21,29 +18,20 @@ public class ApplyCourseTemplateMessageHandler {
    @Autowired
    private NodeManagerService nodeManagerService;
 
-   public boolean handleMessage(Serializable message) {
-      log.debug("Message received: " + message);
-      ApplyCourseTemplateMessage courseMessage = (ApplyCourseTemplateMessage)message;
-      String courseId = courseMessage.getCourseId();
-      String sisTermId = courseMessage.getSisTermId();
-      String accountId = courseMessage.getAccountId();
-      String sisCourseId = courseMessage.getSisCourseId();
-      Long templateId = courseMessage.getTemplateId();
+   public boolean handleMessage(String courseId, String sisTermId, String accountId, String sisCourseId, boolean forceApply, Long templateId) {
+      log.debug("Message received: CourseId: {}, SisTermId: {}, AccountId: {}, SisCourseId: {}, ForceApply: {}, TemplateId: {}",
+            courseId, sisCourseId, accountId, sisCourseId, forceApply, templateId);
 
       try {
          HierarchyResource templateForCourse = nodeManagerService.getTemplate(templateId);
          String url = nodeManagerService.getUrlToFile(templateForCourse.getStoredFile());
          log.debug("Course template url: " + url);
-         courseTemplatingService.checkAndDoImsCcImport(courseId, sisTermId, accountId, sisCourseId, url, courseMessage.isForceApply());
+         courseTemplatingService.checkAndDoImsCcImport(courseId, sisTermId, accountId, sisCourseId, url, forceApply);
       } catch (HierarchyResourceException e) {
          log.error("Unable to apply template to course - " + sisCourseId, e);
          return false;
       }
 
       return true;
-   }
-
-   public Class handlesClass() {
-      return ApplyCourseTemplateMessage.class;
    }
 }

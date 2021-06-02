@@ -18,7 +18,8 @@ class TemplatingTabContent extends React.Component {
             saveNewTemplateModalOpen: false,
             loading: false,
             validation: {},
-            fileInputKey: Date.now()
+            fileInputKey: Date.now(),
+            disableModalButtons: false
         }
 
         this.handleHierarchyOptionChange.bind(this)
@@ -114,13 +115,22 @@ class TemplatingTabContent extends React.Component {
                     'content-type': 'multipart/form-data'
                 }
             }
+            this.setState({disableModalButtons: true})
             axios.post("app/tool/template/submit", formData, config)
                 .then(response => response.data)
                 .then((data) => {
                     resetForm("newTemplateForm");
                     this.dialogSaved("The template " + data.displayName + " has been associated with the " + this.state.selectedNode + " account.");
                     this.nodeDataLookup(this.state.selectedNode);
-            })
+                })
+                .catch((error) => {
+                    if (error.response.status == 413) {
+                        validation['templateFileInput'] = {variant: 'danger', note: 'Template file is too large and cannot be processed by the server'};
+                    } else {
+                        validation['templateFileInput'] = {variant: 'danger', note: 'There was an unknown error while processing your file upload'};
+                    }
+                    this.setState({validation: validation, disableModalButtons: false})
+                })
         } else {
             this.setState({validation: validation})
         }
@@ -129,7 +139,7 @@ class TemplatingTabContent extends React.Component {
   dialogSaved = (notificationText) => {
   //      console.log(inputKey)
         this.props.notificationHandler({display: true, text: notificationText})
-        this.setState({saveNewTemplateModalOpen: false, validation: {}, fileInputKey: Date.now()})
+        this.setState({saveNewTemplateModalOpen: false, validation: {}, fileInputKey: Date.now(), disableModalButtons: false})
     }
 
   render() {
@@ -157,7 +167,7 @@ class TemplatingTabContent extends React.Component {
                     notificationHandler={this.props.notificationHandler} refreshHandler={this.handleRefresh}/>
 
             <ConfirmationModal isOpen={this.state.saveNewTemplateModalOpen} handleConfirm={this.handleNewTemplateModalSave}
-                title="New Template" onDismiss={this.handleNewTemplateModalCancel} yesLabel="Submit" noLabel="Cancel">
+                title="New Template" onDismiss={this.handleNewTemplateModalCancel} yesLabel="Submit" noLabel="Cancel" showLoading={this.state.disableModalButtons}>
                 <Form id="newTemplateForm">
                     <Input id="newDisplayName" type="text" label="Display Name (required)" margin={{bottom: 'sm'}}
                         {...this.state.validation.displayName} />

@@ -16,7 +16,8 @@ class SelectedTemplate extends React.Component {
             defaultData: {},
             templateForEdit: null,
             validation: {},
-            inputKey: Date.now()
+            inputKey: Date.now(),
+            disableModalButtons: false
         }
 
         this.handleEditTemplateModalOpen.bind(this)
@@ -82,13 +83,22 @@ class SelectedTemplate extends React.Component {
                     'content-type': 'multipart/form-data'
                 }
             }
+            this.setState({disableModalButtons: true})
             axios.post(`app/tool/template/${templateId}/update`, formData, config)
                 .then(response => response.data)
                 .then((data) => {
                     resetForm("editTemplateForm");
                     this.dialogSaved("The template " + data.displayName + " has been updated in the " + this.props.selectedNode + " account.");
                     this.props.refreshHandler();
-            })
+                })
+                .catch((error) => {
+                    if (error.response.status == 413) {
+                        validation['templateFileInput'] = {variant: 'danger', note: 'Template file is too large and cannot be processed by the server'};
+                    } else {
+                        validation['templateFileInput'] = {variant: 'danger', note: 'There was an unknown error while processing your file upload'};
+                    }
+                    this.setState({validation: validation, disableModalButtons: false})
+                })
         } else {
             this.setState({validation: validation})
         }
@@ -96,7 +106,7 @@ class SelectedTemplate extends React.Component {
 
     dialogSaved = (notificationText) => {
         this.props.notificationHandler({display: true, text: notificationText})
-        this.setState({editTemplateModalOpen: false, validation: {}, inputKey: Date.now(), templateForEdit: null})
+        this.setState({editTemplateModalOpen: false, validation: {}, inputKey: Date.now(), templateForEdit: null, disableModalButtons: false})
     }
 
     lookupTemplate = (templateId) => {
@@ -187,7 +197,7 @@ class SelectedTemplate extends React.Component {
         if (this.state.templateForEdit) {
             editModal =
                 <ConfirmationModal isOpen={this.state.editTemplateModalOpen} handleConfirm={this.handleEditTemplateModalSave}
-                    title="Edit Template" onDismiss={this.handleModalCancel} yesLabel="Submit" noLabel="Cancel">
+                    title="Edit Template" onDismiss={this.handleModalCancel} yesLabel="Submit" noLabel="Cancel" showLoading={this.state.disableModalButtons}>
                     <Form id="editTemplateForm">
                         <Input key={`templateId_${this.state.inputKey}`} id="editTemplateId" type="hidden" defaultValue={this.state.templateForEdit.id} />
                         <Input key={`displayName_${this.state.inputKey}`} id="editDisplayName" type="text" label="Display Name (required)" margin={{bottom: 'sm'}}

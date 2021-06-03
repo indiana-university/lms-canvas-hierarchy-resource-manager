@@ -10,6 +10,10 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${oauth.tokenprovider.url}/.well-known/jwks.json
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -69,6 +73,8 @@ server:
   servlet:
     session:
       timeout: 30m
+  tomcat:
+    max-swallow-size: -1
 
 ---
 

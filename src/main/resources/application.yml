@@ -31,8 +31,7 @@ spring:
     password: ${lms.db.password}
     type: org.springframework.jdbc.datasource.DriverManagerDataSource
   rabbitmq:
-    host: ${lms.rabbitmq.host.${app.env}}
-    port: ${lms.rabbitmq.port.${app.env}}
+    addresses: ${lms.rabbitmq.address.${app.env}}
     username: ${lms.rabbitmq.username.${app.env}}
     password: ${lms.rabbitmq.password.${app.env}}
     virtualHost: ${lms.rabbitmq.virtualHost.${app.env}}

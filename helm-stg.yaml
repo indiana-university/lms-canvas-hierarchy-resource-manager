@@ -1,7 +1,7 @@
 
 projectedSecret:
   - secret:
-      name: "properties-2021-01-28"
+      name: "properties-2021-06-03"
 
 image:
   tag: unstable-stg
@@ -12,5 +12,5 @@ env:
 ingress:
   enabled: true
   hosts:
-    - host: "microservices-template-stg.apps-test.iu.edu"
+    - host: "hierarchyresourcemanager-stg.apps-test.iu.edu"
       paths: []

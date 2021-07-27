@@ -1,21 +1,71 @@
 spring:
   application:
-    name: microservices-template
+    name: hierarchyresourcemanager
   profiles:
     active: redis
   session:
     store-type: none
-#  output:
-#    ansi:
-#      enabled: ALWAYS
   security:
     oauth2:
       resourceserver:
         jwt:
           jwk-set-uri: ${oauth.tokenprovider.url}/.well-known/jwks.json
-microservices-template:
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        temp:
+          use_jdbc_metadata_defaults: false
+      jadira:
+        usertype:
+          autoRegisterUserTypes: true
+  datasource:
+    driverClassName: ${lms.db.driverClass}
+    url: ${lms.db.url}
+    username: ${lms.db.user}
+    password: ${lms.db.password}
+    type: org.springframework.jdbc.datasource.DriverManagerDataSource
+  rabbitmq:
+    addresses: ${lms.rabbitmq.address.${app.env}}
+    username: ${lms.rabbitmq.username.${app.env}}
+    password: ${lms.rabbitmq.password.${app.env}}
+    virtualHost: ${lms.rabbitmq.virtualHost.${app.env}}
+    listener.simple:
+      missing-queues-fatal: false
+      retry:
+        enabled: true
+        initial-interval: 3s
+        max-attempts: 3
+        max-interval: 10s
+        multiplier: 2
+hierarchyresourcemanager:
   version: @app.version@
   env: ${app.env}
+  courseTemplateQueueName: coursetemplate_${app.env}
+
+  prd:
+    appBaseUrl: https://hierarchyresourcemanager.apps.iu.edu
+  stg:
+    appBaseUrl: https://hierarchyresourcemanager-stg.apps-test.iu.edu
+  reg:
+    appBaseUrl: https://hierarchyresourcemanager-reg.apps-test.iu.edu
+  snd:
+    appBaseUrl: https://hierarchyresourcemanager-snd.apps-snd.iu.edu
+  dev:
+    appBaseUrl: http://localhost:8081
+  ci:
+    appBaseUrl: http://localhost:8081
+
+  appBaseUrl: ${hierarchyresourcemanager.${app.env}.appBaseUrl}
 
 server:
   error:
@@ -24,6 +74,8 @@ server:
   servlet:
     session:
       timeout: 30m
+  tomcat:
+    max-swallow-size: -1
 
 ---
 
@@ -31,4 +83,4 @@ spring:
   profiles: redis
   session:
     store-type: redis
-    redis.namespace: microservices-template-${app.version}:session
+    redis.namespace: hierarchyresourcemanager-${app.version}:session

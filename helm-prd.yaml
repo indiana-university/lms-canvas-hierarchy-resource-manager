@@ -1,7 +1,7 @@
 
 projectedSecret:
   - secret:
-      name: "properties-2021-01-28"
+      name: "properties-2021-06-03"
   - secret:
       name: "lms-security-properties-20201014"
 
@@ -14,5 +14,5 @@ env:
 ingress:
   enabled: true
   hosts:
-    - host: "microservices-template.apps.iu.edu"
+    - host: "hierarchyresourcemanager.apps.iu.edu"
       paths: []

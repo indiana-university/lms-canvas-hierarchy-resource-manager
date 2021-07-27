@@ -1,0 +1,65 @@
+.textAreaDefault {
+    visibility: hidden;
+}
+
+.node-select {
+    width: 50%;
+}
+
+/* Overrides rivet's box shadow within the react-select */
+.node-rivet__input > input[type="text"]:focus {
+    box-shadow: none;
+}
+
+table#templateTable tr {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+table#templateTable td, th {
+    flex: 1;
+}
+
+table#templateTable th:last-child {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px 1px 1px 1px);
+    clip: rect(1px, 1px, 1px, 1px);
+}
+
+table#templateTable td:last-child[hidden] {
+    display: none;
+}
+
+table#templateTable td:last-child {
+    flex: 1 1 100%;
+}
+
+.responsive-cell-header {
+    display: none;
+}
+
+.detailsflex {
+    display: flex;
+    flex-basis: auto;
+}
+
+.longdetailswidthlimit {
+    flex-grow: 1;
+    max-width: 90ch;
+}
+
+.tableColumnWidthOverride {
+    max-width: 25%;
+}
+
+.defaultColumnWidthOverride {
+    max-width: 8%;
+}
+
+/* this allows for the span on the button to still function to the event listener */
+button > * {
+    pointer-events: none;
+}

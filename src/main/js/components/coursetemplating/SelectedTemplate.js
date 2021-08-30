@@ -161,9 +161,15 @@ class SelectedTemplate extends React.Component {
             })
     }
 
-    handleModalCancel = () => {
+    handleModalCancel(triggerId) {
         this.setState({editTemplateModalOpen: false, deleteModalOpen: false, deleteData: {}, defaultModalOpen: false,
                 defaultData: {}, templateForEdit: null, validation: {}, inputKey: Date.now()})
+     
+        // return focus to the trigger element
+        var trigger = document.getElementById(triggerId);
+        if (trigger) {
+            trigger.focus();
+        }
     }
 
     handleMoreClick = (event) => {
@@ -197,7 +203,8 @@ class SelectedTemplate extends React.Component {
         if (this.state.templateForEdit) {
             editModal =
                 <ConfirmationModal isOpen={this.state.editTemplateModalOpen} handleConfirm={this.handleEditTemplateModalSave}
-                    title="Edit Template" onDismiss={this.handleModalCancel} yesLabel="Submit" noLabel="Cancel" showLoading={this.state.disableModalButtons}>
+                    title="Edit Template" onDismiss={() => this.handleModalCancel("edit-" + this.state.templateForEdit.id)} yesLabel="Submit" noLabel="Cancel" 
+                    showLoading={this.state.disableModalButtons} focusId="editDisplayName">
                     <Form id="editTemplateForm">
                         <Input key={`templateId_${this.state.inputKey}`} id="editTemplateId" type="hidden" defaultValue={this.state.templateForEdit.id} />
                         <Input key={`displayName_${this.state.inputKey}`} id="editDisplayName" type="text" label="Display Name (required)" margin={{bottom: 'sm'}}
@@ -218,7 +225,7 @@ class SelectedTemplate extends React.Component {
         return (
             <div>
                 <table id="templateTable">
-                    <caption className="sr-only">Table example one</caption>
+                    <caption className="sr-only">Templates for the selected node</caption>
                     <thead>
                         <tr className="rvt-vertical-center">
                             <th scope="col" className="tableColumnWidthOverride">Display Name</th>
@@ -236,12 +243,14 @@ class SelectedTemplate extends React.Component {
                 {editModal}
 
                 <ConfirmationModal isOpen={this.state.deleteModalOpen} handleConfirm={this.handleModalDelete}
-                    title="Delete Template" onDismiss={this.handleModalCancel} yesLabel="Delete" noLabel="Cancel">
+                    title="Delete Template" onDismiss={() => this.handleModalCancel("delete-" + this.state.deleteData.templateId)} 
+                    yesLabel="Delete" noLabel="Cancel" focusId={"delete-instr-" + this.state.deleteData.templateId}>
                     <DeleteModalText deleteData={this.state.deleteData} />
                 </ConfirmationModal>
 
                 <ConfirmationModal isOpen={this.state.defaultModalOpen} handleConfirm={this.handleModalDefault}
-                    title="Change Default Status" onDismiss={this.handleModalCancel}>
+                    title="Change Default Status" focusId={"default-instr-" + this.state.defaultData.templateId}
+                    onDismiss={() => this.handleModalCancel("default-" + this.state.defaultData.templateId)}>
                     <DefaultModalText defaultData={this.state.defaultData} />
                 </ConfirmationModal>
             </div>
@@ -266,7 +275,7 @@ class SelectedTemplate extends React.Component {
 }
 
 function CanvasCommonsUrl(props) {
-    if (props.url != null) {
+    if (props.url != null && props.url.trim().length > 0) {
         return (
             <a href={props.url} target="_blank">{props.url}</a>
         )
@@ -284,16 +293,17 @@ function Template(props) {
                 <td className="defaultColumnWidthOverride">{props.templateData.defaultTemplate ? 'Yes' : 'No'}</td>
                 <td>
                     <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm" onClick={props.handleEditTemplateModalOpen}
-                            data-id={props.templateData.id}>
+                            data-id={props.templateData.id} id={"edit-" + props.templateData.id}>
                         <span className="rvt-sr-only">Edit entry</span>
                         <span>Edit</span>
                     </button>
                     <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm rvt-m-top-sm rvt-m-top-none-xl-up"
-                        onClick={props.handleDeleteDialogOpen} data-id={props.templateData.id}>
+                        onClick={props.handleDeleteDialogOpen} data-id={props.templateData.id} id={"delete-" + props.templateData.id}>
                         <span>Delete</span>
                     </button>
                     <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm rvt-m-top-sm rvt-m-top-none-xl-up"
-                        onClick={props.handleDefaultModalOpen} data-id={props.templateData.id} data-nodehasdefault={props.nodeHasDefault}>
+                        onClick={props.handleDefaultModalOpen} data-id={props.templateData.id} data-nodehasdefault={props.nodeHasDefault}
+                        id={"default-" + props.templateData.id}>
                         <span>{props.templateData.defaultTemplate ? 'Disable Default' : 'Enable Default'}</span>
                     </button>
                     <button type="button" className="rvt-button rvt-button--secondary rvt-m-top-sm rvt-m-top-none-xl-up" onClick={props.handleMoreClick}
@@ -328,21 +338,22 @@ function Template(props) {
 
 function DefaultModalText(props) {
     var bonusDefaultText = null
+    var defaultInfoText = null
     if (props.defaultData.disabling) {
-        return (
-            <p>Are you sure you wish to disable the default status for <span className="rvt-text-bold">{props.defaultData.displayName}</span> for the <span className="rvt-text-bold">{props.defaultData.nodeName}</span> account?</p>
-        )
+        defaultInfoText = <p>Are you sure you wish to disable the default status for <span className="rvt-text-bold">{props.defaultData.displayName}</span> for the <span className="rvt-text-bold">{props.defaultData.nodeName}</span> account?</p>
     } else {
+        defaultInfoText = <p>Are you sure you wish to set the template <span className="rvt-text-bold">{props.defaultData.displayName}</span> to default for the <span className="rvt-text-bold">{props.defaultData.nodeName}</span> account?</p>
         if (props.defaultData.nodehasdefault == "true") {
             bonusDefaultText = <p>Setting this as default will remove the default status from another template for this node.</p>
         }
-        return (
-            <div>
-                <p>Are you sure you wish to set the template <span className="rvt-text-bold">{props.defaultData.displayName}</span> to default for the <span className="rvt-text-bold">{props.defaultData.nodeName}</span> account?</p>
-                {bonusDefaultText}
-            </div>
-        )
     }
+    return (
+        <div tabindex="-1" id={"default-instr-" + props.defaultData.templateId}>
+            {defaultInfoText}
+            {bonusDefaultText}
+        </div>
+    )
+    
 }
 
 function DeleteModalText(props) {
@@ -352,8 +363,10 @@ function DeleteModalText(props) {
         bonusDeleteText = <p>Deleting this template will also remove the default template for this node.</p>
     }
     return (
-        <div>
-            <p>Are you sure you wish to delete the template <span className="rvt-text-bold">{props.deleteData.displayName}</span> from the <span className="rvt-text-bold">{props.deleteData.nodeName}</span> account?</p>
+        <div tabindex="-1" id={"delete-instr-" + props.deleteData.templateId}>
+            <p>
+                Are you sure you wish to delete the template <span className="rvt-text-bold">{props.deleteData.displayName}</span> from the <span className="rvt-text-bold">{props.deleteData.nodeName}</span> account?
+            </p>
             {bonusDeleteText}
         </div>
     )

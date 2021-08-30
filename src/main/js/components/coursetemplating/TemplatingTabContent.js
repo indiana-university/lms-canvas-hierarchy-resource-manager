@@ -64,6 +64,7 @@ class TemplatingTabContent extends React.Component {
     handleNewTemplateModalCancel = () => {
         resetForm("newTemplateForm");
         this.setState({saveNewTemplateModalOpen: false, defaultModalOpen: false, validation: {}, fileInputKey: Date.now()})
+        document.getElementById('addNewTemplate').focus();
     }
 
     handleNewTemplateModalSave = () => {
@@ -144,22 +145,22 @@ class TemplatingTabContent extends React.Component {
 
   render() {
     let fileAlert = null
-    let fileAttributes = {}
+    let fileAttributes = {'aria-required': 'true'}
     if (this.state.validation.templateFileInput) {
         fileAlert = <InlineAlert id="missingFileAlert" variant={this.state.validation.templateFileInput.variant}>{this.state.validation.templateFileInput.note}</InlineAlert>
-        fileAttributes = {'aria-describedby': 'missingFileAlert', 'aria-invalid': true}
+        fileAttributes = {'aria-required': 'true', 'aria-describedby': 'missingFileAlert', 'aria-invalid': true}
     }
 
   return (
         <div>
             <span className="rvt-ts-26 rvt-text-bold rvt-display-block rvt-m-bottom-md">Manage templates</span>
-            <label htmlFor="nodeSelectCourseTemplate">Node</label>
+            <label id="nodeSelectCourseTemplate">Node</label>
             <div className="rvt-m-bottom-md">
                 <Select options={this.props.hierarchy} isSearchable={true} isClearable={true} placeholder="Select Node" className="node-select"
-                    onChange={this.handleHierarchyOptionChange} classNamePrefix="node-rivet"/>
+                    onChange={this.handleHierarchyOptionChange} classNamePrefix="node-rivet" aria-labelledby="nodeSelectCourseTemplate" />
             </div>
 
-            <button className="rvt-button rvt-button--secondary rvt-m-bottom-sm" onClick={this.handleNewTemplateModalOpen}
+            <button id="addNewTemplate" className="rvt-button rvt-button--secondary rvt-m-bottom-sm" onClick={this.handleNewTemplateModalOpen}
                 disabled={!this.state.selectedNode} aria-disabled={!this.state.selectedNode}>New Template</button>
 
             <Loading loading={this.state.loading} />
@@ -167,7 +168,8 @@ class TemplatingTabContent extends React.Component {
                     notificationHandler={this.props.notificationHandler} refreshHandler={this.handleRefresh}/>
 
             <ConfirmationModal isOpen={this.state.saveNewTemplateModalOpen} handleConfirm={this.handleNewTemplateModalSave}
-                title="New Template" onDismiss={this.handleNewTemplateModalCancel} yesLabel="Submit" noLabel="Cancel" showLoading={this.state.disableModalButtons}>
+                title="New Template" onDismiss={this.handleNewTemplateModalCancel} yesLabel="Submit" noLabel="Cancel" 
+                showLoading={this.state.disableModalButtons} focusId="newDisplayName">
                 <Form id="newTemplateForm">
                     <Input id="newDisplayName" type="text" label="Display Name (required)" margin={{bottom: 'sm'}}
                         {...this.state.validation.displayName} />

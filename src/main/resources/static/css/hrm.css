@@ -63,3 +63,19 @@ table#templateTable td:last-child {
 button > * {
     pointer-events: none;
 }
+
+.node-rivet__placeholder, .node-rivet__indicator {
+    color: #000 !important;
+}
+
+/* Add inline error indicator for the message editor. Copy rivet styling from
+    their rvt-validation-danger class; needed to override tinymce styling */
+.alert-danger-inline {
+    border-color: #df3603 !important;
+    box-shadow: 0 0 0 0.125rem #df3603 !important;
+    border-radius: 0.25rem !important;
+}
+
+.tox-tinymce {
+    border-radius: 0.25rem !important;
+}

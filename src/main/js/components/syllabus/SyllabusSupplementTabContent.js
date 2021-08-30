@@ -27,7 +27,10 @@ class SyllabusSupplementTabContent extends React.Component {
             deleteModalOpen: false,
             titleLengthError: false,
             usernameLengthError: false,
-            emailLengthError: false
+            emailLengthError: false,
+            contentLengthError: false,
+            nodeChange: false,
+            deletionChange: false
         }
 
         this.handleInit.bind(this)
@@ -42,10 +45,25 @@ class SyllabusSupplementTabContent extends React.Component {
         this.handleModalCancel.bind(this)
         this.filePickerCallback.bind(this)
     }
+    
+    componentDidMount() {
+        // unfortunately, the best we can do to identify the node input is to find the first id
+        // that starts with "react-select" because a random integer is appended to the id. At this time,
+        // react-select is not used anywhere else
+        var nodeSelect = document.querySelector('*[id^="react-select"]');
+        if (nodeSelect) {
+            nodeSelect.setAttribute('aria-labelledby', 'selectNodeLabel');
+        }    
+    }
 
     handleInit = (event) => {
         {/* This is needed so that the tinymce header doesn't get a higher z-index than the react dropdown input */}
         $(".tox-editor-header").css("zIndex", 0)
+        
+        var editor = document.getElementById('supplementText_ifr');
+        if (editor) {
+            editor.setAttribute('aria-label', 'Supplement text (required)');
+        }
     }
 
   handleHierarchyOptionChange = (selectedOption) => {
@@ -61,13 +79,18 @@ class SyllabusSupplementTabContent extends React.Component {
                    selectedNode: stateVal,
                    cancelDisabled: true,
                    deleteDisabled: true,
-                   saveDisabled: true
+                   saveDisabled: true,
+                   nodeChange: true
                 });
-
+                
+      // always reset the error state
+      self.setState({titleLengthError: false, usernameLengthError: false, emailLengthError: false, contentLengthError: false});
+      this.handleContentErrorIndicator(true);  
+        
       if (reset) {
           self.setState({syllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
                         initialSyllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
-                        inputsDisabled: true, titleLengthError: false, usernameLengthError: false, emailLengthError: false})
+                        inputsDisabled: true});
       } else {
           axios.get(`app/tool/syllabus/node/${stateVal}`)
               .then(response => response.data)
@@ -88,6 +111,14 @@ class SyllabusSupplementTabContent extends React.Component {
             return false
         }
         return true
+    }
+    
+    isContentValid = (content) => {
+        if (!content || content.length < 1) {
+            return false
+        } else {
+            return true
+        }
     }
 
     handleTextInputChange = (event) => {
@@ -114,10 +145,32 @@ class SyllabusSupplementTabContent extends React.Component {
     handleEditorChange = (content) => {
         var syllabus = this.cloneObject(this.state.syllabus)
         syllabus.syllabusContent = content
+        
+        if (!this.state.nodeChange && !this.state.deletionChange) {
+            this.handleContentErrorIndicator(this.isContentValid(syllabus.syllabusContent));
+            this.state.contentLengthError = !this.isContentValid(syllabus.syllabusContent);
+        }
 
         this.setState({ saveDisabled: !this.canSave(syllabus, this.state.initialSyllabus),
                         cancelDisabled: this.canCancel(syllabus, this.state.initialSyllabus),
-                        syllabus: syllabus})
+                        syllabus: syllabus, nodeChange: false, deletionChange: false})
+    }
+    
+    // for the red outline around the content editor.
+    handleContentErrorIndicator(isContentValid) {
+        if (isContentValid) {
+            document.getElementById('supplementContentContainer').classList.remove('alert-danger-inline');
+            var editor = document.getElementById('supplementText_ifr');
+            if (editor) {
+                editor.removeAttribute('aria-invalid');
+            }
+        } else {
+            document.getElementById('supplementContentContainer').classList.add('alert-danger-inline');
+            var editor = document.getElementById('supplementText_ifr');
+            if (editor) {
+                editor.setAttribute('aria-invalid', 'true');
+            }
+        }
     }
 
     canSave = (syllabus, initialSyllabus) => {
@@ -126,7 +179,7 @@ class SyllabusSupplementTabContent extends React.Component {
        if (this.isInputValid(syllabus.syllabusTitle) &&
            this.isInputValid(syllabus.contactUsername) &&
            this.isInputValid(syllabus.contactEmail) &&
-           syllabus.syllabusContent !== "" &&
+           this.isContentValid(syllabus.syllabusContent) &&
            this.syllabusIsUpdated(syllabus, initialSyllabus)) {
              canSave = true;
        }
@@ -161,8 +214,14 @@ class SyllabusSupplementTabContent extends React.Component {
     this.setState({deleteModalOpen: true})
   }
 
-  handleModalCancel = () => {
+  handleModalCancel(triggerId) {
     this.setState({saveModalOpen: false, deleteModalOpen: false})
+    
+    // return focus to the trigger element
+    var trigger = document.getElementById(triggerId);
+    if (trigger) {
+        trigger.focus();
+    }
   }
 
   handleModalSave = () => {
@@ -172,6 +231,7 @@ class SyllabusSupplementTabContent extends React.Component {
     axios.post("app/tool/syllabus/submit", JSON.stringify(inputData), config)
         .then(response => response.data)
         .then((data) => {
+          this.state.deletionChange = true;
           this.dialogSaved(data, "The syllabus supplement has been saved to the " + this.state.selectedNode + " account.",
             true, false, true);
         })
@@ -199,7 +259,10 @@ class SyllabusSupplementTabContent extends React.Component {
         this.setState({syllabus: this.cloneObject(this.state.initialSyllabus), saveDisabled: true, cancelDisabled: true,
                 titleLengthError: !this.isInputValid(this.state.initialSyllabus.syllabusTitle),
                 usernameLengthError: !this.isInputValid(this.state.initialSyllabus.contactUsername),
-                emailLengthError: !this.isInputValid(this.state.initialSyllabus.contactEmail)})
+                emailLengthError: !this.isInputValid(this.state.initialSyllabus.contactEmail),
+                contentLengthError: !this.isContentValid(this.state.initialSyllabus.syllabusContent)});
+                
+        this.handleContentErrorIndicator(this.isContentValid(this.state.initialSyllabus.syllabusContent));
     }
 
     cloneObject(input) {
@@ -250,23 +313,23 @@ render() {
         Could be related to the various babel dependencies, but I didn't have time to mess with it!
     */
     var inputProps = {}
-    var noteNode = <React.Fragment>Title for syllabus supplement.</React.Fragment>
+    var noteNode = <React.Fragment>Title for syllabus supplement</React.Fragment>
     if (this.state.titleLengthError) {
-        noteNode = <React.Fragment><strong>Supplement Title</strong> needs to be provided and be 255 characters or less</React.Fragment>
+        noteNode = <React.Fragment><strong>Supplement Title</strong> needs to be provided and be 255 characters or less.</React.Fragment>
         inputProps.variant = 'danger'
     }
 
     var contactUserProps = {}
     var contactUserNote = <React.Fragment></React.Fragment>
     if (this.state.usernameLengthError) {
-        contactUserNote = <React.Fragment><strong>Supplement Contact Username</strong> must be provided</React.Fragment>
+        contactUserNote = <React.Fragment><strong>Supplement Contact Username</strong> must be provided.</React.Fragment>
         contactUserProps.variant = 'danger'
     }
 
     var contactEmailProps = {}
     var contactEmailNote = <React.Fragment></React.Fragment>
     if (this.state.emailLengthError) {
-        contactEmailNote = <React.Fragment><strong>Supplement Contact Email</strong> must be provided</React.Fragment>
+        contactEmailNote = <React.Fragment><strong>Supplement Contact Email</strong> must be provided.</React.Fragment>
         contactEmailProps.variant = 'danger'
     }
 
@@ -274,34 +337,39 @@ render() {
   return (
         <div id="syllabusTabDiv">
             <span className="rvt-ts-26 rvt-text-bold rvt-display-block rvt-m-bottom-md">Add, update, or delete a syllabus supplement</span>
-            <label htmlFor="nodeSelectCourseTemplate">Node Select:</label>
+            <label id="selectNodeLabel">Node Select:
+                <span class="sr-only">Select a node to add, update, or delete its syllabus supplement.</span>
+            </label>
             <div className="rvt-m-bottom-md">
                 <Select options={this.props.hierarchy} id="hierNodeName" name="hierNodeName" isSearchable={true} isClearable={true} placeholder="Select Node" className="node-select"
                     onChange={this.handleHierarchyOptionChange} classNamePrefix="node-rivet"/>
             </div>
 
-            <Input type="text" name={this.titleInput} label="Supplement Title" margin={{bottom: 'md'}}
+            <Input type="text" name={this.titleInput} label="Supplement Title (required)" margin={{bottom: 'md'}}
                     disabled={this.state.inputsDisabled} value={this.state.syllabus.syllabusTitle}
                     onChange={this.handleTextInputChange} note={noteNode} {...inputProps} />
 
-            <label htmlFor="supplementText">Supplement Text</label>
+            <label htmlFor="supplementText">Supplement Text (required)</label>
+            <div id="supplementContentContainer">
+                <Editor id="supplementText" className="rvt-m-bottom-md" value={this.state.syllabus.syllabusContent}
+                    onEditorChange={this.handleEditorChange} onInit={this.handleInit} disabled={this.state.inputsDisabled}
+                    init={{ plugins: 'advlist code image link lists table',
+                            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link image table | bullist numlist outdent indent | code',
+                            image_title: true,
+                            automatic_uploads: true,
+                            file_picker_types: 'image',
+                            file_picker_callback: this.filePickerCallback}}
+                />
+            </div>
+            <SyllabusContentError contentError={this.state.contentLengthError} />
+            
 
-            <Editor id="supplementText" className="rvt-m-bottom-md" value={this.state.syllabus.syllabusContent}
-                onEditorChange={this.handleEditorChange} onInit={this.handleInit} disabled={this.state.inputsDisabled}
-                init={{ plugins: 'advlist code image link lists table',
-                        toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link image table | bullist numlist outdent indent | code',
-                        image_title: true,
-                        automatic_uploads: true,
-                        file_picker_types: 'image',
-                        file_picker_callback: this.filePickerCallback}}
-            />
-
-            <Input type="text" name={this.usernameInput} label="Contact Username" margin={{top: 'md', bottom: 'md'}}
+            <Input type="text" name={this.usernameInput} label="Contact Username (required)" margin={{top: 'md', bottom: 'md'}}
                 disabled={this.state.inputsDisabled} value={this.state.syllabus.contactUsername}
                 onChange={this.handleTextInputChange} note={contactUserNote} {...contactUserProps}
                 maxLength="255" />
 
-            <Input type="text" name={this.emailInput} label="Contact Email" margin={{bottom: 'md'}}
+            <Input type="text" name={this.emailInput} label="Contact Email (required)" margin={{bottom: 'md'}}
                 disabled={this.state.inputsDisabled} value={this.state.syllabus.contactEmail}
                 onChange={this.handleTextInputChange} note={contactEmailNote} {...contactEmailProps}
                 maxLength="255" />
@@ -316,17 +384,39 @@ render() {
             </div>
 
             <ConfirmationModal isOpen={this.state.saveModalOpen} handleConfirm={this.handleModalSave} title="Save Confirmation"
-                    onDismiss={this.handleModalCancel}>
-                <p>Are you sure you wish to save this supplement to the {this.state.selectedNode} account?</p>
+                    onDismiss={() => this.handleModalCancel("syllabusSupplementSaveButton")} focusId="confirmSupplementSave">
+                <p id="confirmSupplementSave" tabindex="-1">Are you sure you wish to save this supplement to the {this.state.selectedNode} account?</p>
             </ConfirmationModal>
             <ConfirmationModal isOpen={this.state.deleteModalOpen} handleConfirm={this.handleModalDelete} title="Delete Confirmation"
-                    onDismiss={this.handleModalCancel}>
-                <p>Are you sure you wish to delete this supplement from the {this.state.selectedNode} account?</p>
+                    onDismiss={() => this.handleModalCancel("syllabusSupplementDeleteButton")} focusId="confirmSupplementDelete">
+                <p id="confirmSupplementDelete" tabindex="-1">Are you sure you wish to delete this supplement from the {this.state.selectedNode} account?</p>
             </ConfirmationModal>
         </div>
 
       );
   }
+}
+
+function SyllabusContentError(props) {
+    if (props.contentError) {
+        return (
+            <div id="supplementContentError" class="rvt-inline-alert rvt-inline-alert--danger">
+                <span class="rvt-inline-alert__icon">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                        <g fill="currentColor">
+                            <path d="M8,0a8,8,0,1,0,8,8A8,8,0,0,0,8,0ZM8,14a6,6,0,1,1,6-6A6,6,0,0,1,8,14Z" />
+                            <path d="M10.83,5.17a1,1,0,0,0-1.41,0L8,6.59,6.59,5.17A1,1,0,0,0,5.17,6.59L6.59,8,5.17,9.41a1,1,0,1,0,1.41,1.41L8,9.41l1.41,1.41a1,1,0,0,0,1.41-1.41L9.41,8l1.41-1.41A1,1,0,0,0,10.83,5.17Z"/>
+                        </g>
+                    </svg>
+                </span>
+                <span class="rvt-inline-alert__message">
+                    <strong>Supplement Text</strong> must be provided.
+                </span>
+            </div>
+        )
+    } else {
+        return null;
+    }
 }
 
 export default SyllabusSupplementTabContent

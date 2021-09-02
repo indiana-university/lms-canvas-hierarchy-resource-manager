@@ -231,7 +231,6 @@ class SyllabusSupplementTabContent extends React.Component {
     axios.post("app/tool/syllabus/submit", JSON.stringify(inputData), config)
         .then(response => response.data)
         .then((data) => {
-          this.state.deletionChange = true;
           this.dialogSaved(data, "The syllabus supplement has been saved to the " + this.state.selectedNode + " account.",
             true, false, true);
         })
@@ -240,6 +239,7 @@ class SyllabusSupplementTabContent extends React.Component {
   handleModalDelete = () => {
     const config = { headers: {'content-type': 'application/json'} }
     var inputData = {nodeName: this.state.selectedNode}
+    this.state.deletionChange = true;
 
     axios.post("app/tool/syllabus/delete", JSON.stringify(inputData), config)
         .then(response => response.data)

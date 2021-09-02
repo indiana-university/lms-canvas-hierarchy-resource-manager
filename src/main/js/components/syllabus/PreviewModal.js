@@ -30,7 +30,7 @@ class PreviewModal extends React.Component {
                 </div>
             ))
         } else {
-            items = <p>No supplements apply to this course.</p>
+            items = <p id="preview-title">No supplements apply to this course.</p>
         }
         return (
             <Modal title="Supplements Preview" isOpen={this.props.isOpen} onDismiss={this.props.onDismiss}>

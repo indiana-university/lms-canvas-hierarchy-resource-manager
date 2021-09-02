@@ -135,7 +135,8 @@ class SelectedTemplate extends React.Component {
         axios.post("app/tool/template/delete", formData)
             .then(response => response.data)
             .then((data) => {
-                this.setState({deleteModalOpen: false, deleteData: {}})
+                this.setState({deleteModalOpen: false, deleteData: {}})    
+                this.props.notificationHandler({display: true, text: "The template was deleted from the " + this.props.selectedNode + " account."})
                 this.props.refreshHandler();
             })
     }
@@ -157,6 +158,7 @@ class SelectedTemplate extends React.Component {
             .then(response => response.data)
             .then((data) => {
                 this.setState({defaultModalOpen: false, defaultData: {}})
+                this.props.notificationHandler({display: true, text: "Default settings were updated."})
                 this.props.refreshHandler();
             })
     }

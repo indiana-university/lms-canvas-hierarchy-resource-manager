@@ -1,41 +1,66 @@
 import React from 'react'
 import {Modal, ModalBody, ModalControls, Button} from "rivet-react"
 
-const ConfirmationModal = (props) => {
+class ConfirmationModal extends React.Component {
 
-    const handleConfirm = () => {
-        props.handleConfirm();
-    };
-
-    let yesButton = <Button key="yes" onClick={handleConfirm.bind(this)}>{props.yesLabel}</Button>
-    let noButton = <Button key="no" onClick={props.onDismiss} modifier="secondary">{props.noLabel}</Button>
-    if (props.showLoading) {
-        yesButton = (
-            <Button key="yes" onClick={handleConfirm.bind(this)} aria-busy="true" disabled variant="loading">
-                <span class="rvt-button__content">{props.yesLabel}</span>
-                <div class="rvt-loader rvt-loader--xs" aria-label="Content loading"></div>
-            </Button>
-        )
-
-        noButton = (
-            <Button key="no" onClick={props.onDismiss} modifier="secondary" aria-busy="true" disabled variant="loading">
-                <span class="rvt-button__content">{props.noLabel}</span>
-                <div class="rvt-loader rvt-loader--xs" aria-label="Content loading"></div>
-            </Button>
-        )
+    constructor(props) {
+        super(props);
+    }
+    
+    // the edit/delete/default template modals aren't mounted until they are triggered
+    componentDidMount() {  
+        // rivet-react modals do not handle focus
+        // manually set the focus on opening
+        this.setFocus(this.props.isOpen, this.props.focusId);      
+    }
+    
+    // the new template modal is mounted immediately so we need to look for update
+    componentDidUpdate() {  
+        // rivet-react modals do not handle focus
+        // manually set the focus on opening
+        this.setFocus(this.props.isOpen, this.props.focusId);       
+    }
+    
+    setFocus(isOpen, focusId) {
+        if (isOpen) {
+            var focusId = document.getElementById(focusId);
+            if (focusId) {
+                focusId.focus();
+            }
+        }     
     }
 
-    return (
-        <Modal title={props.title} isOpen={props.isOpen} onDismiss={props.onDismiss}>
-            <ModalBody>
-                {props.children}
-            </ModalBody>
-            <ModalControls>
-                {yesButton}
-                {noButton}
-            </ModalControls>
-        </Modal>
-    )
+    render() {
+        let yesButton = <Button key="yes" onClick={this.props.handleConfirm}>{this.props.yesLabel}</Button>
+        let noButton = <Button key="no" onClick={this.props.onDismiss} modifier="secondary">{this.props.noLabel}</Button>
+        if (this.props.showLoading) {
+            yesButton = (
+                <Button key="yes" onClick={this.props.handleConfirm} aria-busy="true" disabled variant="loading">
+                    <span class="rvt-button__content">{this.props.yesLabel}</span>
+                    <div class="rvt-loader rvt-loader--xs" aria-label="Content loading"></div>
+                </Button>
+            )
+    
+            noButton = (
+                <Button key="no" onClick={this.props.onDismiss} modifier="secondary" aria-busy="true" disabled variant="loading">
+                    <span class="rvt-button__content">{this.props.noLabel}</span>
+                    <div class="rvt-loader rvt-loader--xs" aria-label="Content loading"></div>
+                </Button>
+            )
+        }
+
+        return (
+            <Modal title={this.props.title} isOpen={this.props.isOpen} onDismiss={this.props.onDismiss}>
+                <ModalBody>
+                    {this.props.children}
+                </ModalBody>
+                <ModalControls>
+                    {yesButton}
+                    {noButton}
+                </ModalControls>
+            </Modal>
+        )
+    }
 }
 
 // Set defaults that can be overridden

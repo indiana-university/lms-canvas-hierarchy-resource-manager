@@ -60,8 +60,14 @@ class ApplyTemplate extends React.Component {
         this.setState({applyModalOpen: true, modalData: {templateId: templateId, templateName: templateName, nodeName: nodeName}})
     }
 
-    handleModalCancel = () => {
+    handleModalCancel(triggerId) {
         this.setState({applyModalOpen: false, modalData: {}})
+        
+        // return focus to the trigger element
+        var trigger = document.getElementById(triggerId);
+        if (trigger) {
+            trigger.focus();
+        }
     }
 
     handleModalApply = () => {
@@ -100,20 +106,23 @@ class ApplyTemplate extends React.Component {
                     </p>
                     {nodes}
                     <ConfirmationModal isOpen={this.state.applyModalOpen} handleConfirm={this.handleModalApply} title="Apply Template"
-                                        onDismiss={this.handleModalCancel} yesLabel="Apply" noLabel="Cancel">
+                                       onDismiss={() => this.handleModalCancel("apply-" + this.state.modalData.templateId)}
+                                       yesLabel="Apply" noLabel="Cancel" focusId="templateWarning">
                         <React.Fragment>
-                            <span className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
-                            <p>
-                                Please note that this action may make changes to your course navigation (including removing the IU
-                                eTexts tool from the navigation of courses that use eTexts), course settings, and/or course content.
-                                If you are uncertain about the impact this template will have on your course, you may want to consider
-                                making a copy of your course before proceeding.
-                            </p>
-                            <p>
-                                For more information, see <a href="https://kb.iu.edu/d/bgry" target="_blank">
-                                <cite>Apply a template to your Canvas course</cite> <RvtSvg icon="rvt-icon-link-external" ariahide="true" />
-                                <span className="sr-only">Opens in new window</span></a> in the IU Knowledge Base.
-                            </p>
+                            <div id="templateWarning" tabindex="-1">
+                                <span className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
+                                <p>
+                                    Please note that this action may make changes to your course navigation (including removing the IU
+                                    eTexts tool from the navigation of courses that use eTexts), course settings, and/or course content.
+                                    If you are uncertain about the impact this template will have on your course, you may want to consider
+                                    making a copy of your course before proceeding.
+                                </p>
+                                <p>
+                                    For more information, see <a href="https://kb.iu.edu/d/bgry" target="_blank">
+                                    <cite>Apply a template to your Canvas course</cite> <RvtSvg icon="rvt-icon-link-external" ariahide="true" />
+                                    <span className="sr-only">Opens in new window</span></a> in the IU Knowledge Base.
+                                </p>
+                            </div>
                         </React.Fragment>
                     </ConfirmationModal>
                 </React.Fragment>
@@ -191,7 +200,8 @@ class ApplyTemplate extends React.Component {
     return (
         <button className="rvt-button rvt-button--secondary rvt-m-right-sm" data-template-id={props.templateData.id}
             data-template-name={props.templateData.displayName} data-node-name={props.templateData.node}
-            onClick={props.handleApply} disabled={props.coursePublished}>Apply Template</button>
+            onClick={props.handleApply} disabled={props.coursePublished}
+            id={"apply-" + props.templateData.id}>Apply Template</button>
     )
   }
 

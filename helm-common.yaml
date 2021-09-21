@@ -25,7 +25,10 @@ imagePullSecrets:
 
 javaOpts: "-XX:MaxRAMPercentage=90 -XshowSettings:vm"
 
-activeProfiles: "redis"
+activeProfiles: "none"
+
+vault:
+  enabled: true
 
 service:
   type: ClusterIP

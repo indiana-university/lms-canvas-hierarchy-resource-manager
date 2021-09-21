@@ -42,6 +42,25 @@ class App extends React.Component {
             alert(error);
         });
   }
+  
+  componentDidUpdate() {
+    // add aria-describedby to the alert message so the content is read by the screenreader
+    // move focus to the msg or else focus disappears on success
+    if (this.state.notification.display) {
+        var messageText = document.querySelector('.rvt-alert__message');
+        if (messageText) {
+            messageText.id = "alertMsgId";
+            var alertDialog = document.querySelector('.rvt-alert');
+            if (alertDialog) {
+                alertDialog.setAttribute('aria-describedby', messageText.id);
+            }
+        }
+        var notification = document.querySelector('.rvt-alert__dismiss');
+        if (notification) {
+            notification.focus();
+        }
+    }
+  }
 
   /**
    * Render

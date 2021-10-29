@@ -3,7 +3,7 @@
 }
 
 .node-select {
-    width: 50%;
+    width: 25%;
 }
 
 /* Overrides rivet's box shadow within the react-select */

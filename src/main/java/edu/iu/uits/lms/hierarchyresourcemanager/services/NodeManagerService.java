@@ -245,8 +245,8 @@ public class NodeManagerService {
       hierarchyResourceRepository.delete(resource);
    }
 
-   public SyllabusSupplement getSyllabusSupplementForNode(String node) {
-      return syllabusSupplementRepository.findByNode(node);
+   public SyllabusSupplement getSyllabusSupplementForNode(String node, int strm) {
+      return syllabusSupplementRepository.findByNodeAndStrm(node, strm);
    }
 
    public SyllabusSupplement saveSyllabusSupplement(SyllabusSupplement syllabusSupplement) {

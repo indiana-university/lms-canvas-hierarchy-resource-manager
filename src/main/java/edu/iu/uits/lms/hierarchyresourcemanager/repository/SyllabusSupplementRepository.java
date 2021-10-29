@@ -8,6 +8,6 @@ import java.util.List;
 
 @Component
 public interface SyllabusSupplementRepository extends PagingAndSortingRepository<SyllabusSupplement, Long> {
-   SyllabusSupplement findByNode(String nodeName);
+   SyllabusSupplement findByNodeAndStrm(String nodeName, int strm);
    List<SyllabusSupplement> findByNodeIn(List<String> nodeName);
 }

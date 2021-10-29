@@ -17,6 +17,8 @@ class SyllabusSupplementTabContent extends React.Component {
 
         this.state = {
             selectedNode: "",
+            selectedTerm: "0",
+            selectedTermName: "Default",
             syllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
             initialSyllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
             cancelDisabled: true,
@@ -35,6 +37,7 @@ class SyllabusSupplementTabContent extends React.Component {
 
         this.handleInit.bind(this)
         this.handleHierarchyOptionChange.bind(this)
+        this.handleTermOptionChange.bind(this)
         this.handleTextInputChange.bind(this)
         this.handleEditorChange.bind(this)
         this.handleSaveDialogOpen.bind(this)
@@ -66,43 +69,49 @@ class SyllabusSupplementTabContent extends React.Component {
         }
     }
 
-  handleHierarchyOptionChange = (selectedOption) => {
-      var self = this;
-      var stateVal = ""
-      var reset = true
-      if (selectedOption) {
-          stateVal = selectedOption.value;
-          reset = false;
-      }
+    handleHierarchyOptionChange = (selectedNode) => {
+        this.setState({selectedNode: selectedNode.value});
+        this.lookUpNode(selectedNode.value, this.state.selectedTerm);
+    }
 
-      self.setState({
-                   selectedNode: stateVal,
-                   cancelDisabled: true,
-                   deleteDisabled: true,
-                   saveDisabled: true,
-                   nodeChange: true
+    handleTermOptionChange = (selectedTerm) => {
+        this.setState({selectedTerm: selectedTerm.value, selectedTermName: selectedTerm.label});
+        this.lookUpNode(this.state.selectedNode, selectedTerm.value);
+    }
+
+    // this function assumes termId will always have a value
+    lookUpNode = (node, termId) => {
+        this.setState({
+            selectedNode: node,
+            cancelDisabled: true,
+            deleteDisabled: true,
+            saveDisabled: true,
+            nodeChange: true
+        });
+
+        // always reset the error state
+        this.setState({titleLengthError: false, usernameLengthError: false, emailLengthError: false, contentLengthError: false});
+        this.handleContentErrorIndicator(true);
+
+        if (node) {
+            // we got a node, do the lookup!
+            axios.get(`app/tool/syllabus/node/${node}/${termId}`)
+                .then(response => response.data)
+                .then((data) => {
+                    var deleteDisabled = this.state.deleteDisabled
+                    if (data.syllabusTitle.length > 0 || data.syllabusContent.length > 0 ||
+                        data.contactUsername.length > 0 || data.contactEmail.length > 0) {
+                        deleteDisabled = false;
+                    }
+
+                    this.setState({ initialSyllabus: this.cloneObject(data), syllabus: this.cloneObject(data),
+                    deleteDisabled: deleteDisabled, inputsDisabled: false });
                 });
-                
-      // always reset the error state
-      self.setState({titleLengthError: false, usernameLengthError: false, emailLengthError: false, contentLengthError: false});
-      this.handleContentErrorIndicator(true);  
-        
-      if (reset) {
-          self.setState({syllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
-                        initialSyllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
-                        inputsDisabled: true});
-      } else {
-          axios.get(`app/tool/syllabus/node/${stateVal}`)
-              .then(response => response.data)
-              .then((data) => {
-                var deleteDisabled = self.state.deleteDisabled
-                if (data.syllabusTitle.length > 0 || data.syllabusContent.length > 0 ||
-                    data.contactUsername.length > 0 || data.contactEmail.length > 0) {
-                  deleteDisabled = false;
-                }
-                self.setState({ initialSyllabus: this.cloneObject(data), syllabus: this.cloneObject(data),
-                    deleteDisabled: deleteDisabled, inputsDisabled: false })
-              })
+        } else {
+            // reset all the stuff in the form
+            this.setState({syllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
+                initialSyllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
+                inputsDisabled: true});
         }
     }
 
@@ -226,19 +235,19 @@ class SyllabusSupplementTabContent extends React.Component {
 
   handleModalSave = () => {
     const config = { headers: {'content-type': 'application/json'} }
-    var inputData = {nodeName: this.state.selectedNode, syllabus: this.cloneObject(this.state.syllabus)}
+    var inputData = {nodeName: this.state.selectedNode, strm: this.state.selectedTerm, syllabus: this.cloneObject(this.state.syllabus)}
 
     axios.post("app/tool/syllabus/submit", JSON.stringify(inputData), config)
         .then(response => response.data)
         .then((data) => {
-          this.dialogSaved(data, "The syllabus supplement has been saved to the " + this.state.selectedNode + " account.",
+          this.dialogSaved(data, "The syllabus supplement has been saved to the " + this.state.selectedNode + " account in the " + this.state.selectedTermName + " term.",
             true, false, true);
         })
   }
 
   handleModalDelete = () => {
     const config = { headers: {'content-type': 'application/json'} }
-    var inputData = {nodeName: this.state.selectedNode}
+    var inputData = {nodeName: this.state.selectedNode, strm: this.state.selectedTerm}
     this.state.deletionChange = true;
 
     axios.post("app/tool/syllabus/delete", JSON.stringify(inputData), config)
@@ -337,12 +346,20 @@ render() {
   return (
         <div id="syllabusTabDiv">
             <span className="rvt-ts-26 rvt-text-bold rvt-display-block rvt-m-bottom-md">Add, update, or delete a syllabus supplement</span>
-            <label id="selectNodeLabel">Node Select:
+            <label id="selectNodeLabel">Node:
                 <span class="sr-only">Select a node to add, update, or delete its syllabus supplement.</span>
             </label>
             <div className="rvt-m-bottom-md">
                 <Select options={this.props.hierarchy} id="hierNodeName" name="hierNodeName" isSearchable={true} isClearable={true} placeholder="Select Node" className="node-select"
                     onChange={this.handleHierarchyOptionChange} classNamePrefix="node-rivet"/>
+            </div>
+
+            <label id="selectTermLabel">Term:
+                <span class="sr-only">Select the specific term to add, update, or delete its syllabus supplement.</span>
+            </label>
+            <div className="rvt-m-bottom-md">
+                <Select options={this.props.terms} id="termId" name="termId" isSearchable={true} isClearable={false} className="node-select"
+                    onChange={this.handleTermOptionChange} defaultValue={this.props.terms[0]} classNamePrefix="node-rivet" />
             </div>
 
             <Input type="text" name={this.titleInput} label="Supplement Title (required)" margin={{bottom: 'md'}}
@@ -385,11 +402,11 @@ render() {
 
             <ConfirmationModal isOpen={this.state.saveModalOpen} handleConfirm={this.handleModalSave} title="Save Confirmation"
                     onDismiss={() => this.handleModalCancel("syllabusSupplementSaveButton")} focusId="confirmSupplementSave">
-                <p id="confirmSupplementSave" tabindex="-1">Are you sure you wish to save this supplement to the {this.state.selectedNode} account?</p>
+                <p id="confirmSupplementSave" tabindex="-1">Are you sure you wish to save this supplement to the {this.state.selectedNode} account for the {this.state.selectedTermName} term?</p>
             </ConfirmationModal>
             <ConfirmationModal isOpen={this.state.deleteModalOpen} handleConfirm={this.handleModalDelete} title="Delete Confirmation"
                     onDismiss={() => this.handleModalCancel("syllabusSupplementDeleteButton")} focusId="confirmSupplementDelete">
-                <p id="confirmSupplementDelete" tabindex="-1">Are you sure you wish to delete this supplement from the {this.state.selectedNode} account?</p>
+                <p id="confirmSupplementDelete" tabindex="-1">Are you sure you wish to delete this supplement from the {this.state.selectedNode} account for the {this.state.selectedTermName} term?</p>
             </ConfirmationModal>
         </div>
 

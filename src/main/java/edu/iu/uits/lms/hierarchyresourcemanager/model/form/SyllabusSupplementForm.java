@@ -7,5 +7,6 @@ import lombok.Data;
 public class SyllabusSupplementForm {
 
    private String nodeName;
+   private int strm;
    private DecoratedSyllabus syllabus;
 }

@@ -22,6 +22,7 @@ class App extends React.Component {
 
     this.state = {
         hierarchy: [],
+        terms: [],
         notification: {display: false, text: ""}
     }
   }
@@ -41,6 +42,16 @@ class App extends React.Component {
         .catch(error => {
             alert(error);
         });
+
+    axios.all([getTerms()])
+            .then(axios.spread(function (terms) {
+                self.setState({
+                    terms: terms.data
+                });
+            }))
+            .catch(error => {
+                alert(error);
+            });
   }
   
   componentDidUpdate() {
@@ -73,7 +84,7 @@ class App extends React.Component {
         content = <ApplyTemplate notificationHandler={this.handleNotifications.bind(this)} />
     } else {
         title = "Canvas Node Manager";
-        content = <NodeManager hierarchy={this.state.hierarchy} notificationHandler={this.handleNotifications.bind(this)} />
+        content = <NodeManager hierarchy={this.state.hierarchy} terms={this.state.terms} notificationHandler={this.handleNotifications.bind(this)} />
     }
     return (
         <div>
@@ -105,7 +116,7 @@ function NodeManager(props) {
                 <TemplatingTabContent hierarchy={props.hierarchy} notificationHandler={props.notificationHandler} />
             </Tab>
             <Tab id="tab-supplements" title="Syllabus Supplements">
-                <SyllabusSupplementTabContent hierarchy={props.hierarchy} notificationHandler={props.notificationHandler}/>
+                <SyllabusSupplementTabContent hierarchy={props.hierarchy} terms={props.terms} notificationHandler={props.notificationHandler} />
             </Tab>
             <Tab id="tab-preview" title="Preview Supplements">
                 <SyllabusPreviewTabContent />
@@ -116,6 +127,10 @@ function NodeManager(props) {
 
   function getHierarchy() {
     return axios.get(`app/tool/hierarchy`);
+  }
+
+  function getTerms() {
+    return axios.get(`app/tool/syllabus/terms`);
   }
 
 export default App

@@ -91,7 +91,6 @@ public class ToolRestController extends HierarchyResourceManagerController {
    @GetMapping("/syllabus/node/{nodeName}/{strm}")
    public DecoratedSyllabus getSyllabusFromNodeName(@PathVariable String nodeName, @PathVariable int strm) {
       getTokenWithoutContext();
-
       SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(nodeName, strm);
 
       if (syllabusSupplement != null) {
@@ -290,7 +289,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
             // the "startsWith 4" bit will make sure to only get the 4 standard semesters (SP, SU, FA, WI)
             if (term.getSisTermId() != null && term.getSisTermId().startsWith("4")) {
                 int termInt = Integer.parseInt(term.getSisTermId());
-                // we only want semesters starting Fall 2021 aka 4218
+                // we only want semesters starting from Fall 2021 aka 4218
                 if (termInt >= 4218) {
                     termMap.put(term.getSisTermId(), term.getName());
                 }
@@ -302,12 +301,15 @@ public class ToolRestController extends HierarchyResourceManagerController {
         Optional<String> firstKey = termMap.keySet().stream().findFirst();
         String key = firstKey.get();
         if (key.endsWith("2")) {
+            // Example: 4222 (Spring 2022) will add 4225 (Summer 2022) and 4228 (Fall 2022)
             termMap.put(key.substring(0,3) + "5", "Summer 20" + key.substring(1,3));
             termMap.put(key.substring(0,3) + "8", "Fall 20" + key.substring(1,3));
         } else if (key.endsWith("5")) {
+            // Example: 4225 (Summer 2022) will add 4228 (Fall 2022) and 4229 (Winter 2022)
             termMap.put(key.substring(0,3) + "8", "Fall 20" + key.substring(1,3));
             termMap.put(key.substring(0,3) + "9", "Winter 20" + key.substring(1,3));
         } else if (key.endsWith("8")) {
+            // Example: 4228 (Fall 2022) will add 4229 (Winter 2022) and 4232 (Spring 2023)
             termMap.put(key.substring(0,3) + "9", "Winter 20" + key.substring(1,3));
             // get the first 3 of the term id
             Integer termToInt = Integer.parseInt(key.substring(1,3));
@@ -316,6 +318,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
 
             termMap.put("4" + termToInt + "2", "Spring 20" + termToInt);
         } else if (key.endsWith("9")) {
+            // Example: 4229 (Winter 2022) will add 4232 (Spring 2023) and 4235 (Summer 2023)
             // get the 2 numbers in the middle of the 4 digit id
             Integer termToInt = Integer.parseInt(key.substring(1,3));
             // if an id is 21, this should make it 22
@@ -325,7 +328,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
             termMap.put("4" + termToInt + "5", "Summer 20" + termToInt);
         }
 
-        // convert our map to a list that a dropdown can read properly
+        // convert our map to a list that our dropdown can read properly
         List<TermOption> termOptions = new ArrayList<>();
 
         // add the default option to be at the top of the list

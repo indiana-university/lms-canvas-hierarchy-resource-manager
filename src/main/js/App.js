@@ -44,14 +44,14 @@ class App extends React.Component {
         });
 
     axios.all([getTerms()])
-            .then(axios.spread(function (terms) {
-                self.setState({
-                    terms: terms.data
-                });
-            }))
-            .catch(error => {
-                alert(error);
+        .then(axios.spread(function (terms) {
+            self.setState({
+                terms: terms.data
             });
+        }))
+        .catch(error => {
+            alert(error);
+        });
   }
   
   componentDidUpdate() {

@@ -10,4 +10,5 @@ import java.util.List;
 public interface SyllabusSupplementRepository extends PagingAndSortingRepository<SyllabusSupplement, Long> {
    SyllabusSupplement findByNodeAndStrm(String nodeName, int strm);
    List<SyllabusSupplement> findByNodeIn(List<String> nodeName);
+   List<SyllabusSupplement> findByNodeInAndStrm(List<String> nodeName, int strm);
 }

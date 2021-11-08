@@ -33,19 +33,10 @@ class App extends React.Component {
    */
   componentDidMount(){
   var self = this;
-    axios.all([getHierarchy()])
-        .then(axios.spread(function (hierarchy) {
+    axios.all([getHierarchy(), getTerms()])
+        .then(axios.spread(function (hierarchy, terms) {
             self.setState({
-                hierarchy: hierarchy.data
-            });
-        }))
-        .catch(error => {
-            alert(error);
-        });
-
-    axios.all([getTerms()])
-        .then(axios.spread(function (terms) {
-            self.setState({
+                hierarchy: hierarchy.data,
                 terms: terms.data
             });
         }))

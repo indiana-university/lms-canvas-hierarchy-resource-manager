@@ -245,7 +245,7 @@ public class NodeManagerService {
       hierarchyResourceRepository.delete(resource);
    }
 
-   public SyllabusSupplement getSyllabusSupplementForNode(String node, int strm) {
+   public SyllabusSupplement getSyllabusSupplementForNode(String node, String strm) {
       return syllabusSupplementRepository.findByNodeAndStrm(node, strm);
    }
 
@@ -262,7 +262,7 @@ public class NodeManagerService {
       Course course = coursesApi.getCourse(courseId);
       if (course != null) {
          Account account = accountsApi.getAccount(course.getAccountId());
-         String termId = "0";
+         String termId = "9999";
 
          // this will rarely happen, but adding as a safety valve
          if (course.getTerm() != null && course.getTerm().getSisTermId() != null) {
@@ -276,18 +276,18 @@ public class NodeManagerService {
 
          List<SyllabusSupplement> items = new ArrayList<>();
 
-         if ("0".equals(termId)) {
+         if ("9999".equals(termId)) {
             // searching default terms only. This will only happen if the course did not have a Term object or sis_term_id. Should be rare
-            items = syllabusSupplementRepository.findByNodeInAndStrm(relatedAccountNames, Integer.parseInt(termId));
+            items = syllabusSupplementRepository.findByNodeInAndStrm(relatedAccountNames, termId);
          } else {
             if (termId.matches("[0-9]+")) {
                // look for specific term first and
                // only try this if the termId is all numbers. e.g. a course with "noexp" will not be checked
-               items = syllabusSupplementRepository.findByNodeInAndStrm(relatedAccountNames, Integer.parseInt(termId));
+               items = syllabusSupplementRepository.findByNodeInAndStrm(relatedAccountNames, termId);
             }
             if (items.isEmpty()) {
                // no results for the specific term, so just search for the default of 0
-               items = syllabusSupplementRepository.findByNodeInAndStrm(relatedAccountNames, 0);
+               items = syllabusSupplementRepository.findByNodeInAndStrm(relatedAccountNames, "9999");
             }
          }
 

@@ -33,7 +33,7 @@ public class SyllabusSupplement {
    private String node;
 
    @Column(nullable = false)
-   private int strm;
+   private String strm;
 
    @Column(name = "contactusername")
    private String contactUsername;

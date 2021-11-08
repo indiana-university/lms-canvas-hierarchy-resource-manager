@@ -17,7 +17,7 @@ class SyllabusSupplementTabContent extends React.Component {
 
         this.state = {
             selectedNode: "",
-            selectedTerm: "0",
+            selectedTerm: "9999",
             selectedTermName: "Default",
             syllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
             initialSyllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
@@ -70,27 +70,29 @@ class SyllabusSupplementTabContent extends React.Component {
     }
 
     handleHierarchyOptionChange = (selectedNode) => {
-        this.setState({selectedNode: selectedNode.value});
-        this.lookUpNode(selectedNode.value, this.state.selectedTerm);
+        this.lookUpNode(selectedNode.value, this.state.selectedTerm, this.state.selectedTermName);
     }
 
     handleTermOptionChange = (selectedTerm) => {
-        this.setState({selectedTerm: selectedTerm.value, selectedTermName: selectedTerm.label});
-        this.lookUpNode(this.state.selectedNode, selectedTerm.value);
+        this.lookUpNode(this.state.selectedNode, selectedTerm.value, selectedTerm.label);
     }
 
     // this function assumes termId will always have a value
-    lookUpNode = (node, termId) => {
+    lookUpNode = (node, termId, termName) => {
         this.setState({
             selectedNode: node,
+            selectedTerm: termId,
+            selectedTermName: termName,
             cancelDisabled: true,
             deleteDisabled: true,
             saveDisabled: true,
-            nodeChange: true
+            nodeChange: true,
+            titleLengthError: false,
+            usernameLengthError: false,
+            emailLengthError: false,
+            contentLengthError: false
         });
 
-        // always reset the error state
-        this.setState({titleLengthError: false, usernameLengthError: false, emailLengthError: false, contentLengthError: false});
         this.handleContentErrorIndicator(true);
 
         if (node) {

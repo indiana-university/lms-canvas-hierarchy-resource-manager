@@ -51,6 +51,7 @@ hierarchyresourcemanager:
   version: @app.version@
   env: ${app.env}
   courseTemplateQueueName: coursetemplate_${app.env}
+  startingTerm: 4218
 
   prd:
     appBaseUrl: https://hierarchyresourcemanager.apps.iu.edu

@@ -53,8 +53,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
    @Autowired
    private TermsApi termsApi;
 
-    @Autowired
-    private ToolConfig toolConfig;
+   @Autowired
+   private ToolConfig toolConfig;
 
    @GetMapping("/hierarchy")
    public List<HierarchyOption> getNodes() {
@@ -228,7 +228,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
       log.debug(nodeName);
 
       String strm = form.getStrm();
-      log.debug("{}", "Term for submission: " + strm);
+      log.debug("Term for submission: {}", strm);
 
       SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(nodeName, strm);
       if (syllabusSupplement == null) {
@@ -294,7 +294,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
             if (term.getSisTermId() != null && term.getSisTermId().startsWith("4")) {
                 int termInt = Integer.parseInt(term.getSisTermId());
                 // we only want semesters starting from Fall 2021 aka 4218
-                if (termInt >= Integer.parseInt(toolConfig.getStartingTerm())) {
+                if (termInt >= toolConfig.getStartingTermId()) {
                     termMap.put(term.getSisTermId(), term.getName());
                 }
             }
@@ -335,7 +335,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
         }
 
         // add the default option
-        termMap.put("9999", "Default");
+        termMap.put(toolConfig.getDefaultTermId(), "Default");
 
         // if the termMap was empty, this will just return an empty dropdown, except for Default
         // this will make the syllabus supplement part partially unusable, but the other two tabs will be fine

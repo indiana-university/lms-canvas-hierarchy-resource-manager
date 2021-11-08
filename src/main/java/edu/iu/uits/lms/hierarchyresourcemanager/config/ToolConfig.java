@@ -14,5 +14,6 @@ public class ToolConfig {
    private String env;
    private String courseTemplateQueueName;
    private String appBaseUrl;
-   private String startingTerm;
+   private int startingTermId;
+   private String defaultTermId;
 }

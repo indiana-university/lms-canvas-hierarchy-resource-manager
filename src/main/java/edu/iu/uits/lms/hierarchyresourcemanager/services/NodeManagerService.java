@@ -262,7 +262,7 @@ public class NodeManagerService {
       Course course = coursesApi.getCourse(courseId);
       if (course != null) {
          Account account = accountsApi.getAccount(course.getAccountId());
-         String termId = "9999";
+         String termId = toolConfig.getDefaultTermId();
 
          // this will rarely happen, but adding as a safety valve
          if (course.getTerm() != null && course.getTerm().getSisTermId() != null) {
@@ -276,7 +276,7 @@ public class NodeManagerService {
 
          List<SyllabusSupplement> items = new ArrayList<>();
 
-         if ("9999".equals(termId)) {
+         if (toolConfig.getDefaultTermId().equals(termId)) {
             // searching default terms only. This will only happen if the course did not have a Term object or sis_term_id. Should be rare
             items = syllabusSupplementRepository.findByNodeInAndStrm(relatedAccountNames, termId);
          } else {
@@ -287,7 +287,7 @@ public class NodeManagerService {
             }
             if (items.isEmpty()) {
                // no results for the specific term, so just search for the default of 0
-               items = syllabusSupplementRepository.findByNodeInAndStrm(relatedAccountNames, "9999");
+               items = syllabusSupplementRepository.findByNodeInAndStrm(relatedAccountNames, toolConfig.getDefaultTermId());
             }
          }
 

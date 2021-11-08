@@ -19,7 +19,7 @@ import javax.persistence.UniqueConstraint;
 import java.util.Date;
 
 @Entity
-@Table(name = "LMS_SYLLABUS_SUPPLEMENT", uniqueConstraints = @UniqueConstraint(name = "syl_node_u", columnNames = {"node"}))
+@Table(name = "LMS_SYLLABUS_SUPPLEMENT", uniqueConstraints = @UniqueConstraint(name = "node_strm_u", columnNames = {"node","strm"}))
 @SequenceGenerator(name = "LMS_SYLLABUS_SUPPLEMENT_ID_SEQ", sequenceName = "LMS_SYLLABUS_SUPPLEMENT_ID_SEQ", allocationSize = 1)
 @Data
 @NoArgsConstructor
@@ -31,6 +31,9 @@ public class SyllabusSupplement {
 
    @Column(nullable = false)
    private String node;
+
+   @Column(nullable = false)
+   private String strm;
 
    @Column(name = "contactusername")
    private String contactUsername;

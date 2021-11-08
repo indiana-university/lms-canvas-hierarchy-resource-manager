@@ -1,5 +1,8 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.rest;
 
+import canvas.client.generated.api.TermsApi;
+import canvas.client.generated.model.CanvasTerm;
+import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.controller.HierarchyResourceManagerController;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.CourseTemplatesWrapper;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.DecoratedResource;
@@ -28,8 +31,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @RestController
@@ -42,6 +49,12 @@ public class ToolRestController extends HierarchyResourceManagerController {
 
    @Autowired
    private NodeHierarchyApi nodeHierarchyApi;
+
+   @Autowired
+   private TermsApi termsApi;
+
+   @Autowired
+   private ToolConfig toolConfig;
 
    @GetMapping("/hierarchy")
    public List<HierarchyOption> getNodes() {
@@ -79,10 +92,10 @@ public class ToolRestController extends HierarchyResourceManagerController {
       return decoratedResources;
    }
 
-   @GetMapping("/syllabus/node/{nodeName}")
-   public DecoratedSyllabus getSyllabusFromNodeName(@PathVariable String nodeName) {
+   @GetMapping("/syllabus/node/{nodeName}/{strm}")
+   public DecoratedSyllabus getSyllabusFromNodeName(@PathVariable String nodeName, @PathVariable String strm) {
       getTokenWithoutContext();
-      SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(nodeName);
+      SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(nodeName, strm);
 
       if (syllabusSupplement != null) {
          DecoratedSyllabus decoratedSyllabus = new DecoratedSyllabus(syllabusSupplement);
@@ -214,10 +227,14 @@ public class ToolRestController extends HierarchyResourceManagerController {
       String nodeName = form.getNodeName();
       log.debug(nodeName);
 
-      SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(nodeName);
+      String strm = form.getStrm();
+      log.debug("Term for submission: {}", strm);
+
+      SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(nodeName, strm);
       if (syllabusSupplement == null) {
          syllabusSupplement = new SyllabusSupplement();
          syllabusSupplement.setNode(nodeName);
+         syllabusSupplement.setStrm(strm);
       }
 
       syllabusSupplement.setTitle(form.getSyllabus().getSyllabusTitle());
@@ -234,7 +251,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
    @PostMapping("/syllabus/delete")
    public ResponseEntity syllabusDelete(@RequestBody SyllabusSupplementForm form) {
       LtiAuthenticationToken token = getTokenWithoutContext();
-      SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(form.getNodeName());
+      SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(form.getNodeName(), form.getStrm());
       if (syllabusSupplement != null) {
          nodeManagerService.deleteSyllabusSupplement(syllabusSupplement);
          return ResponseEntity.ok(new DecoratedSyllabus());
@@ -263,5 +280,83 @@ public class ToolRestController extends HierarchyResourceManagerController {
     public ResponseEntity templateDefaultChange(@RequestParam("templateId") String templateId, @RequestParam("enableDefault") boolean enableDefault) throws HierarchyResourceException {
        nodeManagerService.templateDefaultChange(templateId, enableDefault);
        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/syllabus/terms")
+    public List<TermOption> getSyllabusTerms() {
+        List<CanvasTerm> enrollmentTerms = termsApi.getEnrollmentTerms();
+
+        // use reverse order for the map to make it display in descending order in the UI
+        Map<String, String> termMap = new TreeMap<>(Collections.reverseOrder());
+
+        for (CanvasTerm term : enrollmentTerms) {
+            // the "startsWith 4" bit will make sure to only get the 4 standard semesters (SP, SU, FA, WI)
+            if (term.getSisTermId() != null && term.getSisTermId().startsWith("4")) {
+                int termInt = Integer.parseInt(term.getSisTermId());
+                // we only want semesters starting from Fall 2021 aka 4218
+                if (termInt >= toolConfig.getStartingTermId()) {
+                    termMap.put(term.getSisTermId(), term.getName());
+                }
+            }
+        }
+
+        // This code will give undesired results starting in Fall 2099 ;)
+        // this block of code adds 2 future terms to our list
+        if (!termMap.isEmpty()) {
+            Optional<String> firstKey = termMap.keySet().stream().findFirst();
+            String key = firstKey.get();
+            if (key.endsWith("2")) {
+                // Example: 4222 (Spring 2022) will add 4225 (Summer 2022) and 4228 (Fall 2022)
+                termMap.put(key.substring(0,3) + "5", "Summer 20" + key.substring(1,3));
+                termMap.put(key.substring(0,3) + "8", "Fall 20" + key.substring(1,3));
+            } else if (key.endsWith("5")) {
+                // Example: 4225 (Summer 2022) will add 4228 (Fall 2022) and 4229 (Winter 2022)
+                termMap.put(key.substring(0,3) + "8", "Fall 20" + key.substring(1,3));
+                termMap.put(key.substring(0,3) + "9", "Winter 20" + key.substring(1,3));
+            } else if (key.endsWith("8")) {
+                // Example: 4228 (Fall 2022) will add 4229 (Winter 2022) and 4232 (Spring 2023)
+                termMap.put(key.substring(0,3) + "9", "Winter 20" + key.substring(1,3));
+                // get the first 3 of the term id
+                Integer termToInt = Integer.parseInt(key.substring(1,3));
+                // e.g. if an id is 21, this should make it 22
+                termToInt++;
+
+                termMap.put("4" + termToInt + "2", "Spring 20" + termToInt);
+            } else if (key.endsWith("9")) {
+                // Example: 4229 (Winter 2022) will add 4232 (Spring 2023) and 4235 (Summer 2023)
+                // get the 2 numbers in the middle of the 4 digit id
+                Integer termToInt = Integer.parseInt(key.substring(1,3));
+                // if an id is 21, this should make it 22
+                termToInt++;
+
+                termMap.put("4" + termToInt + "2", "Spring 20" + termToInt);
+                termMap.put("4" + termToInt + "5", "Summer 20" + termToInt);
+            }
+        }
+
+        // add the default option
+        termMap.put(toolConfig.getDefaultTermId(), "Default");
+
+        // if the termMap was empty, this will just return an empty dropdown, except for Default
+        // this will make the syllabus supplement part partially unusable, but the other two tabs will be fine
+
+        // convert our map to a list that our dropdown can read properly
+        List<TermOption> termOptions = new ArrayList<>();
+        termOptions.addAll(termMap.entrySet()
+                .stream().map(e -> new TermOption(e.getKey(), e.getValue()))
+                .collect(Collectors.toList()));
+
+        return termOptions;
+    }
+
+    @Data
+    public static class TermOption {
+        private String value;
+        private String label;
+
+        public TermOption(String termId, String termName) {
+            this.value = termId;
+            this.label = termName;
+        }
     }
 }

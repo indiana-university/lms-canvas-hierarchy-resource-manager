@@ -245,8 +245,8 @@ public class NodeManagerService {
       hierarchyResourceRepository.delete(resource);
    }
 
-   public SyllabusSupplement getSyllabusSupplementForNode(String node) {
-      return syllabusSupplementRepository.findByNode(node);
+   public SyllabusSupplement getSyllabusSupplementForNode(String node, String strm) {
+      return syllabusSupplementRepository.findByNodeAndStrm(node, strm);
    }
 
    public SyllabusSupplement saveSyllabusSupplement(SyllabusSupplement syllabusSupplement) {
@@ -262,15 +262,47 @@ public class NodeManagerService {
       Course course = coursesApi.getCourse(courseId);
       if (course != null) {
          Account account = accountsApi.getAccount(course.getAccountId());
+         String termId = toolConfig.getDefaultTermId();
+
+         // this will rarely happen, but adding as a safety valve
+         if (course.getTerm() != null && course.getTerm().getSisTermId() != null) {
+            termId = course.getTerm().getSisTermId();
+         }
 
          List<String> relatedAccountNames = new ArrayList<>();
          relatedAccountNames.add(account.getName());
 
          accountsApi.getParentAccounts(account.getId()).forEach(parentAccount -> relatedAccountNames.add(parentAccount.getName()));
 
-         List<SyllabusSupplement> items = syllabusSupplementRepository.findByNodeIn(relatedAccountNames);
+         List<SyllabusSupplement> items = new ArrayList<>();
+         List<SyllabusSupplement> items2wow = new ArrayList<>();
+         // get the defaults
+         items = syllabusSupplementRepository.findByNodeInAndStrm(relatedAccountNames, toolConfig.getDefaultTermId());
 
-         decoratedSyllabi = items.stream().map(DecoratedSyllabus::new).collect(Collectors.toList());
+         // if the termId is not 9999 and is all numbers, look up the specific nodes for a term
+         if (!toolConfig.getDefaultTermId().equals(termId) && termId.matches("[0-9]+")) {
+            items2wow = syllabusSupplementRepository.findByNodeInAndStrm(relatedAccountNames, termId);
+         }
+
+         // loop through the specific term results and if there is a nodeName match, remove it from the default list
+         for (SyllabusSupplement ss : items2wow) {
+            String node = ss.getNode();
+            for (SyllabusSupplement defaultSyllabusSupplement : items) {
+               if (defaultSyllabusSupplement.getNode().equals(node)) {
+                  // found a match, so remove it
+                  items.remove(defaultSyllabusSupplement);
+                  break;
+               }
+            }
+         }
+
+         // combine the filtered defaults and term specifics into one list
+         List<SyllabusSupplement> finalList = new ArrayList<>();
+         finalList.addAll(items);
+         finalList.addAll(items2wow);
+
+         // convert the list to desired end result
+         decoratedSyllabi = finalList.stream().map(DecoratedSyllabus::new).collect(Collectors.toList());
 
          decoratedSyllabi.sort(Comparator.comparing(item -> relatedAccountNames.indexOf(item.getNodeName())));
       }

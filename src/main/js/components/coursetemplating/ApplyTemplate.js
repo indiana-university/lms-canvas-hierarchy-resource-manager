@@ -151,7 +151,7 @@ class ApplyTemplate extends React.Component {
                 </button>
             </h2>
             <div className="rvt-collapsible__content rvt-p-top-sm" id={nodeId} aria-hidden="true" aria-labelledby={`${nodeId}-label`}>
-                <table>
+                <table id={`${nodeId}-table`}>
                     <caption className="sr-only">{`${props.nodeName} templates`}</caption>
                     <thead>
                     <tr>

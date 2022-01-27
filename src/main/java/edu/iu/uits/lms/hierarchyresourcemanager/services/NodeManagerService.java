@@ -142,6 +142,9 @@ public class NodeManagerService {
          return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Canvas Course must be unpublished");
       }
 
+      // Canvas work around to set the homepage to modules to make sure the template's home page is applied
+      coursesApi.updateCourseFrontPage(canvasCourseId, "modules");
+
       //Trigger a content migration, which will setup the course from the template
       boolean result = applyCourseTemplateMessageHandler.handleMessage(canvasCourseId, course.getTerm().getSisTermId(),
             course.getAccountId(), course.getSisCourseId(), true, templateId);
@@ -172,6 +175,9 @@ public class NodeManagerService {
       //Trigger a content migration, which will setup the course from the template
       CourseTemplateMessage ctm = new CourseTemplateMessage(canvasCourseId, course.getTerm().getSisTermId(),
             course.getAccountId(), course.getSisCourseId(), true);
+
+      // Canvas work around to set the homepage to modules to make sure the template's home page is applied
+      coursesApi.updateCourseFrontPage(canvasCourseId, "modules");
 
       courseTemplateMessageSender.send(ctm);
 

@@ -44,6 +44,8 @@ class SelectedTemplate extends React.Component {
         formData.append('displayName', elements['editDisplayName'].value);
         formData.append('contactName', elements['editContactName'].value);
         formData.append('contactUsername', elements['editContactUsername'].value);
+        formData.append('sourceCourseId', elements['editSourceCourseId'].value);
+        formData.append('sponsor', elements['editSponsor'].value);
         formData.append('ccUrl', elements['editCcUrl'].value);
         formData.append('description', elements['editDescription'].value);
         formData.append('templateFileInput', fileInput[0]);
@@ -64,6 +66,16 @@ class SelectedTemplate extends React.Component {
         if (isEmpty(formData.get('contactUsername'))) {
             validationPassed = false;
             validation['contactUsername'] = {variant: 'danger', note: <React.Fragment><strong>Contact Username</strong> is required</React.Fragment>};
+        }
+
+        if (isEmpty(formData.get('sourceCourseId'))) {
+            validationPassed = false;
+            validation['sourceCourseId'] = {variant: 'danger', note: <React.Fragment><strong>Source Course ID</strong> is required</React.Fragment>};
+        }
+
+        if (isEmpty(formData.get('sponsor'))) {
+            validationPassed = false;
+            validation['sponsor'] = {variant: 'danger', note: <React.Fragment><strong>Sponsor</strong> is required</React.Fragment>};
         }
 
         if (isEmpty(formData.get('description'))) {
@@ -211,11 +223,15 @@ class SelectedTemplate extends React.Component {
                         <Input key={`templateId_${this.state.inputKey}`} id="editTemplateId" type="hidden" defaultValue={this.state.templateForEdit.id} />
                         <Input key={`displayName_${this.state.inputKey}`} id="editDisplayName" type="text" label="Display Name (required)" margin={{bottom: 'sm'}}
                             defaultValue={this.state.templateForEdit.displayName} {...this.state.validation.displayName} />
+                        <Input key={`sponsor_${this.state.inputKey}`} id="editSponsor" type="text" label="Sponsor (required)" margin={{bottom: 'sm'}}
+                            defaultValue={this.state.templateForEdit.sponsor} {...this.state.validation.sponsor} />
                         <Input key={`contactName_${this.state.inputKey}`} id="editContactName" type="text" label="Contact Name (required)" margin={{bottom: 'sm'}}
                             defaultValue={this.state.templateForEdit.contactName} {...this.state.validation.contactName} />
                         <Input key={`contactUsername_${this.state.inputKey}`} id="editContactUsername" type="text" label="Contact Username (required)" margin={{bottom: 'sm'}}
                             defaultValue={this.state.templateForEdit.contactUsername} {...this.state.validation.contactUsername} />
-                        <Input key={`ccUrl_${this.state.inputKey}`} id="editCcUrl" type="text" label="Canvas Commons URL (optional)" margin={{bottom: 'sm'}}
+                        <Input key={`sourceCourseId_${this.state.inputKey}`} id="editSourceCourseId" type="text" label="Source Course ID (required)" margin={{bottom: 'sm'}}
+                            defaultValue={this.state.templateForEdit.sourceCourseId} {...this.state.validation.sourceCourseId} />
+                        <Input key={`ccUrl_${this.state.inputKey}`} id="editCcUrl" type="text" label="Preview URL (optional)" margin={{bottom: 'sm'}}
                             defaultValue={this.state.templateForEdit.canvasCommonsUrl} />
                         <Textarea key={`description_${this.state.inputKey}`} id="editDescription" label="Description (required)" margin={{bottom: 'sm'}}
                             defaultValue={this.state.templateForEdit.description} {...this.state.validation.description} />
@@ -316,18 +332,20 @@ function Template(props) {
                 <td role="cell" id={props.templateData.id} hidden>
                     <dl>
                         <div className="detailsflex">
-                            <div>
+                            <dl>
                                 <dt>Contact Name</dt>
                                 <dd>{props.templateData.contactName}</dd>
                                 <dt>Contact Username</dt>
                                 <dd>{props.templateData.contactUsername}</dd>
-                            </div>
-                            <div className="rvt-m-left-md longdetailswidthlimit">
-                                <dt>Canvas Commons URL</dt>
+                                <dt>Source Course ID</dt>
+                                <dd>{props.templateData.sourceCourseId}</dd>
+                                <dt>Sponsor</dt>
+                                <dd>{props.templateData.sponsor}</dd>
+                                <dt>Preview URL</dt>
                                 <dd><CanvasCommonsUrl url={props.templateData.canvasCommonsUrl} /></dd>
                                 <dt>Description</dt>
                                 <dd>{props.templateData.description}</dd>
-                            </div>
+                            </dl>
                        </div>
                     </dl>
                 </td>

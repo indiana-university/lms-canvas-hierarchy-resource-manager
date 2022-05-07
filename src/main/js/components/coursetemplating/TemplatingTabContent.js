@@ -77,6 +77,8 @@ class TemplatingTabContent extends React.Component {
         formData.append('displayName', elements['newDisplayName'].value);
         formData.append('contactName', elements['newContactName'].value);
         formData.append('contactUsername', elements['newContactUsername'].value);
+        formData.append('sourceCourseId', elements['newSourceCourseId'].value);
+        formData.append('sponsor', elements['newSponsor'].value);
         formData.append('ccUrl', elements['newCcUrl'].value);
         formData.append('description', elements['newDescription'].value);
         formData.append('templateFileInput', fileInput[0]);
@@ -97,6 +99,16 @@ class TemplatingTabContent extends React.Component {
         if (isEmpty(formData.get('contactUsername'))) {
             validationPassed = false;
             validation['contactUsername'] = {variant: 'danger', note: <React.Fragment><strong>Contact Username</strong> is required</React.Fragment>};
+        }
+
+        if (isEmpty(formData.get('sourceCourseId'))) {
+            validationPassed = false;
+            validation['sourceCourseId'] = {variant: 'danger', note: <React.Fragment><strong>Source Course ID</strong> is required</React.Fragment>};
+        }
+
+        if (isEmpty(formData.get('sponsor'))) {
+            validationPassed = false;
+            validation['sponsor'] = {variant: 'danger', note: <React.Fragment><strong>Sponsor</strong> is required</React.Fragment>};
         }
 
         if (isEmpty(formData.get('description'))) {
@@ -173,11 +185,15 @@ class TemplatingTabContent extends React.Component {
                 <Form id="newTemplateForm">
                     <Input id="newDisplayName" type="text" label="Display Name (required)" margin={{bottom: 'sm'}}
                         {...this.state.validation.displayName} />
+                    <Input id="newSponsor" type="text" label="Sponsor (required)" margin={{bottom: 'sm'}}
+                        {...this.state.validation.sponsor} />
                     <Input id="newContactName" type="text" label="Contact Name (required)" margin={{bottom: 'sm'}}
                         {...this.state.validation.contactName} />
                     <Input id="newContactUsername" type="text" label="Contact Username (required)" margin={{bottom: 'sm'}}
                         {...this.state.validation.contactUsername} />
-                    <Input id="newCcUrl" type="text" label="Canvas Commons URL (optional)" margin={{bottom: 'sm'}}/>
+                    <Input id="newSourceCourseId" type="text" label="Source Course ID (required)" margin={{bottom: 'sm'}}
+                        {...this.state.validation.sourceCourseId} />
+                    <Input id="newCcUrl" type="text" label="Preview URL (optional)" margin={{bottom: 'sm'}}/>
                     <Textarea id="newDescription" label="Description (required)" margin={{bottom: 'sm'}}
                         {...this.state.validation.description} />
                     <File key={this.state.fileInputKey} id="newTemplateFileInput" margin={{bottom: 'sm'}} {...fileAttributes} />

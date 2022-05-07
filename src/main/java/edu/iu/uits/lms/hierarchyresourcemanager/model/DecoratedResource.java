@@ -15,4 +15,6 @@ public class DecoratedResource {
    private String contactName;
    private String description;
    private boolean defaultTemplate;
+   private String sourceCourseId;
+   private String sponsor;
 }

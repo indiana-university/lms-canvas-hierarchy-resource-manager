@@ -41,9 +41,35 @@ table#templateTable td:last-child {
     display: none;
 }
 
-.detailsflex {
-    display: flex;
-    flex-basis: auto;
+.detailsflex dl {
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
+
+.detailsflex dt {
+    float: left;
+    width: 20%;
+    padding: 0 10px 0 0;
+    margin: 0;
+    text-align: right;
+}
+
+.detailsflex dt:after {
+    content: ":";
+}
+
+.detailsflex dd {
+    float: left;
+    width: 80%;
+    padding: 0;
+    margin: 0;
+}
+
+/* This is to handle empty dd elements.  Might only be temporary until we back fill the new fields? */
+.detailsflex dd:after {
+    content: "\00a0";
 }
 
 .longdetailswidthlimit {
@@ -79,3 +105,5 @@ button > * {
 .tox-tinymce {
     border-radius: 0.25rem !important;
 }
+
+

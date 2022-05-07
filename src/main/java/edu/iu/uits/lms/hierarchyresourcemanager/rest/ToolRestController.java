@@ -85,7 +85,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
          StoredFile storedFile = resource.getStoredFile();
          DecoratedResource decoratedResource = new DecoratedResource(resource.getId(), storedFile.getDisplayName(),
                  nodeManagerService.getUrlToFile(storedFile), resource.getDisplayName(), resource.getCanvasCommonsUrl(),
-                 resource.getContactUsername(), resource.getContactName(), resource.getDescription(), resource.isDefaultTemplate());
+                 resource.getContactUsername(), resource.getContactName(), resource.getDescription(), resource.isDefaultTemplate(),
+               resource.getSourceCourseId(), resource.getSponsor());
          decoratedResources.add(decoratedResource);
          decoratedResources.sort(Comparator.comparing(DecoratedResource::getDisplayName));
       }
@@ -109,7 +110,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
    public ResponseEntity templateSubmit(@RequestParam("templateFileInput") MultipartFile templateFile,
        @RequestParam("nodeName") String nodeName, @RequestParam("displayName") String displayName,
        @RequestParam("contactName") String contactName, @RequestParam("contactUsername") String contactUsername,
-       @RequestParam("ccUrl") String ccUrl, @RequestParam("description") String description)  {
+       @RequestParam("ccUrl") String ccUrl, @RequestParam("description") String description,
+       @RequestParam("sourceCourseId") String sourceCourseId, @RequestParam("sponsor") String sponsor)  {
 
        LtiAuthenticationToken token = getTokenWithoutContext();
        log.debug(nodeName);
@@ -122,6 +124,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
        hierarchyResource.setCanvasCommonsUrl(ccUrl);
        hierarchyResource.setDescription(description);
        hierarchyResource.setContactEmail(contactUsername + "@iu.edu");
+       hierarchyResource.setSourceCourseId(sourceCourseId);
+       hierarchyResource.setSponsor(sponsor);
 
        StoredFile storedFile = new StoredFile();
 
@@ -143,7 +147,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
        DecoratedResource decoratedResource = new DecoratedResource(savedHierarchResource.getId(), storedFile.getDisplayName(),
            nodeManagerService.getUrlToFile(storedFile), savedHierarchResource.getDisplayName(), savedHierarchResource.getCanvasCommonsUrl(),
            savedHierarchResource.getContactUsername(), savedHierarchResource.getContactName(), savedHierarchResource.getDescription(),
-           savedHierarchResource.isDefaultTemplate());
+           savedHierarchResource.isDefaultTemplate(), savedHierarchResource.getSourceCourseId(), savedHierarchResource.getSponsor());
 
        return ResponseEntity.status(HttpStatus.OK).body(decoratedResource);
    }
@@ -152,7 +156,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
    public ResponseEntity templateUpdate(@PathVariable Long templateId, @RequestParam(value = "templateFileInput", required = false) MultipartFile templateFile,
                                         @RequestParam("nodeName") String nodeName, @RequestParam("displayName") String displayName,
                                         @RequestParam("contactName") String contactName, @RequestParam("contactUsername") String contactUsername,
-                                        @RequestParam("ccUrl") String ccUrl, @RequestParam("description") String description)  {
+                                        @RequestParam("ccUrl") String ccUrl, @RequestParam("description") String description,
+                                        @RequestParam("sourceCourseId") String sourceCourseId, @RequestParam("sponsor") String sponsor)  {
 
       LtiAuthenticationToken token = getTokenWithoutContext();
       log.debug(nodeName + ": " + templateId);
@@ -167,6 +172,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
          hierarchyResource.setCanvasCommonsUrl(ccUrl);
          hierarchyResource.setDescription(description);
          hierarchyResource.setContactEmail(contactUsername + "@iu.edu");
+         hierarchyResource.setSourceCourseId(sourceCourseId);
+         hierarchyResource.setSponsor(sponsor);
 
          StoredFile storedFile = hierarchyResource.getStoredFile();
 
@@ -188,7 +195,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
          DecoratedResource decoratedResource = new DecoratedResource(savedHierarchyResource.getId(), storedFile.getDisplayName(),
                nodeManagerService.getUrlToFile(storedFile), savedHierarchyResource.getDisplayName(), savedHierarchyResource.getCanvasCommonsUrl(),
                savedHierarchyResource.getContactUsername(), savedHierarchyResource.getContactName(), savedHierarchyResource.getDescription(),
-               savedHierarchyResource.isDefaultTemplate());
+               savedHierarchyResource.isDefaultTemplate(), savedHierarchyResource.getSourceCourseId(), savedHierarchyResource.getSponsor());
 
          return ResponseEntity.status(HttpStatus.OK).body(decoratedResource);
       } catch (HierarchyResourceException e) {

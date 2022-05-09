@@ -70,7 +70,8 @@ class SyllabusSupplementTabContent extends React.Component {
     }
 
     handleHierarchyOptionChange = (selectedNode) => {
-        this.lookUpNode(selectedNode.value, this.state.selectedTerm, this.state.selectedTermName);
+        var node = selectedNode ? selectedNode.value : null;
+        this.lookUpNode(node, this.state.selectedTerm, this.state.selectedTermName);
     }
 
     handleTermOptionChange = (selectedTerm) => {

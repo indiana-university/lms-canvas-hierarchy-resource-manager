@@ -330,23 +330,19 @@ function Template(props) {
                     </button>
                 </td>
                 <td role="cell" id={props.templateData.id} hidden>
-                    <dl>
-                        <div className="detailsflex">
-                            <dl>
-                                <dt>Contact Name</dt>
-                                <dd>{props.templateData.contactName}</dd>
-                                <dt>Contact Username</dt>
-                                <dd>{props.templateData.contactUsername}</dd>
-                                <dt>Source Course ID</dt>
-                                <dd>{props.templateData.sourceCourseId}</dd>
-                                <dt>Sponsor</dt>
-                                <dd>{props.templateData.sponsor}</dd>
-                                <dt>Preview URL</dt>
-                                <dd><CanvasCommonsUrl url={props.templateData.canvasCommonsUrl} /></dd>
-                                <dt>Description</dt>
-                                <dd>{props.templateData.description}</dd>
-                            </dl>
-                       </div>
+                    <dl className="detailsflex">
+                        <dt>Contact Name</dt>
+                        <dd>{props.templateData.contactName}</dd>
+                        <dt>Contact Username</dt>
+                        <dd>{props.templateData.contactUsername}</dd>
+                        <dt>Source Course ID</dt>
+                        <dd>{props.templateData.sourceCourseId}</dd>
+                        <dt>Sponsor</dt>
+                        <dd>{props.templateData.sponsor}</dd>
+                        <dt>Preview URL</dt>
+                        <dd><CanvasCommonsUrl url={props.templateData.canvasCommonsUrl} /></dd>
+                        <dt>Description</dt>
+                        <dd>{props.templateData.description}</dd>
                     </dl>
                 </td>
             </tr>

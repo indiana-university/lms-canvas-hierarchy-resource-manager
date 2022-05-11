@@ -331,14 +331,14 @@ function Template(props) {
                 </td>
                 <td role="cell" id={props.templateData.id} hidden>
                     <dl className="detailsflex">
+                        <dt>Sponsor</dt>
+                        <dd>{props.templateData.sponsor}</dd>
                         <dt>Contact Name</dt>
                         <dd>{props.templateData.contactName}</dd>
                         <dt>Contact Username</dt>
                         <dd>{props.templateData.contactUsername}</dd>
                         <dt>Source Course ID</dt>
                         <dd>{props.templateData.sourceCourseId}</dd>
-                        <dt>Sponsor</dt>
-                        <dd>{props.templateData.sponsor}</dd>
                         <dt>Preview URL</dt>
                         <dd><CanvasCommonsUrl url={props.templateData.canvasCommonsUrl} /></dd>
                         <dt>Description</dt>

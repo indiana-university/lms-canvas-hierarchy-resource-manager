@@ -53,4 +53,9 @@ public class HierarchyResource extends BaseObject {
 
     @Column(name = "defaulttemplate")
     private boolean defaultTemplate;
+
+    @Column(name = "source_course_id")
+    private String sourceCourseId;
+
+    private String sponsor;
 }

@@ -1,7 +1,7 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.rest;
 
-import canvas.client.generated.api.TermsApi;
-import canvas.client.generated.model.CanvasTerm;
+import edu.iu.uits.lms.canvas.model.CanvasTerm;
+import edu.iu.uits.lms.canvas.services.TermService;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.controller.HierarchyResourceManagerController;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.CourseTemplatesWrapper;
@@ -13,8 +13,7 @@ import edu.iu.uits.lms.hierarchyresourcemanager.model.SyllabusSupplement;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.form.SyllabusSupplementForm;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.HierarchyResourceException;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
-import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
-import iuonly.client.generated.api.NodeHierarchyApi;
+import edu.iu.uits.lms.iuonly.services.NodeHierarchyService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,19 +47,20 @@ public class ToolRestController extends HierarchyResourceManagerController {
    private NodeManagerService nodeManagerService;
 
    @Autowired
-   private NodeHierarchyApi nodeHierarchyApi;
+   private NodeHierarchyService nodeHierarchyService;
 
    @Autowired
-   private TermsApi termsApi;
+   private TermService termService;
 
    @Autowired
    private ToolConfig toolConfig;
 
    @GetMapping("/hierarchy")
    public List<HierarchyOption> getNodes() {
-      getTokenWithoutContext();
+// TODO - getTokenWithoutContext()
+//      getTokenWithoutContext();
 
-      List<String> hierarchy = nodeHierarchyApi.getFlattenedHierarchy();
+      List<String> hierarchy = nodeHierarchyService.getFlattenedHierarchy();
       List<HierarchyOption> results = hierarchy.stream().map(HierarchyOption::new).collect(Collectors.toList());
       return results;
    }
@@ -78,7 +78,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
 
    @GetMapping("/template/nodes/{nodeName}")
    public List<DecoratedResource> getNodesFromNodeName(@PathVariable String nodeName) {
-      getTokenWithoutContext();
+// TODO - getTokenWithoutContext()
+//      getTokenWithoutContext();
       List<DecoratedResource> decoratedResources = new ArrayList<>();
       List<HierarchyResource> resources = nodeManagerService.getTemplatesForNode(nodeName);
       for (HierarchyResource resource : resources) {
@@ -95,7 +96,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
 
    @GetMapping("/syllabus/node/{nodeName}/{strm}")
    public DecoratedSyllabus getSyllabusFromNodeName(@PathVariable String nodeName, @PathVariable String strm) {
-      getTokenWithoutContext();
+       // TODO - getTokenWithoutContext()
+//       getTokenWithoutContext();
       SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(nodeName, strm);
 
       if (syllabusSupplement != null) {
@@ -113,7 +115,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
        @RequestParam("ccUrl") String ccUrl, @RequestParam("description") String description,
        @RequestParam("sourceCourseId") String sourceCourseId, @RequestParam("sponsor") String sponsor)  {
 
-       LtiAuthenticationToken token = getTokenWithoutContext();
+// TODO - getTokenWithoutContext()
+//       LtiAuthenticationToken token = getTokenWithoutContext();
        log.debug(nodeName);
 
        HierarchyResource hierarchyResource = new HierarchyResource();
@@ -159,7 +162,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
                                         @RequestParam("ccUrl") String ccUrl, @RequestParam("description") String description,
                                         @RequestParam("sourceCourseId") String sourceCourseId, @RequestParam("sponsor") String sponsor)  {
 
-      LtiAuthenticationToken token = getTokenWithoutContext();
+// TODO - getTokenWithoutContext()
+//      LtiAuthenticationToken token = getTokenWithoutContext();
       log.debug(nodeName + ": " + templateId);
 
       try {
@@ -207,7 +211,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
 
     @PostMapping("/template/delete")
     public ResponseEntity templateDelete(@RequestParam("templateId") String templateId) {
-        LtiAuthenticationToken token = getTokenWithoutContext();
+// TODO - getTokenWithoutContext()
+//        LtiAuthenticationToken token = getTokenWithoutContext();
         HierarchyResource hierarchyResource = null;
         try {
             hierarchyResource = nodeManagerService.getTemplate(Long.parseLong(templateId));
@@ -229,7 +234,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
 
    @PostMapping("/syllabus/submit")
    public ResponseEntity syllabusSubmit(@RequestBody SyllabusSupplementForm form) {
-      getTokenWithoutContext();
+// TODO - getTokenWithoutContext()
+//      getTokenWithoutContext();
 
       String nodeName = form.getNodeName();
       log.debug(nodeName);
@@ -257,7 +263,8 @@ public class ToolRestController extends HierarchyResourceManagerController {
 
    @PostMapping("/syllabus/delete")
    public ResponseEntity syllabusDelete(@RequestBody SyllabusSupplementForm form) {
-      LtiAuthenticationToken token = getTokenWithoutContext();
+// TODO - getTokenWithoutContext()
+//      LtiAuthenticationToken token = getTokenWithoutContext();
       SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(form.getNodeName(), form.getStrm());
       if (syllabusSupplement != null) {
          nodeManagerService.deleteSyllabusSupplement(syllabusSupplement);
@@ -291,7 +298,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
 
     @GetMapping("/syllabus/terms")
     public List<TermOption> getSyllabusTerms() {
-        List<CanvasTerm> enrollmentTerms = termsApi.getEnrollmentTerms();
+        List<CanvasTerm> enrollmentTerms = termService.getEnrollmentTerms();
 
         // use reverse order for the map to make it display in descending order in the UI
         Map<String, String> termMap = new TreeMap<>(Collections.reverseOrder());

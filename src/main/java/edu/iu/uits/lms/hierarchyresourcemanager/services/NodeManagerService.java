@@ -1,11 +1,11 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.services;
 
-import canvas.client.generated.api.AccountsApi;
-import canvas.client.generated.api.CanvasApi;
-import canvas.client.generated.api.CoursesApi;
-import canvas.client.generated.model.Account;
-import canvas.client.generated.model.Course;
-import canvas.helpers.CourseHelper;
+import edu.iu.uits.lms.canvas.helpers.CourseHelper;
+import edu.iu.uits.lms.canvas.model.Account;
+import edu.iu.uits.lms.canvas.model.Course;
+import edu.iu.uits.lms.canvas.services.AccountService;
+import edu.iu.uits.lms.canvas.services.CanvasService;
+import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.common.coursetemplates.CourseTemplateMessage;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessageSender;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
@@ -40,15 +40,13 @@ public class NodeManagerService {
    private SyllabusSupplementRepository syllabusSupplementRepository;
 
    @Autowired
-   @Qualifier("coursesApiViaAnonymous")
-   private CoursesApi coursesApi;
+   private CourseService courseService;
 
    @Autowired
-   @Qualifier("accountsApiViaAnonymous")
-   private AccountsApi accountsApi;
+   private AccountService accountService;
 
    @Autowired
-   private CanvasApi canvasApi;
+   private CanvasService canvasService;
 
    @Autowired
    private ApplyCourseTemplateMessageHandler applyCourseTemplateMessageHandler;
@@ -68,12 +66,12 @@ public class NodeManagerService {
    }
 
    public CourseTemplatesWrapper getAvailableTemplatesForSisCourse(String sisCourseId) throws HierarchyResourceException {
-      Course course = coursesApi.getCourse("sis_course_id:" + sisCourseId);
+      Course course = courseService.getCourse("sis_course_id:" + sisCourseId);
       return getAvailableTemplatesForCourse(course);
    }
 
    public CourseTemplatesWrapper getAvailableTemplatesForCanvasCourse(String canvasCourseId) throws HierarchyResourceException {
-      Course course = coursesApi.getCourse(canvasCourseId);
+      Course course = courseService.getCourse(canvasCourseId);
       return getAvailableTemplatesForCourse(course);
    }
 
@@ -82,11 +80,11 @@ public class NodeManagerService {
       CourseTemplatesWrapper courseTemplatesWrapper = new CourseTemplatesWrapper();
       List<HierarchyResource> hierarchyResources = new ArrayList<>();
       if (course != null) {
-         Account account = accountsApi.getAccount(course.getAccountId());
+         Account account = accountService.getAccount(course.getAccountId());
          if (account != null) {
             // specific account doesn't exist in our table, let's see if there's a parent
             List<String> relatedAccountNames = new ArrayList<>();
-            accountsApi.getParentAccounts(account.getId()).forEach(parentAccount -> relatedAccountNames.add(parentAccount.getName()));
+            accountService.getParentAccounts(account.getId()).forEach(parentAccount -> relatedAccountNames.add(parentAccount.getName()));
             Collections.reverse(relatedAccountNames);
 
             for (String accountName : relatedAccountNames) {
@@ -132,7 +130,7 @@ public class NodeManagerService {
       }
 
       //Make sure we have a course
-      Course course = coursesApi.getCourse(canvasCourseId);
+      Course course = courseService.getCourse(canvasCourseId);
       if (course == null) {
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found: " + canvasCourseId);
       }
@@ -143,7 +141,7 @@ public class NodeManagerService {
       }
 
       // Canvas work around to set the homepage to modules to make sure the template's home page is applied
-      coursesApi.updateCourseFrontPage(canvasCourseId, "modules");
+      courseService.updateCourseFrontPage(canvasCourseId, "modules");
 
       //Trigger a content migration, which will setup the course from the template
       boolean result = applyCourseTemplateMessageHandler.handleMessage(canvasCourseId, course.getTerm().getSisTermId(),
@@ -162,7 +160,7 @@ public class NodeManagerService {
       }
 
       //Make sure we have a course
-      Course course = coursesApi.getCourse(canvasCourseId);
+      Course course = courseService.getCourse(canvasCourseId);
       if (course == null) {
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found: " + canvasCourseId);
       }
@@ -177,7 +175,7 @@ public class NodeManagerService {
             course.getAccountId(), course.getSisCourseId(), true);
 
       // Canvas work around to set the homepage to modules to make sure the template's home page is applied
-      coursesApi.updateCourseFrontPage(canvasCourseId, "modules");
+      courseService.updateCourseFrontPage(canvasCourseId, "modules");
 
       courseTemplateMessageSender.send(ctm);
 
@@ -185,12 +183,12 @@ public class NodeManagerService {
    }
 
    public HierarchyResource getClosestDefaultTemplateForCanvasCourse(String canvasCourseId) throws HierarchyResourceException {
-      Course course = coursesApi.getCourse(canvasCourseId);
+      Course course = courseService.getCourse(canvasCourseId);
       return getClosestDefaultTemplateForCourse(course);
    }
 
    public HierarchyResource getClosestDefaultTemplateForSisCourse(String sisCourseId) throws HierarchyResourceException {
-      Course course = coursesApi.getCourse("sis_course_id:" + sisCourseId);
+      Course course = courseService.getCourse("sis_course_id:" + sisCourseId);
       return getClosestDefaultTemplateForCourse(course);
    }
 
@@ -203,7 +201,7 @@ public class NodeManagerService {
    private HierarchyResource getClosestDefaultTemplateForCourse(Course course) throws HierarchyResourceException {
       String bodyText = "";
       if (course!=null) {
-         Account account = accountsApi.getAccount(course.getAccountId());
+         Account account = accountService.getAccount(course.getAccountId());
          if (account!=null) {
             List<HierarchyResource> hierarchyResources = hierarchyResourceRepository.findByNodeAndDefaultTemplateTrue(account.getName());
             if (hierarchyResources != null && hierarchyResources.size() == 1) {
@@ -211,7 +209,7 @@ public class NodeManagerService {
             } else {
                // specific account doesn't exist in our table, let's see if there's a parent
                List<String> relatedAccountNames = new ArrayList<>();
-               accountsApi.getParentAccounts(account.getId()).forEach(parentAccount -> relatedAccountNames.add(parentAccount.getName()));
+               accountService.getParentAccounts(account.getId()).forEach(parentAccount -> relatedAccountNames.add(parentAccount.getName()));
 
                for (String accountName : relatedAccountNames) {
                   List<HierarchyResource> parentHierarchyResources = hierarchyResourceRepository.findByNodeAndDefaultTemplateTrue(accountName);
@@ -265,9 +263,9 @@ public class NodeManagerService {
 
    public List<DecoratedSyllabus> getSyllabusDataForCourse(String courseId) {
       List<DecoratedSyllabus> decoratedSyllabi = new ArrayList<>();
-      Course course = coursesApi.getCourse(courseId);
+      Course course = courseService.getCourse(courseId);
       if (course != null) {
-         Account account = accountsApi.getAccount(course.getAccountId());
+         Account account = accountService.getAccount(course.getAccountId());
          String termId = toolConfig.getDefaultTermId();
 
          // this will rarely happen, but adding as a safety valve
@@ -278,7 +276,7 @@ public class NodeManagerService {
          List<String> relatedAccountNames = new ArrayList<>();
          relatedAccountNames.add(account.getName());
 
-         accountsApi.getParentAccounts(account.getId()).forEach(parentAccount -> relatedAccountNames.add(parentAccount.getName()));
+         accountService.getParentAccounts(account.getId()).forEach(parentAccount -> relatedAccountNames.add(parentAccount.getName()));
 
          List<SyllabusSupplement> items = new ArrayList<>();
          List<SyllabusSupplement> items2wow = new ArrayList<>();

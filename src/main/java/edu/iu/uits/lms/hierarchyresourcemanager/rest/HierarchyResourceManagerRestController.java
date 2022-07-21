@@ -1,6 +1,6 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.rest;
 
-import canvas.client.generated.api.CoursesApi;
+import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessageSender;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.HierarchyResource;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.StoredFile;
@@ -39,7 +39,7 @@ public class HierarchyResourceManagerRestController {
     private NodeManagerService hierarchyResourceService;
 
     @Autowired
-    private CoursesApi courseService;
+    private CourseService courseService;
 
     @Autowired
     private CourseTemplateMessageSender courseTemplateMessageSender;

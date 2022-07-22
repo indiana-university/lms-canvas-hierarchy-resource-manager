@@ -22,7 +22,7 @@
 
         <lms-canvas-common-configuration.version>5.0.3</lms-canvas-common-configuration.version>
         <lms-canvas-iu-custom-services.version>5.0.7</lms-canvas-iu-custom-services.version>
-        <lms-canvas-lti-framework.version>5.1.9</lms-canvas-lti-framework.version>
+        <lms-canvas-lti-framework.version>5.0.4</lms-canvas-lti-framework.version>
         <lms-canvas-redis-config.version>5.0.7</lms-canvas-redis-config.version>
         <lms-canvas-rivet.version>5.1.8.2_1</lms-canvas-rivet.version>
         <lms-canvas-services.version>5.0.8</lms-canvas-services.version>
@@ -80,15 +80,10 @@
             <artifactId>lms-canvas-iu-custom-services</artifactId>
             <version>${lms-canvas-iu-custom-services.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>edu.iu.uits.lms</groupId>-->
-<!--            <artifactId>lms-canvas-lti-framework</artifactId>-->
-<!--            <version>${lms-canvas-lti-framework.version}</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
-            <artifactId>lms-lti-web</artifactId>
-            <version>4.0.24</version>
+            <artifactId>lms-canvas-lti-framework</artifactId>
+            <version>${lms-canvas-lti-framework.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
@@ -198,28 +193,28 @@
                     <verbose>true</verbose>
                 </configuration>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>de.jpdigital</groupId>-->
-<!--                <artifactId>hibernate54-ddl-maven-plugin</artifactId>-->
-<!--                <version>${hibernate5-ddl-maven-plugin.version}</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>gen-ddl</goal>-->
-<!--                        </goals>-->
-<!--                        <phase>process-classes</phase>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--                <configuration>-->
-<!--                    <dialects>-->
-<!--                        <param>h2</param>-->
-<!--                        <param>postgresql9</param>-->
-<!--                    </dialects>-->
-<!--                    <packages>-->
-<!--                        <param>edu.iu.uits.lms.courselist</param>-->
-<!--                    </packages>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <plugin>
+                <groupId>de.jpdigital</groupId>
+                <artifactId>hibernate54-ddl-maven-plugin</artifactId>
+                <version>${hibernate5-ddl-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>gen-ddl</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dialects>
+                        <param>h2</param>
+                        <param>postgresql9</param>
+                    </dialects>
+                    <packages>
+                        <param>edu.iu.uits.lms.hierarchyresourcemanager</param>
+                    </packages>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${plugins.compiler.version}</version>

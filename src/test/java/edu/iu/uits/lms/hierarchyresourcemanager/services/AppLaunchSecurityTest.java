@@ -6,8 +6,7 @@ import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,10 +24,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(HierarchyResourceManagerController.class)
+@WebMvcTest(value  = HierarchyResourceManagerController.class, properties = {"oauth.tokenprovider.url=http://foo"})
 @Import(ToolConfig.class)
-@ActiveProfiles("none")
 public class AppLaunchSecurityTest {
 
    @Autowired

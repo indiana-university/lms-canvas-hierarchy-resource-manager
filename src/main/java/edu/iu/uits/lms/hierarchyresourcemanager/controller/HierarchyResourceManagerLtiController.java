@@ -2,7 +2,6 @@ package edu.iu.uits.lms.hierarchyresourcemanager.controller;
 
 import edu.iu.uits.lms.hierarchyresourcemanager.model.User;
 import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
-import edu.iu.uits.lms.lti.controller.LtiController;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
 import io.jsonwebtoken.Claims;
@@ -12,6 +11,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import edu.iu.uits.lms.lti.controller.LtiController;
 import org.tsugi.basiclti.BasicLTIConstants;
 
 import javax.servlet.http.HttpServletRequest;

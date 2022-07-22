@@ -1,7 +1,7 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.rest;
 
-import edu.iu.uits.lms.hierarchyresourcemanager.model.StoredFile;
 import edu.iu.uits.lms.hierarchyresourcemanager.repository.FileStorageRepository;
+import edu.iu.uits.lms.iuonly.model.StoredFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;

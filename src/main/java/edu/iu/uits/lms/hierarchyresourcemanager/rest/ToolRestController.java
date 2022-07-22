@@ -7,12 +7,12 @@ import edu.iu.uits.lms.hierarchyresourcemanager.controller.HierarchyResourceMana
 import edu.iu.uits.lms.hierarchyresourcemanager.model.CourseTemplatesWrapper;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.DecoratedResource;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.DecoratedSyllabus;
-import edu.iu.uits.lms.hierarchyresourcemanager.model.HierarchyResource;
-import edu.iu.uits.lms.hierarchyresourcemanager.model.StoredFile;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.SyllabusSupplement;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.form.SyllabusSupplementForm;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.HierarchyResourceException;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
+import edu.iu.uits.lms.iuonly.model.HierarchyResource;
+import edu.iu.uits.lms.iuonly.model.StoredFile;
 import edu.iu.uits.lms.iuonly.services.NodeHierarchyService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

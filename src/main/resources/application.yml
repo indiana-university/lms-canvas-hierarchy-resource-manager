@@ -1,19 +1,22 @@
 spring:
   application:
     name: hierarchyresourcemanager
-  profiles:
-    active: redis
   session:
     store-type: none
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: ${oauth.tokenprovider.url}/.well-known/jwks.json
-  servlet:
-    multipart:
-      max-file-size: 500MB
-      max-request-size: 500MB
+  config.import: optional:${app.fullFilePath}/${app.overridesFileName}, optional:${app.fullFilePath}/security.properties, classpath:canvas.properties, optional:classpath:git.properties
+  rabbitmq:
+    addresses: ${lms.rabbitmq.address.${app.env}}
+    username: ${lms.rabbitmq.username.${app.env}}
+    password: ${lms.rabbitmq.password.${app.env}}
+    virtualHost: ${lms.rabbitmq.virtualHost.${app.env}}
+    listener.simple:
+      missing-queues-fatal: false
+      retry:
+        enabled: true
+        initial-interval: 3s
+        max-attempts: 3
+        max-interval: 10s
+        multiplier: 2
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -30,44 +33,26 @@ spring:
           autoRegisterUserTypes: true
   datasource:
     driverClassName: ${lms.db.driverClass}
-    url: ${lms.db.url}
+    jdbcUrl: ${lms.db.url}
     username: ${lms.db.user}
     password: ${lms.db.password}
     type: org.springframework.jdbc.datasource.DriverManagerDataSource
-  rabbitmq:
-    addresses: ${lms.rabbitmq.address.${app.env}}
-    username: ${lms.rabbitmq.username.${app.env}}
-    password: ${lms.rabbitmq.password.${app.env}}
-    virtualHost: ${lms.rabbitmq.virtualHost.${app.env}}
-    listener.simple:
-      missing-queues-fatal: false
-      retry:
-        enabled: true
-        initial-interval: 3s
-        max-attempts: 3
-        max-interval: 10s
-        multiplier: 2
+  cloud.vault.enabled: false
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${oauth.tokenprovider.url}/.well-known/jwks.json
 hierarchyresourcemanager:
   version: @app.version@
   env: ${app.env}
   courseTemplateQueueName: coursetemplate_${app.env}
   startingTermId: 4218
   defaultTermId: 9999
-
-  prd:
-    appBaseUrl: https://hierarchyresourcemanager.apps.iu.edu
-  stg:
-    appBaseUrl: https://hierarchyresourcemanager-stg.apps-test.iu.edu
-  reg:
-    appBaseUrl: https://hierarchyresourcemanager-reg.apps-test.iu.edu
-  snd:
-    appBaseUrl: https://hierarchyresourcemanager-snd.apps-snd.iu.edu
-  dev:
-    appBaseUrl: http://localhost:8081
-  ci:
-    appBaseUrl: http://localhost:8081
-
-  appBaseUrl: ${hierarchyresourcemanager.${app.env}.appBaseUrl}
 
 server:
   error:
@@ -76,13 +61,51 @@ server:
   servlet:
     session:
       timeout: 30m
-  tomcat:
-    max-swallow-size: -1
+
+app:
+  env: dev
+  fullFilePath: file:/usr/src/app/config
+  overridesFileName: overrides.properties
+
+management:
+  endpoint.info.enabled: true
+  endpoints.web.exposure.include: health,info
+  health.redis.enabled: false
+
+---
+spring:
+  config.activate.on-profile: redis-session
+  session:
+    store-type: redis
+    redis.namespace: hierarchyresourcemanager-${app.version}:session
+management.health.redis.enabled: true
+---
+
+spring:
+  config:
+    activate.on-profile: vault
+    import: vault://
+  cloud.vault:
+    enabled: true
+    config:
+      lifecycle.lease-endpoints: sysleases
+    generic:
+      enabled: false
+    kv:
+      enabled: true
+      backend: ua-vpit/enterprise-systems/lms/kv
+      application-name: viewem
 
 ---
 
 spring:
-  profiles: redis
-  session:
-    store-type: redis
-    redis.namespace: hierarchyresourcemanager-${app.version}:session
+  config:
+    activate.on-profile: swagger
+    import: classpath:lti-api-config.properties
+springdoc:
+  swagger-ui:
+    oauth:
+      clientId: ${oauth.tokenprovider.clientId}
+  oAuthFlow:
+    authorizationUrl: ${oauth.tokenprovider.url}/oauth/authorize
+    tokenUrl: ${oauth.tokenprovider.accessTokenUri}

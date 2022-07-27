@@ -3,7 +3,7 @@ spring:
     name: hierarchyresourcemanager
   session:
     store-type: none
-  config.import: optional:${app.fullFilePath}/${app.overridesFileName}, optional:${app.fullFilePath}/security.properties, classpath:canvas.properties, optional:classpath:git.properties
+  config.import: optional:${app.fullFilePath}/${app.overridesFileName}, optional:${app.fullFilePath}/security.properties, classpath:canvas.properties, optional:classpath:git.properties, optional:classpath:email.properties
   rabbitmq:
     addresses: ${lms.rabbitmq.address.${app.env}}
     username: ${lms.rabbitmq.username.${app.env}}
@@ -32,11 +32,10 @@ spring:
         usertype:
           autoRegisterUserTypes: true
   datasource:
-    driverClassName: ${lms.db.driverClass}
-    jdbcUrl: ${lms.db.url}
+    url: ${lms.db.url}
     username: ${lms.db.user}
     password: ${lms.db.password}
-    type: org.springframework.jdbc.datasource.DriverManagerDataSource
+    type: ${lms.db.poolType}
   cloud.vault.enabled: false
   servlet:
     multipart:
@@ -94,7 +93,7 @@ spring:
     kv:
       enabled: true
       backend: ua-vpit/enterprise-systems/lms/kv
-      application-name: viewem
+      application-name: hierarchyresourcemanager
 
 ---
 

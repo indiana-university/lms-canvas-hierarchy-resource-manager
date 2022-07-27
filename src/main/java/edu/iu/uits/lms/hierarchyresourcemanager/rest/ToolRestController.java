@@ -2,6 +2,7 @@ package edu.iu.uits.lms.hierarchyresourcemanager.rest;
 
 import edu.iu.uits.lms.canvas.model.CanvasTerm;
 import edu.iu.uits.lms.canvas.services.TermService;
+import edu.iu.uits.lms.hierarchyresourcemanager.config.BaseCache;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.controller.HierarchyResourceManagerController;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.CourseTemplatesWrapper;
@@ -10,13 +11,14 @@ import edu.iu.uits.lms.hierarchyresourcemanager.model.DecoratedSyllabus;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.SyllabusSupplement;
 import edu.iu.uits.lms.hierarchyresourcemanager.model.form.SyllabusSupplementForm;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.HierarchyResourceException;
+import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeHierarchyRealtimeService;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
 import edu.iu.uits.lms.iuonly.model.HierarchyResource;
 import edu.iu.uits.lms.iuonly.model.StoredFile;
-import edu.iu.uits.lms.iuonly.services.NodeHierarchyService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +49,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
    private NodeManagerService nodeManagerService;
 
    @Autowired
-   private NodeHierarchyService nodeHierarchyService;
+   private NodeHierarchyRealtimeService nodeHierarchyRealtimeService;
 
    @Autowired
    private TermService termService;
@@ -55,57 +57,59 @@ public class ToolRestController extends HierarchyResourceManagerController {
    @Autowired
    private ToolConfig toolConfig;
 
-   @GetMapping("/hierarchy")
-   public List<HierarchyOption> getNodes() {
-// TODO - getTokenWithoutContext()
-//      getTokenWithoutContext();
+//    @Cacheable(value = BaseCache.CACHE_NAME, cacheManager = "HierarchyResourceManagerCacheManager")
+    @GetMapping("/hierarchy")
+    public List<HierarchyOption> getNodes() {
+        log.info("In GET NODES!!!");
+        getTokenWithoutContext();
 
-      List<String> hierarchy = nodeHierarchyService.getFlattenedHierarchy();
-      List<HierarchyOption> results = hierarchy.stream().map(HierarchyOption::new).collect(Collectors.toList());
-      return results;
-   }
+        List<HierarchyOption> results = null;
+
+        List<String> hierarchy = nodeHierarchyRealtimeService.getFlattenedHierarchy();
+        results = hierarchy.stream().map(HierarchyOption::new).collect(Collectors.toList());
+
+        return results;
+    }
 
    @GetMapping("/hierarchy/{courseId}")
    public CourseTemplatesWrapper getTemplatesForCourse(@PathVariable String courseId) {
-      CourseTemplatesWrapper templatesWrapper = null;
-      try {
-         templatesWrapper = nodeManagerService.getAvailableTemplatesForCanvasCourse(courseId);
-      } catch (HierarchyResourceException e) {
-         log.error("unable to get templates for this course", e);
-      }
-      return templatesWrapper;
+       CourseTemplatesWrapper templatesWrapper = null;
+       try {
+           templatesWrapper = nodeManagerService.getAvailableTemplatesForCanvasCourse(courseId);
+       } catch (HierarchyResourceException e) {
+           log.error("unable to get templates for this course", e);
+       }
+       return templatesWrapper;
    }
 
    @GetMapping("/template/nodes/{nodeName}")
    public List<DecoratedResource> getNodesFromNodeName(@PathVariable String nodeName) {
-// TODO - getTokenWithoutContext()
-//      getTokenWithoutContext();
-      List<DecoratedResource> decoratedResources = new ArrayList<>();
-      List<HierarchyResource> resources = nodeManagerService.getTemplatesForNode(nodeName);
-      for (HierarchyResource resource : resources) {
-         StoredFile storedFile = resource.getStoredFile();
-         DecoratedResource decoratedResource = new DecoratedResource(resource.getId(), storedFile.getDisplayName(),
-                 nodeManagerService.getUrlToFile(storedFile), resource.getDisplayName(), resource.getCanvasCommonsUrl(),
-                 resource.getContactUsername(), resource.getContactName(), resource.getDescription(), resource.isDefaultTemplate(),
-               resource.getSourceCourseId(), resource.getSponsor());
-         decoratedResources.add(decoratedResource);
-         decoratedResources.sort(Comparator.comparing(DecoratedResource::getDisplayName));
-      }
-      return decoratedResources;
+       getTokenWithoutContext();
+       List<DecoratedResource> decoratedResources = new ArrayList<>();
+       List<HierarchyResource> resources = nodeManagerService.getTemplatesForNode(nodeName);
+       for (HierarchyResource resource : resources) {
+           StoredFile storedFile = resource.getStoredFile();
+           DecoratedResource decoratedResource = new DecoratedResource(resource.getId(), storedFile.getDisplayName(),
+                   nodeManagerService.getUrlToFile(storedFile), resource.getDisplayName(), resource.getCanvasCommonsUrl(),
+                   resource.getContactUsername(), resource.getContactName(), resource.getDescription(), resource.isDefaultTemplate(),
+                   resource.getSourceCourseId(), resource.getSponsor());
+           decoratedResources.add(decoratedResource);
+           decoratedResources.sort(Comparator.comparing(DecoratedResource::getDisplayName));
+       }
+       return decoratedResources;
    }
 
    @GetMapping("/syllabus/node/{nodeName}/{strm}")
    public DecoratedSyllabus getSyllabusFromNodeName(@PathVariable String nodeName, @PathVariable String strm) {
-       // TODO - getTokenWithoutContext()
-//       getTokenWithoutContext();
-      SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(nodeName, strm);
+       getTokenWithoutContext();
+       SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(nodeName, strm);
 
-      if (syllabusSupplement != null) {
-         DecoratedSyllabus decoratedSyllabus = new DecoratedSyllabus(syllabusSupplement);
-         return decoratedSyllabus;
-      }
+       if (syllabusSupplement != null) {
+           DecoratedSyllabus decoratedSyllabus = new DecoratedSyllabus(syllabusSupplement);
+           return decoratedSyllabus;
+       }
 
-      return new DecoratedSyllabus();
+       return new DecoratedSyllabus();
    }
 
    @PostMapping("/template/submit")
@@ -113,10 +117,9 @@ public class ToolRestController extends HierarchyResourceManagerController {
        @RequestParam("nodeName") String nodeName, @RequestParam("displayName") String displayName,
        @RequestParam("contactName") String contactName, @RequestParam("contactUsername") String contactUsername,
        @RequestParam("ccUrl") String ccUrl, @RequestParam("description") String description,
-       @RequestParam("sourceCourseId") String sourceCourseId, @RequestParam("sponsor") String sponsor)  {
+       @RequestParam("sourceCourseId") String sourceCourseId, @RequestParam("sponsor") String sponsor) {
 
-// TODO - getTokenWithoutContext()
-//       LtiAuthenticationToken token = getTokenWithoutContext();
+       getTokenWithoutContext();
        log.debug(nodeName);
 
        HierarchyResource hierarchyResource = new HierarchyResource();
@@ -148,9 +151,9 @@ public class ToolRestController extends HierarchyResourceManagerController {
        }
 
        DecoratedResource decoratedResource = new DecoratedResource(savedHierarchResource.getId(), storedFile.getDisplayName(),
-           nodeManagerService.getUrlToFile(storedFile), savedHierarchResource.getDisplayName(), savedHierarchResource.getCanvasCommonsUrl(),
-           savedHierarchResource.getContactUsername(), savedHierarchResource.getContactName(), savedHierarchResource.getDescription(),
-           savedHierarchResource.isDefaultTemplate(), savedHierarchResource.getSourceCourseId(), savedHierarchResource.getSponsor());
+               nodeManagerService.getUrlToFile(storedFile), savedHierarchResource.getDisplayName(), savedHierarchResource.getCanvasCommonsUrl(),
+               savedHierarchResource.getContactUsername(), savedHierarchResource.getContactName(), savedHierarchResource.getDescription(),
+               savedHierarchResource.isDefaultTemplate(), savedHierarchResource.getSourceCourseId(), savedHierarchResource.getSponsor());
 
        return ResponseEntity.status(HttpStatus.OK).body(decoratedResource);
    }
@@ -160,59 +163,57 @@ public class ToolRestController extends HierarchyResourceManagerController {
                                         @RequestParam("nodeName") String nodeName, @RequestParam("displayName") String displayName,
                                         @RequestParam("contactName") String contactName, @RequestParam("contactUsername") String contactUsername,
                                         @RequestParam("ccUrl") String ccUrl, @RequestParam("description") String description,
-                                        @RequestParam("sourceCourseId") String sourceCourseId, @RequestParam("sponsor") String sponsor)  {
+                                        @RequestParam("sourceCourseId") String sourceCourseId, @RequestParam("sponsor") String sponsor) {
 
-// TODO - getTokenWithoutContext()
-//      LtiAuthenticationToken token = getTokenWithoutContext();
-      log.debug(nodeName + ": " + templateId);
+       getTokenWithoutContext();
+       log.debug(nodeName + ": " + templateId);
 
-      try {
-         HierarchyResource hierarchyResource = nodeManagerService.getTemplate(templateId);
+       try {
+           HierarchyResource hierarchyResource = nodeManagerService.getTemplate(templateId);
 
-         hierarchyResource.setNode(nodeName);
-         hierarchyResource.setDisplayName(displayName);
-         hierarchyResource.setContactName(contactName);
-         hierarchyResource.setContactUsername(contactUsername);
-         hierarchyResource.setCanvasCommonsUrl(ccUrl);
-         hierarchyResource.setDescription(description);
-         hierarchyResource.setContactEmail(contactUsername + "@iu.edu");
-         hierarchyResource.setSourceCourseId(sourceCourseId);
-         hierarchyResource.setSponsor(sponsor);
+           hierarchyResource.setNode(nodeName);
+           hierarchyResource.setDisplayName(displayName);
+           hierarchyResource.setContactName(contactName);
+           hierarchyResource.setContactUsername(contactUsername);
+           hierarchyResource.setCanvasCommonsUrl(ccUrl);
+           hierarchyResource.setDescription(description);
+           hierarchyResource.setContactEmail(contactUsername + "@iu.edu");
+           hierarchyResource.setSourceCourseId(sourceCourseId);
+           hierarchyResource.setSponsor(sponsor);
 
-         StoredFile storedFile = hierarchyResource.getStoredFile();
+           StoredFile storedFile = hierarchyResource.getStoredFile();
 
-         //Only need to do this if there is a new file uploaded
-         if (templateFile != null) {
-            try {
-               storedFile.setContent(templateFile.getBytes());
-               storedFile.setDisplayName(templateFile.getOriginalFilename());
-               hierarchyResource.setStoredFile(storedFile);
-            } catch (IOException e) {
-               String msg = "Unable to store uploaded template file";
-               log.error(msg, e);
-               return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(msg);
-            }
-         }
+           //Only need to do this if there is a new file uploaded
+           if (templateFile != null) {
+               try {
+                   storedFile.setContent(templateFile.getBytes());
+                   storedFile.setDisplayName(templateFile.getOriginalFilename());
+                   hierarchyResource.setStoredFile(storedFile);
+               } catch (IOException e) {
+                   String msg = "Unable to store uploaded template file";
+                   log.error(msg, e);
+                   return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(msg);
+               }
+           }
 
-         HierarchyResource savedHierarchyResource = nodeManagerService.saveTemplate(hierarchyResource);
+           HierarchyResource savedHierarchyResource = nodeManagerService.saveTemplate(hierarchyResource);
 
-         DecoratedResource decoratedResource = new DecoratedResource(savedHierarchyResource.getId(), storedFile.getDisplayName(),
-               nodeManagerService.getUrlToFile(storedFile), savedHierarchyResource.getDisplayName(), savedHierarchyResource.getCanvasCommonsUrl(),
-               savedHierarchyResource.getContactUsername(), savedHierarchyResource.getContactName(), savedHierarchyResource.getDescription(),
-               savedHierarchyResource.isDefaultTemplate(), savedHierarchyResource.getSourceCourseId(), savedHierarchyResource.getSponsor());
+           DecoratedResource decoratedResource = new DecoratedResource(savedHierarchyResource.getId(), storedFile.getDisplayName(),
+                   nodeManagerService.getUrlToFile(storedFile), savedHierarchyResource.getDisplayName(), savedHierarchyResource.getCanvasCommonsUrl(),
+                   savedHierarchyResource.getContactUsername(), savedHierarchyResource.getContactName(), savedHierarchyResource.getDescription(),
+                   savedHierarchyResource.isDefaultTemplate(), savedHierarchyResource.getSourceCourseId(), savedHierarchyResource.getSponsor());
 
-         return ResponseEntity.status(HttpStatus.OK).body(decoratedResource);
-      } catch (HierarchyResourceException e) {
-         String msg = "Unable to find template with id " + templateId;
-         log.error(msg, e);
-         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(msg);
-      }
+           return ResponseEntity.status(HttpStatus.OK).body(decoratedResource);
+       } catch (HierarchyResourceException e) {
+           String msg = "Unable to find template with id " + templateId;
+           log.error(msg, e);
+           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(msg);
+       }
    }
 
     @PostMapping("/template/delete")
     public ResponseEntity templateDelete(@RequestParam("templateId") String templateId) {
-// TODO - getTokenWithoutContext()
-//        LtiAuthenticationToken token = getTokenWithoutContext();
+        getTokenWithoutContext();
         HierarchyResource hierarchyResource = null;
         try {
             hierarchyResource = nodeManagerService.getTemplate(Long.parseLong(templateId));
@@ -225,7 +226,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
         } else {
             return ResponseEntity.notFound().build();
         }
-   }
+    }
 
    @PostMapping("/template/apply/{canvasCourseId}/{templateId}")
    public ResponseEntity applyTemplateToCourse(@PathVariable String canvasCourseId, @PathVariable Long templateId) {
@@ -234,44 +235,42 @@ public class ToolRestController extends HierarchyResourceManagerController {
 
    @PostMapping("/syllabus/submit")
    public ResponseEntity syllabusSubmit(@RequestBody SyllabusSupplementForm form) {
-// TODO - getTokenWithoutContext()
-//      getTokenWithoutContext();
+       getTokenWithoutContext();
 
-      String nodeName = form.getNodeName();
-      log.debug(nodeName);
+       String nodeName = form.getNodeName();
+       log.debug(nodeName);
 
-      String strm = form.getStrm();
-      log.debug("Term for submission: {}", strm);
+       String strm = form.getStrm();
+       log.debug("Term for submission: {}", strm);
 
-      SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(nodeName, strm);
-      if (syllabusSupplement == null) {
-         syllabusSupplement = new SyllabusSupplement();
-         syllabusSupplement.setNode(nodeName);
-         syllabusSupplement.setStrm(strm);
-      }
+       SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(nodeName, strm);
+       if (syllabusSupplement == null) {
+           syllabusSupplement = new SyllabusSupplement();
+           syllabusSupplement.setNode(nodeName);
+           syllabusSupplement.setStrm(strm);
+       }
 
-      syllabusSupplement.setTitle(form.getSyllabus().getSyllabusTitle());
-      syllabusSupplement.setContent(form.getSyllabus().getSyllabusContent());
-      syllabusSupplement.setContactUsername(form.getSyllabus().getContactUsername());
-      syllabusSupplement.setContactEmail(form.getSyllabus().getContactEmail());
+       syllabusSupplement.setTitle(form.getSyllabus().getSyllabusTitle());
+       syllabusSupplement.setContent(form.getSyllabus().getSyllabusContent());
+       syllabusSupplement.setContactUsername(form.getSyllabus().getContactUsername());
+       syllabusSupplement.setContactEmail(form.getSyllabus().getContactEmail());
 
-      nodeManagerService.saveSyllabusSupplement(syllabusSupplement);
+       nodeManagerService.saveSyllabusSupplement(syllabusSupplement);
 
-      DecoratedSyllabus decoratedSyllabus = new DecoratedSyllabus(syllabusSupplement);
-      return ResponseEntity.status(HttpStatus.OK).body(decoratedSyllabus);
+       DecoratedSyllabus decoratedSyllabus = new DecoratedSyllabus(syllabusSupplement);
+       return ResponseEntity.status(HttpStatus.OK).body(decoratedSyllabus);
    }
 
    @PostMapping("/syllabus/delete")
    public ResponseEntity syllabusDelete(@RequestBody SyllabusSupplementForm form) {
-// TODO - getTokenWithoutContext()
-//      LtiAuthenticationToken token = getTokenWithoutContext();
-      SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(form.getNodeName(), form.getStrm());
-      if (syllabusSupplement != null) {
-         nodeManagerService.deleteSyllabusSupplement(syllabusSupplement);
-         return ResponseEntity.ok(new DecoratedSyllabus());
-      } else {
-         return ResponseEntity.notFound().build();
-      }
+       getTokenWithoutContext();
+       SyllabusSupplement syllabusSupplement = nodeManagerService.getSyllabusSupplementForNode(form.getNodeName(), form.getStrm());
+       if (syllabusSupplement != null) {
+           nodeManagerService.deleteSyllabusSupplement(syllabusSupplement);
+           return ResponseEntity.ok(new DecoratedSyllabus());
+       } else {
+           return ResponseEntity.notFound().build();
+       }
    }
 
    @GetMapping("/syllabus/preview/{courseId}")

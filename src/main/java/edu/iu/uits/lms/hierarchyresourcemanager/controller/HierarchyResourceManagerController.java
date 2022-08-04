@@ -2,7 +2,7 @@ package edu.iu.uits.lms.hierarchyresourcemanager.controller;
 
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
 import edu.iu.uits.lms.lti.LTIConstants;
-import edu.iu.uits.lms.lti.controller.LtiAuthenticationTokenAwareController;
+import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
 @Controller
 @Slf4j
 @RequestMapping("/app")
-public class HierarchyResourceManagerController extends LtiAuthenticationTokenAwareController {
+public class HierarchyResourceManagerController extends OidcTokenAwareController {
 
     @Autowired
     private NodeManagerService nodeManagerService;

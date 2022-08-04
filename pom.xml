@@ -22,7 +22,7 @@
 
         <lms-canvas-common-configuration.version>5.0.3</lms-canvas-common-configuration.version>
         <lms-canvas-iu-custom-services.version>5.0.7</lms-canvas-iu-custom-services.version>
-        <lms-canvas-lti-framework.version>5.0.4</lms-canvas-lti-framework.version>
+        <lms-canvas-lti-framework.version>5.1.9</lms-canvas-lti-framework.version>
         <lms-canvas-redis-config.version>5.0.7</lms-canvas-redis-config.version>
         <lms-canvas-rivet.version>5.1.8.2_1</lms-canvas-rivet.version>
         <lms-canvas-services.version>5.0.8</lms-canvas-services.version>
@@ -110,6 +110,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

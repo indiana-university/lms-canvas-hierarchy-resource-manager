@@ -35,7 +35,7 @@ class ApplyTemplate extends React.Component {
      */
     componentDidMount(){
       var self = this;
-      axios.get(`app/tool/hierarchy/${courseId}`).then(response => {
+      axios.get(`/app/tool/hierarchy/${courseId}`).then(response => {
             var wrapper = response.data;
             this.setState({
               nodeHierarchy: wrapper.templates,
@@ -71,7 +71,7 @@ class ApplyTemplate extends React.Component {
     }
 
     handleModalApply = () => {
-        axios.post(`app/tool/template/apply/${courseId}/${this.state.modalData.templateId}`)
+        axios.post(`/app/tool/template/apply/${courseId}/${this.state.modalData.templateId}`)
             .then(response => response.data)
             .then((data) => {
                 this.dialogSaved();

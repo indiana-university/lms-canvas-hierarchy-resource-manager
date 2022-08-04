@@ -49,7 +49,7 @@ class TemplatingTabContent extends React.Component {
     }
 
     nodeDataLookup = (nodeValue) => {
-        axios.get(`app/tool/template/nodes/${nodeValue}`)
+        axios.get(`/app/tool/template/nodes/${nodeValue}`)
             .then(response => response.data)
             .then((data) => {
                 this.setState({nodeListInfo: data, selectedNode: nodeValue, loading: false})
@@ -129,7 +129,7 @@ class TemplatingTabContent extends React.Component {
                 }
             }
             this.setState({disableModalButtons: true})
-            axios.post("app/tool/template/submit", formData, config)
+            axios.post("/app/tool/template/submit", formData, config)
                 .then(response => response.data)
                 .then((data) => {
                     resetForm("newTemplateForm");

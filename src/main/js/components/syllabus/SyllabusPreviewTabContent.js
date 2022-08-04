@@ -32,7 +32,7 @@ class SyllabusPreviewTabContent extends React.Component {
             courseNote.classList.remove('rvt-display-none');
             
             this.setState({ previewItems: [], loading: true, modalOpen: true })
-            axios.get(`app/tool/syllabus/preview/${courseId}`)
+            axios.get(`/app/tool/syllabus/preview/${courseId}`)
                       .then(response => response.data)
                       .then((data) => {
                         this.setState({ previewItems: data, loading: false })

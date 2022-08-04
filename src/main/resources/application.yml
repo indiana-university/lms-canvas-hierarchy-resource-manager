@@ -3,7 +3,7 @@ spring:
     name: hierarchyresourcemanager
   session:
     store-type: none
-  config.import: optional:${app.fullFilePath}/${app.overridesFileName}, optional:${app.fullFilePath}/security.properties, classpath:canvas.properties, optional:classpath:git.properties, optional:classpath:email.properties
+  config.import: optional:${app.fullFilePath}/${app.overridesFileName}, optional:${app.fullFilePath}/security.properties, classpath:canvas.properties, optional:classpath:git.properties, optional:classpath:email.properties, classpath:lti-registrations.properties
   rabbitmq:
     addresses: ${lms.rabbitmq.address.${app.env}}
     username: ${lms.rabbitmq.username.${app.env}}
@@ -49,7 +49,7 @@ spring:
 hierarchyresourcemanager:
   version: @app.version@
   env: ${app.env}
-  courseTemplateQueueName: coursetemplate_${app.env}
+  courseTemplateQueueName: coursetemplate_${lms.rabbitmq.queue_env_suffix}
   startingTermId: 4218
   defaultTermId: 9999
 

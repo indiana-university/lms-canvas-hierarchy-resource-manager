@@ -96,7 +96,7 @@ class SelectedTemplate extends React.Component {
                 }
             }
             this.setState({disableModalButtons: true})
-            axios.post(`app/tool/template/${templateId}/update`, formData, config)
+            axios.post(`/app/tool/template/${templateId}/update`, formData, config)
                 .then(response => response.data)
                 .then((data) => {
                     resetForm("editTemplateForm");
@@ -144,7 +144,7 @@ class SelectedTemplate extends React.Component {
         const formData = new FormData();
         formData.append('templateId', this.state.deleteData.templateId);
 
-        axios.post("app/tool/template/delete", formData)
+        axios.post("/app/tool/template/delete", formData)
             .then(response => response.data)
             .then((data) => {
                 this.setState({deleteModalOpen: false, deleteData: {}})    
@@ -166,7 +166,7 @@ class SelectedTemplate extends React.Component {
         const formData = new FormData();
         formData.append('templateId', this.state.defaultData.templateId);
         formData.append('enableDefault', !this.state.defaultData.disabling);
-        axios.post("app/tool/template/defaultchange", formData)
+        axios.post("/app/tool/template/defaultchange", formData)
             .then(response => response.data)
             .then((data) => {
                 this.setState({defaultModalOpen: false, defaultData: {}})

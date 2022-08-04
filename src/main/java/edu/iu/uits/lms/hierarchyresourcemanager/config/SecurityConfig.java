@@ -1,7 +1,8 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.config;
 
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
-import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
+import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -9,31 +10,63 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import uk.ac.ox.ctl.lti13.Lti13Configurer;
+
+import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_ROLE;
+import static edu.iu.uits.lms.lti.LTIConstants.WELL_KNOWN_ALL;
 
 @Configuration
 public class SecurityConfig {
 
     @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4)
-    public static class AppWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+    @Order(SecurityProperties.BASIC_AUTH_ORDER - 3)
+    public static class RestSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+        @Override
+        public void configure(HttpSecurity http) throws Exception {
+            http.requestMatchers().antMatchers("/rest/**")
+                    .and()
+                    .authorizeRequests()
+                    .antMatchers("/rest/file/**").permitAll()
+                    .antMatchers("/rest/syllabus/**").permitAll()
+                    .antMatchers("/rest/hrm/canvasCourseId/*/node").permitAll()
+                    .antMatchers("/rest/**")
+                    .access("hasAuthority('SCOPE_lms:rest') and hasAuthority('ROLE_LMS_REST_ADMINS')")
+                    .and()
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
+                    .oauth2ResourceServer()
+                    .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
+        }
+    }
 
+    @Configuration
+    @Order(SecurityProperties.BASIC_AUTH_ORDER - 2)
+    public static class AppWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+        @Autowired
+        private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.authenticationProvider(new LtiAuthenticationProvider());
             http
-                  .requestMatchers().antMatchers("/lti/**", "/app/**")
-                  .and()
-                  .authorizeRequests()
-                  .antMatchers("/lti/**").permitAll()
-                  .antMatchers("/app/**").hasRole(LtiAuthenticationProvider.LTI_USER);
+                    .requestMatchers()
+                    .antMatchers(WELL_KNOWN_ALL, "/app/accessDenied", "/error", "/app/**")
+                    .and()
+                    .authorizeRequests()
+                    .antMatchers(WELL_KNOWN_ALL, "/app/accessDenied", "/error").permitAll()
+                    .antMatchers("/**").hasRole(BASE_USER_ROLE);
 
-            //Need to disable csrf so that we can use POST via REST
-            http.csrf().disable();
+            // Setup the LTI handshake
+            Lti13Configurer lti13Configurer = new Lti13Configurer()
+                    .grantedAuthoritiesMapper(lmsDefaultGrantedAuthoritiesMapper);
 
-            //Need to disable the frame options so we can embed this in another tool
-            http.headers().frameOptions().disable();
+            http.apply(lti13Configurer);
 
-            http.exceptionHandling().accessDeniedPage("/accessDenied");
+            //Fallback for everything else
+            http.requestMatchers().antMatchers("/**")
+                    .and()
+                    .authorizeRequests()
+                    .anyRequest().authenticated();
+
+            http.exceptionHandling().accessDeniedPage("/app/accessDenied");
         }
 
         @Override
@@ -44,31 +77,8 @@ public class SecurityConfig {
 
     }
 
-
     @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 3)
-    public static class RestSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-
-        @Override
-        public void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers("/rest/**")
-                  .and()
-                  .authorizeRequests()
-                  .antMatchers("/rest/file/**").permitAll()
-                  .antMatchers("/rest/syllabus/**").permitAll()
-                  .antMatchers("/rest/hrm/canvasCourseId/*/node").permitAll()
-                  .antMatchers("/rest/**")
-                  .access("hasAuthority('SCOPE_lms:rest') and hasAuthority('ROLE_LMS_REST_ADMINS')")
-                  .and()
-                  .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                  .and()
-                  .oauth2ResourceServer()
-                  .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
-        }
-    }
-
-    @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 2)
+    @Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
     public static class CatchAllSecurityConfig extends WebSecurityConfigurerAdapter {
 
         @Override

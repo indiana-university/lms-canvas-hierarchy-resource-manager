@@ -60,9 +60,9 @@ public class RedisCacheConfig extends BaseCache {
 
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
-        final int ttl = 3600;
+        final int ttlMinutes = 30;
         return RedisCacheConfiguration.defaultCacheConfig()
-              .entryTtl(Duration.ofSeconds(ttl))
+              .entryTtl(Duration.ofMinutes(ttlMinutes))
               .disableCachingNullValues()
               .prefixCacheNameWith(toolConfig.getEnv() + "-gct");
     }

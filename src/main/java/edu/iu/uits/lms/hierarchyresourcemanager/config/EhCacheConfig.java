@@ -82,7 +82,7 @@ public class EhCacheConfig extends BaseCache {
       // getCache() defined.  But setting them to generic Object.class seems to solve this.
       // There might be a way around this but that is work for a future ticket!
 
-      final int ttl = 3600;
+      final int ttlMinutes = 30;
 
       CacheEntryListenerConfiguration<Object, Object> listenerConfiguration =
             new MutableCacheEntryListenerConfiguration<>(
@@ -95,7 +95,7 @@ public class EhCacheConfig extends BaseCache {
             new MutableConfiguration<>()
                   .setTypes(Object.class, Object.class)
                   .setStoreByValue(false)
-                  .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, ttl)))
+                  .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, ttlMinutes)))
                   .setManagementEnabled(true)
                   .setStatisticsEnabled(true)
                   .addCacheEntryListenerConfiguration(listenerConfiguration);

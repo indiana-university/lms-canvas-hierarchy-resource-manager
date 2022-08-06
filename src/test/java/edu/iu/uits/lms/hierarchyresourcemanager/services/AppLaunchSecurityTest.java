@@ -1,13 +1,11 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.services;
 
-
 import edu.iu.uits.lms.canvas.config.CanvasClientTestConfig;
 import edu.iu.uits.lms.email.service.EmailService;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.controller.HierarchyResourceManagerController;
 import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
 import edu.iu.uits.lms.iuonly.IuClientTestConfig;
-import edu.iu.uits.lms.iuonly.config.IUClientConfig;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

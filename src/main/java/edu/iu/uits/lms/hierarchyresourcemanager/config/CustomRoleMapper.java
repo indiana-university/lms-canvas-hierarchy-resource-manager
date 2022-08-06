@@ -28,28 +28,19 @@ public class CustomRoleMapper extends LmsDefaultGrantedAuthoritiesMapper {
 
    @Override
    public Collection<? extends GrantedAuthority> mapAuthorities(Collection<? extends GrantedAuthority> authorities) {
-       OidcAuthenticationToken token = getTokenWithoutContext();
+       List<GrantedAuthority> remappedAuthorities = new ArrayList<>();
+       remappedAuthorities.addAll(authorities);
+       for (GrantedAuthority authority : authorities) {
+           OidcUserAuthority userAuth = (OidcUserAuthority) authority;
+           OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(userAuth.getAttributes());
+           log.debug("LTI Claims: {}", userAuth.getAttributes());
 
-       String isApplyTemplateSecurityModeString = "false";
-
-       if (token != null) {
-           OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
-           isApplyTemplateSecurityModeString = oidcTokenUtils.getCustomValue("is_apply_template_security_mode");
-       }
-
-       if (isApplyTemplateSecurityModeString != null && Boolean.getBoolean(isApplyTemplateSecurityModeString)) {
-           log.debug("Apply template mode");
-           // Use the legit roles
-           return super.mapAuthorities(authorities);
-       } else {
-           log.debug("Node Manager mode");
-           List<GrantedAuthority> remappedAuthorities = new ArrayList<>();
-           remappedAuthorities.addAll(authorities);
-           for (GrantedAuthority authority : authorities) {
-               OidcUserAuthority userAuth = (OidcUserAuthority) authority;
-               OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(userAuth.getAttributes());
-               log.debug("LTI Claims: {}", userAuth.getAttributes());
-
+           if (Boolean.parseBoolean(oidcTokenUtils.getCustomValue("is_apply_template_security_mode"))) {
+               log.debug("Apply template mode");
+               // Use the legit roles
+               return super.mapAuthorities(authorities);
+           } else {
+               log.debug("Node Manager mode");
                String userId = oidcTokenUtils.getUserLoginId();
 
                String rolesString = "NotAuthorized";
@@ -67,24 +58,8 @@ public class CustomRoleMapper extends LmsDefaultGrantedAuthoritiesMapper {
 
                remappedAuthorities.add(newUserAuth);
            }
-
-           return remappedAuthorities;
        }
+
+       return remappedAuthorities;
    }
-
-    private OidcAuthenticationToken getTokenWithoutContext() {
-        OidcAuthenticationToken token = null;
-
-        Authentication authToken = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authToken == null) {
-            throw new InvalidTokenContextException("No authentication token found");
-        }
-
-        if (authToken instanceof OidcAuthenticationToken) {
-            token = (OidcAuthenticationToken) authToken;
-        }
-
-        return token;
-    }
 }

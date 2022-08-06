@@ -2,11 +2,11 @@ package edu.iu.uits.lms.hierarchyresourcemanager.rest;
 
 import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessageSender;
-import edu.iu.uits.lms.hierarchyresourcemanager.repository.FileStorageRepository;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.HierarchyResourceException;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
 import edu.iu.uits.lms.iuonly.model.HierarchyResource;
 import edu.iu.uits.lms.iuonly.model.StoredFile;
+import edu.iu.uits.lms.iuonly.repository.FileStorageRepository;
 import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

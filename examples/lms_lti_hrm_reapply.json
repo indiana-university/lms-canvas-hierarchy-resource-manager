@@ -24,6 +24,6 @@
     "canvas_membership_roles": "$Canvas.membership.roles",
     "canvas_course_id": "$Canvas.course.id",
     "canvas_user_login_id": "$Canvas.user.loginId",
-    "greg": "true"
+    "is_apply_template_security_mode": "true"
   }
 }

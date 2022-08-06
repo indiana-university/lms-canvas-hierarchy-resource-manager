@@ -1,6 +1,8 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.config;
 
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
+import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -43,7 +45,11 @@ public class SecurityConfig {
     @Order(SecurityProperties.BASIC_AUTH_ORDER - 2)
     public static class AppWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         @Autowired
-        private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
+        private UserRepository userRepository;
+
+        @Autowired
+        private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http
@@ -56,7 +62,7 @@ public class SecurityConfig {
 
             // Setup the LTI handshake
             Lti13Configurer lti13Configurer = new Lti13Configurer()
-                    .grantedAuthoritiesMapper(lmsDefaultGrantedAuthoritiesMapper);
+                    .grantedAuthoritiesMapper(new CustomRoleMapper(defaultInstructorRoleRepository, userRepository));
 
             http.apply(lti13Configurer);
 

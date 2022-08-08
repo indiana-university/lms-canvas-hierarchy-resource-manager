@@ -76,7 +76,7 @@ spring:
   config.activate.on-profile: redis-session
   session:
     store-type: redis
-    redis.namespace: hierarchyresourcemanager-${app.version}:session
+    redis.namespace: hierarchyresourcemanager-@app.version@:session
 management.health.redis.enabled: true
 ---
 

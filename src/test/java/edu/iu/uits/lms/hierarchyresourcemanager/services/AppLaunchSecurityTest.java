@@ -45,7 +45,7 @@ public class AppLaunchSecurityTest {
    public void appNoAuthnLaunch() throws Exception {
       //This is a secured endpoint and should not not allow access without authn
       mvc.perform(get("/app/manager")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+            .header(HttpHeaders.USER_AGENT, edu.iu.uits.lms.lti.service.TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
    }
@@ -59,7 +59,7 @@ public class AppLaunchSecurityTest {
 
       //This is a secured endpoint and should not not allow access without authn
       mvc.perform(get("/app/manager")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+            .header(HttpHeaders.USER_AGENT, edu.iu.uits.lms.lti.service.TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
    }
@@ -68,7 +68,7 @@ public class AppLaunchSecurityTest {
    public void randomUrlNoAuth() throws Exception {
       //This is a secured endpoint and should not not allow access without authn
       mvc.perform(get("/asdf/foobar")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+            .header(HttpHeaders.USER_AGENT, edu.iu.uits.lms.lti.service.TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
    }
@@ -82,7 +82,7 @@ public class AppLaunchSecurityTest {
 
       //This is a secured endpoint and should not not allow access without authn
       mvc.perform(get("/asdf/foobar")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+            .header(HttpHeaders.USER_AGENT, edu.iu.uits.lms.lti.service.TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
    }

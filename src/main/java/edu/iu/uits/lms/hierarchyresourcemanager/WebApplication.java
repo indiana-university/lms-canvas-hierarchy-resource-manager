@@ -29,8 +29,7 @@ import java.util.Date;
 @EnableEmailClient
 @EnableRedisConfiguration
 @EnableCookieValve
-//@EnableLtiClient(toolKeys = {"lms_lti_hrm_apply", "lms_lti_hrm_manager", "lms_lti_hrm_reapply"})
-@EnableLtiClient(toolKeys = {"lms_lti_hrm_manager"})
+@EnableLtiClient(toolKeys = {"lms_lti_hrm_apply", "lms_lti_hrm_manager", "lms_lti_hrm_reapply"})
 @EnableConfigurationProperties(GitRepositoryState.class)
 public class WebApplication {
 

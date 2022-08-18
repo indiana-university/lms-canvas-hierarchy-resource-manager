@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -232,7 +233,9 @@ public class NodeManagerService {
    }
 
    public String getUrlToFile(StoredFile storedFile) {
-      return toolConfig.getAppBaseUrl() + "/rest/file/download/" + storedFile.getId() + "/" + storedFile.getDisplayName();
+      String baseUrl = toolConfig.getTemplateHostingUrl() == null ?
+              toolConfig.getAppBaseUrl() : toolConfig.getTemplateHostingUrl();
+      return MessageFormat.format("{0}/rest/iu/file/download/{1}/{2}", baseUrl, storedFile.getId(), storedFile.getDisplayName());
    }
 
    public List<HierarchyResource> getTemplatesForNode(String nodeName) {

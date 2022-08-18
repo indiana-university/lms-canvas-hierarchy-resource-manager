@@ -2,7 +2,7 @@
   "title": "Hierarchy Resource Manager - Apply Template",
   "description": "HRM does cool stuff.",
   "oidc_initiation_url": "http://localhost:8080/lti/login_initiation/lms_lti_hrm_apply",
-  "target_link_uri": "http://localhost:8080/annc/loading",
+  "target_link_uri": "http://localhost:8080/template/launch",
   "extensions": [
     {
       "domain": "localhost",

@@ -25,9 +25,10 @@ public class SecurityConfig {
     public static class RestSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
         @Override
         public void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers("/rest/**")
+            http.requestMatchers().antMatchers("/rest/**", "/api/**")
                     .and()
                     .authorizeRequests()
+                    .antMatchers("/api/**").permitAll()
                     .antMatchers("/rest/file/**").permitAll()
                     .antMatchers("/rest/syllabus/**").permitAll()
                     .antMatchers("/rest/hrm/canvasCourseId/*/node").permitAll()

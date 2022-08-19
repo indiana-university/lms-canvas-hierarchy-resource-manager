@@ -7,6 +7,7 @@ import edu.iu.uits.lms.hierarchyresourcemanager.controller.HierarchyResourceMana
 import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
 import edu.iu.uits.lms.iuonly.IuClientTestConfig;
 import edu.iu.uits.lms.lti.LTIConstants;
+import edu.iu.uits.lms.lti.service.TestUtils;
 import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,32 +44,32 @@ public class AppLaunchSecurityTest {
 
    @Test
    public void appNoAuthnLaunch() throws Exception {
-      //This is a secured endpoint and should not not allow access without authn
+      //This is a secured endpoint and should not allow access without authn
       mvc.perform(get("/app/manager")
-            .header(HttpHeaders.USER_AGENT, edu.iu.uits.lms.lti.service.TestUtils.defaultUseragent())
+            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
    }
 
    @Test
    public void appAuthnLaunch() throws Exception {
-      OidcAuthenticationToken token = edu.iu.uits.lms.lti.service.TestUtils.buildToken("userId",
+      OidcAuthenticationToken token = TestUtils.buildToken("userId",
               "asdf", LTIConstants.INSTRUCTOR_AUTHORITY);
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
-      //This is a secured endpoint and should not not allow access without authn
+      //This is a secured endpoint and should not allow access without authn
       mvc.perform(get("/app/manager")
-            .header(HttpHeaders.USER_AGENT, edu.iu.uits.lms.lti.service.TestUtils.defaultUseragent())
+            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
    }
 
    @Test
    public void randomUrlNoAuth() throws Exception {
-      //This is a secured endpoint and should not not allow access without authn
+      //This is a secured endpoint and should not allow access without authn
       mvc.perform(get("/asdf/foobar")
-            .header(HttpHeaders.USER_AGENT, edu.iu.uits.lms.lti.service.TestUtils.defaultUseragent())
+            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
    }
@@ -80,9 +81,9 @@ public class AppLaunchSecurityTest {
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
-      //This is a secured endpoint and should not not allow access without authn
+      //This is a secured endpoint and should not allow access without authn
       mvc.perform(get("/asdf/foobar")
-            .header(HttpHeaders.USER_AGENT, edu.iu.uits.lms.lti.service.TestUtils.defaultUseragent())
+            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
    }

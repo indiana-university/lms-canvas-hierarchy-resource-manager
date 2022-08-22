@@ -9,7 +9,4 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 public class TestConfig {
     @MockBean
     private UserRepository userRepository = null;
-
-    @MockBean
-    private EmailService emailService = null;
 }

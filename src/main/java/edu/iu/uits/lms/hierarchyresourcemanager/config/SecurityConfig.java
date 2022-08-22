@@ -29,7 +29,6 @@ public class SecurityConfig {
                     .and()
                     .authorizeRequests()
                     .antMatchers("/api/**").permitAll()
-                    .antMatchers("/rest/file/**").permitAll()
                     .antMatchers("/rest/syllabus/**").permitAll()
                     .antMatchers("/rest/hrm/canvasCourseId/*/node").permitAll()
                     .antMatchers("/rest/**")
@@ -55,7 +54,7 @@ public class SecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             http
                     .requestMatchers()
-                    .antMatchers(WELL_KNOWN_ALL, "/app/accessDenied", "/error", "/app/**")
+                    .antMatchers(WELL_KNOWN_ALL, "/error", "/app/**")
                     .and()
                     .authorizeRequests()
                     .antMatchers(WELL_KNOWN_ALL, "/app/accessDenied", "/error").permitAll()

@@ -68,7 +68,7 @@ public class PostgresDBConfig {
 
     @Bean(name = "hrmEntityMgrFactory")
     @Primary
-    public LocalContainerEntityManagerFactoryBean gctEntityMgrFactory(
+    public LocalContainerEntityManagerFactoryBean hrmEntityMgrFactory(
             final EntityManagerFactoryBuilder builder,
             @Qualifier("hrmDataSource") final DataSource dataSource) {
         // dynamically setting up the hibernate properties for each of the datasource.
@@ -85,7 +85,7 @@ public class PostgresDBConfig {
 
     @Bean(name = "hrmTransactionMgr")
     @Primary
-    public PlatformTransactionManager gctTransactionMgr(
+    public PlatformTransactionManager hrmTransactionMgr(
             @Qualifier("hrmEntityMgrFactory") final EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
     }

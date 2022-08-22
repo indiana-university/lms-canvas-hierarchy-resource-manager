@@ -58,13 +58,13 @@ public class RedisCacheConfig extends BaseCache {
     @Autowired
     private JedisConnectionFactory redisConnectionFactory;
 
-    @Bean
+    @Bean(name = "HierarchyResourceManagerRedisCacheConfiguration")
     public RedisCacheConfiguration cacheConfiguration() {
         final int ttlMinutes = 30;
         return RedisCacheConfiguration.defaultCacheConfig()
               .entryTtl(Duration.ofMinutes(ttlMinutes))
               .disableCachingNullValues()
-              .prefixCacheNameWith(toolConfig.getEnv() + "-gct");
+              .prefixCacheNameWith(toolConfig.getEnv() + "-hrm");
     }
 
     @Bean(name = "HierarchyResourceManagerCacheManager")

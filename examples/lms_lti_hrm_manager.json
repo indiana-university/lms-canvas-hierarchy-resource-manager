@@ -1,6 +1,6 @@
 {
-  "title": "Hierarchy Resource Manager - Node manager",
-  "description": "HRM does cool stuff.",
+  "title": "Hierarchy Resource Manager - Node Manager",
+  "description": "Tool used to maintain templates at IU.",
   "oidc_initiation_url": "http://localhost:8080/lti/login_initiation/lms_lti_hrm_manager",
   "target_link_uri": "http://localhost:8080/app/manager",
   "extensions": [

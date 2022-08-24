@@ -1,5 +1,5 @@
 {
-  "title": "Hierarchy Resource Manager - Node Manager",
+  "title": "Canvas Node Manager",
   "description": "Tool used to maintain templates at IU.",
   "oidc_initiation_url": "http://localhost:8080/lti/login_initiation/lms_lti_hrm_manager",
   "target_link_uri": "http://localhost:8080/app/manager",
@@ -13,7 +13,7 @@
           {
             "enabled": true,
             "default": "disabled",
-            "placement": "user_navigation",
+            "placement": "account_navigation",
             "message_type": "LtiResourceLinkRequest"
           }
         ]

@@ -1,5 +1,5 @@
 {
-  "title": "Hierarchy Resource Manager - Reapply Template",
+  "title": "Reapply Default Template",
   "description": "Use this tool to reapply an IU created template to a course.",
   "oidc_initiation_url": "http://localhost:8080/lti/login_initiation/lms_lti_hrm_reapply",
   "target_link_uri": "http://localhost:8080/reapply/launch",
@@ -12,7 +12,7 @@
         "placements": [
           {
             "enabled": true,
-            "placement": "course_navigation",
+            "placement": "course_settings_sub_navigation",
             "message_type": "LtiResourceLinkRequest"
           }
         ]

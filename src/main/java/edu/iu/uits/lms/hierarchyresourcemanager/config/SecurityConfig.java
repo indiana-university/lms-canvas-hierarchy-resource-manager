@@ -58,7 +58,7 @@ public class SecurityConfig {
                     .and()
                     .authorizeRequests()
                     .antMatchers(WELL_KNOWN_ALL, "/app/accessDenied", "/error").permitAll()
-                    .antMatchers("/**").hasRole(BASE_USER_ROLE);
+                    .antMatchers("/app/**").hasRole(BASE_USER_ROLE);
 
             // Setup the LTI handshake
             Lti13Configurer lti13Configurer = new Lti13Configurer()

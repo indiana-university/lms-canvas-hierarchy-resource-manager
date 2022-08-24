@@ -2,6 +2,7 @@ package edu.iu.uits.lms.hierarchyresourcemanager;
 
 import edu.iu.uits.lms.canvas.config.EnableCanvasClient;
 import edu.iu.uits.lms.common.samesite.EnableCookieFilter;
+import edu.iu.uits.lms.common.samesite.EnableCookieValve;
 import edu.iu.uits.lms.common.server.GitRepositoryState;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.server.ServerUtils;
@@ -27,6 +28,7 @@ import java.util.Date;
 @EnableIuOnlyClient
 @EnableEmailClient
 @EnableRedisConfiguration
+@EnableCookieValve
 @EnableCookieFilter(ignoredRequestPatterns = {"/rest/**"})
 @EnableLtiClient(toolKeys = {"lms_lti_hrm_apply", "lms_lti_hrm_manager", "lms_lti_hrm_reapply"})
 @EnableConfigurationProperties(GitRepositoryState.class)

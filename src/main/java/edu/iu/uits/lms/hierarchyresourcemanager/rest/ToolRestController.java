@@ -57,7 +57,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
    @Autowired
    private ToolConfig toolConfig;
 
-    @Cacheable(value = BaseCache.CACHE_NAME, cacheManager = "HierarchyResourceManagerCacheManager")
+//    @Cacheable(value = BaseCache.CACHE_NAME, cacheManager = "HierarchyResourceManagerCacheManager")
     @GetMapping("/hierarchy")
     public List<HierarchyOption> getNodes() {
         getTokenWithoutContext();

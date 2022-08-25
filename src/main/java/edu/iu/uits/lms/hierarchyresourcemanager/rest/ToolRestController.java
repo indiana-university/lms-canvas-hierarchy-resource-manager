@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -57,7 +58,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
    @Autowired
    private ToolConfig toolConfig;
 
-//    @Cacheable(value = BaseCache.CACHE_NAME, cacheManager = "HierarchyResourceManagerCacheManager")
+    @Cacheable(value = BaseCache.CACHE_NAME, cacheManager = "HierarchyResourceManagerCacheManager")
     @GetMapping("/hierarchy")
     public List<HierarchyOption> getNodes() {
         getTokenWithoutContext();
@@ -278,7 +279,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
    }
 
       @Data
-   public static class HierarchyOption {
+   public static class HierarchyOption implements Serializable {
       private String value;
       private String label;
 

@@ -1,12 +1,12 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.config;
 
 import edu.iu.uits.lms.common.cors.LmsCorsInterceptor;
+import edu.iu.uits.lms.common.session.DualSessionIdResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -60,6 +60,6 @@ public class ApplicationConfig implements WebMvcConfigurer {
     */
    @Bean
    public HttpSessionIdResolver httpSessionIdResolver() {
-      return HeaderHttpSessionIdResolver.xAuthToken();
+      return new DualSessionIdResolver("/app/tool/");
    }
 }

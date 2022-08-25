@@ -1,13 +1,13 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.rest;
 
-import canvas.client.generated.api.CoursesApi;
+import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessageSender;
-import edu.iu.uits.lms.hierarchyresourcemanager.model.HierarchyResource;
-import edu.iu.uits.lms.hierarchyresourcemanager.model.StoredFile;
-import edu.iu.uits.lms.hierarchyresourcemanager.repository.FileStorageRepository;
-import edu.iu.uits.lms.hierarchyresourcemanager.repository.HierarchyResourceRepository;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.HierarchyResourceException;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
+import edu.iu.uits.lms.iuonly.model.HierarchyResource;
+import edu.iu.uits.lms.iuonly.model.StoredFile;
+import edu.iu.uits.lms.iuonly.repository.FileStorageRepository;
+import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,7 +39,7 @@ public class HierarchyResourceManagerRestController {
     private NodeManagerService hierarchyResourceService;
 
     @Autowired
-    private CoursesApi courseService;
+    private CourseService courseService;
 
     @Autowired
     private CourseTemplateMessageSender courseTemplateMessageSender;

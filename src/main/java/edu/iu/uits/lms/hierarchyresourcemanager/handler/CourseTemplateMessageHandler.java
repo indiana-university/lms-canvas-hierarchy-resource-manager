@@ -1,10 +1,10 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.handler;
 
 import edu.iu.uits.lms.common.coursetemplates.CourseTemplateMessage;
-import edu.iu.uits.lms.hierarchyresourcemanager.model.HierarchyResource;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.HierarchyResourceException;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
-import iuonly.coursetemplating.CourseTemplatingService;
+import edu.iu.uits.lms.iuonly.model.HierarchyResource;
+import edu.iu.uits.lms.iuonly.services.CourseTemplatingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -98,7 +98,7 @@ class SyllabusSupplementTabContent extends React.Component {
 
         if (node) {
             // we got a node, do the lookup!
-            axios.get(`app/tool/syllabus/node/${node}/${termId}`)
+            axios.get(`/app/tool/syllabus/node/${node}/${termId}`)
                 .then(response => response.data)
                 .then((data) => {
                     var deleteDisabled = this.state.deleteDisabled
@@ -240,7 +240,7 @@ class SyllabusSupplementTabContent extends React.Component {
     const config = { headers: {'content-type': 'application/json'} }
     var inputData = {nodeName: this.state.selectedNode, strm: this.state.selectedTerm, syllabus: this.cloneObject(this.state.syllabus)}
 
-    axios.post("app/tool/syllabus/submit", JSON.stringify(inputData), config)
+    axios.post("/app/tool/syllabus/submit", JSON.stringify(inputData), config)
         .then(response => response.data)
         .then((data) => {
           this.dialogSaved(data, "The syllabus supplement has been saved to the " + this.state.selectedNode + " account in the " + this.state.selectedTermName + " term.",
@@ -253,7 +253,7 @@ class SyllabusSupplementTabContent extends React.Component {
     var inputData = {nodeName: this.state.selectedNode, strm: this.state.selectedTerm}
     this.state.deletionChange = true;
 
-    axios.post("app/tool/syllabus/delete", JSON.stringify(inputData), config)
+    axios.post("/app/tool/syllabus/delete", JSON.stringify(inputData), config)
         .then(response => response.data)
         .then((data) => {
           this.dialogSaved(data, "The syllabus supplement for " + this.state.selectedNode + " has been deleted.",

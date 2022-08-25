@@ -16,4 +16,5 @@ public class ToolConfig {
    private String appBaseUrl;
    private int startingTermId;
    private String defaultTermId;
+   private String templateHostingUrl;
 }

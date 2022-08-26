@@ -22,7 +22,7 @@
         <jquery.version>3.5.1</jquery.version>
 
         <lms-canvas-common-configuration.version>5.0.4</lms-canvas-common-configuration.version>
-        <lms-canvas-iu-custom-services.version>5.0.9</lms-canvas-iu-custom-services.version>
+        <lms-canvas-iu-custom-services.version>5.0.10-SNAPSHOT</lms-canvas-iu-custom-services.version>
         <lms-canvas-lti-framework.version>5.1.10</lms-canvas-lti-framework.version>
         <lms-canvas-redis-config.version>5.0.7</lms-canvas-redis-config.version>
         <lms-canvas-rivet.version>5.1.8.2_1</lms-canvas-rivet.version>
@@ -256,6 +256,8 @@
                     </dialects>
                     <packages>
                         <param>edu.iu.uits.lms.hierarchyresourcemanager</param>
+                        <param>edu.iu.uits.lms.iuonly</param>
+                        <param>edu.iu.uits.lms.lti</param>
                     </packages>
                 </configuration>
             </plugin>

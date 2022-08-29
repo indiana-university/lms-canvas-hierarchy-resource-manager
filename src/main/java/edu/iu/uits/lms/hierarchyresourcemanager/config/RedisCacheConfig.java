@@ -2,7 +2,7 @@ package edu.iu.uits.lms.hierarchyresourcemanager.config;
 
 /*-
  * #%L
- * hierarchyresourcemanager
+ * lms-lti-hierarchyresourcemanager
  * %%
  * Copyright (C) 2015 - 2022 Indiana University
  * %%

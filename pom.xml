@@ -14,15 +14,69 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
+    <description>LTI tool for managing content within the course hierarchy, such as course templates and syllabus supplements</description>
+    <url>https://github.com/indiana-university/lms-canvas-hierarchy-resource-manager</url>
+    <inceptionYear>2015</inceptionYear>
+
+    <organization>
+        <name>Indiana University</name>
+        <url>https://iu.edu</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>Learning Management Systems Team</name>
+            <email>lmsreq@iu.edu</email>
+            <organization>Indiana University</organization>
+            <organizationUrl>https://iu.edu</organizationUrl>
+        </developer>
+    </developers>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/indiana-university/lms-canvas-hierarchy-resource-manager/issues</url>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>BSD 3-Clause License</name>
+            <url>https://opensource.org/licenses/BSD-3-Clause</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <distributionManagement>
+        <repository>
+            <name>Sonatype OSS Repository</name>
+            <id>Sonatype-OSS</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <name>Sonatype OSS Snapshot Repository</name>
+            <id>Sonatype-OSS</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <scm>
+        <connection>scm:git:https://github.com/indiana-university/lms-canvas-hierarchy-resource-manager.git</connection>
+        <developerConnection>scm:git:https://github.com/indiana-university/lms-canvas-hierarchy-resource-manager.git</developerConnection>
+        <url>https://github.com/indiana-university/lms-canvas-hierarchy-resource-manager</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <app.version>${project.version}</app.version>
         <frontend-maven-plugin.version>1.11.0</frontend-maven-plugin.version>
         <git-commit-id-maven-plugin.version>5.0.0</git-commit-id-maven-plugin.version>
         <hibernate5-ddl-maven-plugin.version>2.3.0</hibernate5-ddl-maven-plugin.version>
+        <java.version>11</java.version>
+        <jdk.source>11</jdk.source>
+        <jdk.target>11</jdk.target>
         <jquery.version>3.5.1</jquery.version>
 
         <lms-canvas-common-configuration.version>5.0.4</lms-canvas-common-configuration.version>
-        <lms-canvas-iu-custom-services.version>5.0.10-SNAPSHOT</lms-canvas-iu-custom-services.version>
+        <lms-canvas-iu-custom-services.version>5.0.10</lms-canvas-iu-custom-services.version>
         <lms-canvas-lti-framework.version>5.1.10</lms-canvas-lti-framework.version>
         <lms-canvas-redis-config.version>5.0.7</lms-canvas-redis-config.version>
         <lms-canvas-rivet.version>5.1.8.2_1</lms-canvas-rivet.version>

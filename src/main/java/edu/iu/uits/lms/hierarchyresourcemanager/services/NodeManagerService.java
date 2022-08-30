@@ -266,8 +266,7 @@ public class NodeManagerService {
    }
 
    public String getUrlToFile(StoredFile storedFile) {
-      String baseUrl = toolConfig.getTemplateHostingUrl() == null ?
-              toolConfig.getAppBaseUrl() : toolConfig.getTemplateHostingUrl();
+      String baseUrl = toolConfig.getTemplateHostingUrl();
       return MessageFormat.format("{0}/rest/iu/file/download/{1}/{2}", baseUrl, storedFile.getId(), storedFile.getDisplayName());
    }
 

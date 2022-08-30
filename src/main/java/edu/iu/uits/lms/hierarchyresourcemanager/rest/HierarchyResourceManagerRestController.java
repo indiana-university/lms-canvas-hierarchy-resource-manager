@@ -40,15 +40,15 @@ import edu.iu.uits.lms.iuonly.model.HierarchyResource;
 import edu.iu.uits.lms.iuonly.model.StoredFile;
 import edu.iu.uits.lms.iuonly.repository.FileStorageRepository;
 import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,6 +57,7 @@ import java.io.IOException;
 
 @RestController("hrmRestController")
 @RequestMapping({"/rest/hrm"})
+@Tag(name = "HierarchyResourceManagerRestController", description = "Some tool specific interactions with the HierarchyResource table")
 public class HierarchyResourceManagerRestController {
 
     @Autowired
@@ -71,7 +72,8 @@ public class HierarchyResourceManagerRestController {
     @Autowired
     private CourseTemplateMessageSender courseTemplateMessageSender;
 
-    @RequestMapping(value = "/iuSiteId/{iuSiteId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping("/iuSiteId/{iuSiteId}")
+    @Operation(summary = "Get a HierarchyResource (template) that is in the closest node based on the course's SIS ID")
     public ResponseEntity getNodeFromIuSiteId(@PathVariable String iuSiteId) {
         try {
             HierarchyResource hierarchyResource = hierarchyResourceService.getClosestDefaultTemplateForSisCourse(iuSiteId);
@@ -81,7 +83,8 @@ public class HierarchyResourceManagerRestController {
         }
     }
 
-    @RequestMapping(value = "/canvasCourseId/{canvasCourseId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping("/canvasCourseId/{canvasCourseId}")
+    @Operation(summary = "Get a HierarchyResource (template) that is in the closest node based on the course's Canvas ID")
     public ResponseEntity getNodeFromCanvasCourseId(@PathVariable String canvasCourseId) {
         try {
             HierarchyResource hierarchyResource = hierarchyResourceService.getClosestDefaultTemplateForCanvasCourse(canvasCourseId);
@@ -92,6 +95,7 @@ public class HierarchyResourceManagerRestController {
     }
 
     @GetMapping("/canvasCourseId/{canvasCourseId}/node")
+    @Operation(summary = "Get a HierarchyResource (template) that is in the closest node based on the course's Canvas ID.  Mask out the file content.")
     public ResponseEntity getNodeFromCanvasCourseIdScrubbed(@PathVariable String canvasCourseId) {
         try {
             HierarchyResource hierarchyResource = hierarchyResourceService.getClosestDefaultTemplateForCanvasCourse(canvasCourseId);
@@ -104,11 +108,13 @@ public class HierarchyResourceManagerRestController {
     }
 
     @PostMapping("/canvasCourseId/{canvasCourseId}")
+    @Operation(summary = "Apply a template to a course by the its Canvas ID")
     public ResponseEntity applyTemplateToCourse(@PathVariable String canvasCourseId) {
         return hierarchyResourceService.applyTemplateToCourse(canvasCourseId);
     }
 
-    @RequestMapping(value="/upload", method=RequestMethod.POST)
+    @PostMapping(value="/upload")
+    @Operation(summary = "Upload a new template file")
     public String uploadNewTemplateFile(@RequestParam("templateFile") MultipartFile templateFile) throws IOException {
         StoredFile storedFile = new StoredFile();
         storedFile.setContent(templateFile.getBytes());

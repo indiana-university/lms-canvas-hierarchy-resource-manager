@@ -48,6 +48,7 @@ import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeHierarchyRealtimeSe
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
 import edu.iu.uits.lms.iuonly.model.HierarchyResource;
 import edu.iu.uits.lms.iuonly.model.StoredFile;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/app/tool")
+@Hidden
 @Slf4j
 public class ToolRestController extends HierarchyResourceManagerController {
 

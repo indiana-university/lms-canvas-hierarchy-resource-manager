@@ -1,6 +1,38 @@
 package edu.iu.uits.lms.hierarchyresourcemanager.rest;
 
-import edu.iu.uits.lms.canvas.services.CourseService;
+/*-
+ * #%L
+ * lms-lti-hierarchyresourcemanager
+ * %%
+ * Copyright (C) 2015 - 2022 Indiana University
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the Indiana University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessageSender;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.HierarchyResourceException;
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
@@ -8,25 +40,24 @@ import edu.iu.uits.lms.iuonly.model.HierarchyResource;
 import edu.iu.uits.lms.iuonly.model.StoredFile;
 import edu.iu.uits.lms.iuonly.repository.FileStorageRepository;
 import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
-@RestController
+@RestController("hrmRestController")
 @RequestMapping({"/rest/hrm"})
-//@LmsSwaggerDocumentation
+@Tag(name = "HierarchyResourceManagerRestController", description = "Some tool specific interactions with the HierarchyResource table")
 public class HierarchyResourceManagerRestController {
 
     @Autowired
@@ -39,28 +70,10 @@ public class HierarchyResourceManagerRestController {
     private NodeManagerService hierarchyResourceService;
 
     @Autowired
-    private CourseService courseService;
-
-    @Autowired
     private CourseTemplateMessageSender courseTemplateMessageSender;
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<HierarchyResource> getAllNodes() {
-        List<HierarchyResource> hierarchyResources = (List<HierarchyResource>) hierarchyResourceRepository.findAll();
-        return hierarchyResources;
-    }
-
-    @RequestMapping(value = "/resourceId/{id}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public HierarchyResource getNodeFromId(@PathVariable Long id) {
-        return hierarchyResourceRepository.findById(id).orElse(null);
-    }
-
-    @RequestMapping(value = "/{nodeName}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<HierarchyResource> getNodeFromNodeName(@PathVariable String nodeName) {
-        return hierarchyResourceRepository.findByNode(nodeName);
-    }
-
-    @RequestMapping(value = "/iuSiteId/{iuSiteId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping("/iuSiteId/{iuSiteId}")
+    @Operation(summary = "Get a HierarchyResource (template) that is in the closest node based on the course's SIS ID")
     public ResponseEntity getNodeFromIuSiteId(@PathVariable String iuSiteId) {
         try {
             HierarchyResource hierarchyResource = hierarchyResourceService.getClosestDefaultTemplateForSisCourse(iuSiteId);
@@ -70,7 +83,8 @@ public class HierarchyResourceManagerRestController {
         }
     }
 
-    @RequestMapping(value = "/canvasCourseId/{canvasCourseId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping("/canvasCourseId/{canvasCourseId}")
+    @Operation(summary = "Get a HierarchyResource (template) that is in the closest node based on the course's Canvas ID")
     public ResponseEntity getNodeFromCanvasCourseId(@PathVariable String canvasCourseId) {
         try {
             HierarchyResource hierarchyResource = hierarchyResourceService.getClosestDefaultTemplateForCanvasCourse(canvasCourseId);
@@ -81,6 +95,7 @@ public class HierarchyResourceManagerRestController {
     }
 
     @GetMapping("/canvasCourseId/{canvasCourseId}/node")
+    @Operation(summary = "Get a HierarchyResource (template) that is in the closest node based on the course's Canvas ID.  Mask out the file content.")
     public ResponseEntity getNodeFromCanvasCourseIdScrubbed(@PathVariable String canvasCourseId) {
         try {
             HierarchyResource hierarchyResource = hierarchyResourceService.getClosestDefaultTemplateForCanvasCourse(canvasCourseId);
@@ -93,11 +108,13 @@ public class HierarchyResourceManagerRestController {
     }
 
     @PostMapping("/canvasCourseId/{canvasCourseId}")
+    @Operation(summary = "Apply a template to a course by the its Canvas ID")
     public ResponseEntity applyTemplateToCourse(@PathVariable String canvasCourseId) {
         return hierarchyResourceService.applyTemplateToCourse(canvasCourseId);
     }
 
-    @RequestMapping(value="/upload", method=RequestMethod.POST)
+    @PostMapping(value="/upload")
+    @Operation(summary = "Upload a new template file")
     public String uploadNewTemplateFile(@RequestParam("templateFile") MultipartFile templateFile) throws IOException {
         StoredFile storedFile = new StoredFile();
         storedFile.setContent(templateFile.getBytes());

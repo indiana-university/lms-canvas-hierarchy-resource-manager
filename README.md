@@ -1,11 +1,153 @@
-# ess-lms-canvas-hierarchyresourcemanager
+# lms-canvas-hierarchy-resource-manager
+LTI tool for managing content within the course hierarchy, such as course templates and syllabus supplements
 
-To Debug w/ Intellij, forward 5005 (in kube-forwarder, or k9s) to any desired port and then hook intellij up to that
+## Running standalone
+Add env vars or system properties as desired.
+
+| ENV Property                           | System Property                        | Default Value             | Description                                                                                                    |
+|----------------------------------------|----------------------------------------|---------------------------|----------------------------------------------------------------------------------------------------------------|
+| `APP_FULLFILEPATH`                     | `app.fullFilePath`                     | `/usr/src/app/config`     | Directory for configuration files                                                                              |
+| `APP_OVERRIDESFILENAME`                | `app.overridesFileName`                | `overrides.properties`    | Customizable filename for additional configurations.  Would be located in the above directory.                 |
+| `SPRING_PROFILES_ACTIVE`               | `spring.profiles.active`               |                           | Supply spring profiles to activate.  See configuration details below for potential values.                     |
+| `APP_ENV`                              | `app.env`                              | `dev`                     | Environment designator.  Free-form and can be used for your own purposes.  Shows up in the application footer. |
+| `LTI_CLIENTREGISTRATION_DEFAULTCLIENT` | `lti.clientregistration.defaultClient` | canvas                    | Specify the launching configuration to expect (canvas/saltire)                                                 |
+
+## Setup Database
+After compiling, see `target/generated-resources/sql/ddl/auto/postgresql9.sql` for appropriate ddl.
+Insert records into the `LTI_13_AUTHZ` table for each tool's registration_id (`"lms_lti_hrm_apply`, `lms_lti_hrm_manager`, `lms_lti_hrm_reapply`), along with the matching client_id
+and secret from Canvas's Developer Keys.  An `env` designator is also required here, and allows a database to support
+multiple environments simultaneously (dev and reg, for example).
+
+### Extra SQL required
+You'll need to run some extra SQL, in addition to the above, since JPA annotations don't have a way to represent an index we need:
 
 ```
-helm upgrade hierarchyresourcemanager harbor-prd/k8s-boot -f helm-common.yaml -f helm-dev.yaml --install
+create unique index on lms_hierarchy_resource (homepagetemplate) where homepagetemplate = true
 ```
 
+This allows for one and only one "homepage" template to be defined for the table.
+
+## Test a local launch
+Startup the application with the `LTI_CLIENTREGISTRATION_DEFAULTCLIENT` value set to `saltire`.
+Use an LTI tool consumer launcher, like https://saltire.lti.app/platform.
+Default values are fine, with the below exceptions...
+
+In the `Message` section, set the following:
+<table>
+<tr><th>Property</th><th>Value</th></tr>
+<tr><td>Custom parameters</td><td>
+
 ```
-helm upgrade hierarchyresourcemanager harbor-prd/k8s-boot -f helm-common.yaml -f helm-snd.yaml --install
+canvas_course_id=123456
+canvas_user_login_id=johnsmith
+canvas_membership_roles=Instructor
 ```
+
+</td></tr>
+</table>
+
+Use an appropriate `canvas_course_id` and `canvas_user_login_id`.
+
+From the `Security Model` section, set the following:
+<table>
+<tr><th>Property</th><th>Value</th></tr>
+<tr><td>LTI version</td><td>1.3.0</td></tr>
+<tr><td>Message URL</td><td>http://localhost:8080/app/manager</td></tr>
+<tr><td>Client ID</td><td>dev (or whatever is appropriate based on the record inserted in the database table from above)</td></tr>
+<tr><td>Initiate login URL</td><td>http://localhost:8080/lti/login_initiation/lms_lti_hrm_manager</td></tr>
+<tr><td>Redirection URI(s)</td><td>http://localhost:8080/lti/login</td></tr>
+</table>
+
+## Canvas JSON
+Example json for the tool can be found in the [examples](examples) directory.
+
+## Configuration
+If choosing to use properties files for the configuration values, the default location is `/usr/src/app/config`, but that can be overridden by setting the `APP_FULLFILEPATH` value via system property or environment variable.
+You may use `security.properties`, `overrides.properties`, or set the `APP_OVERRIDESFILENAME` value with your desired file name.
+
+### Canvas Configuration
+The following properties need to be set to configure the communication with Canvas and Canvas Catalog.
+They can be set in a properties file, or overridden as environment variables.
+
+| Property             | Default Value               | Description                                               |
+|----------------------|-----------------------------|-----------------------------------------------------------|
+| `canvas.host`        |                             | Hostname of the Canvas instance                           |
+| `canvas.baseUrl`     | https://`${canvas.host}`    | Base URL of the Canvas instance                           |
+| `canvas.baseApiUrl`  | `${canvas.baseUrl}`/api/v1  | Base URL for the Canvas API                               |
+| `canvas.token`       |                             | Token for access to Canvas instance                       |
+| `canvas.accountId`   |                             | Your institution's root accountId in your Canvas instance |
+| `catalog.baseUrl`    |                             | Base URL of the Canvas Catalog instance                   |
+| `catalog.baseApiUrl` | `${catalog.baseUrl}`/api/v1 | Base URL for the Canvas Catalog API                       |
+| `catalog.token`      |                             | Token for access to the Canvas Catalog instance           |
+
+### Database Configuration
+The following properties need to be set to configure the communication with a database.
+They can be set in a properties file, or overridden as environment variables.
+
+| Property             | Description                                                                                                            |
+|----------------------|------------------------------------------------------------------------------------------------------------------------|
+| `lms.db.user`        | Username used to access the database                                                                                   |
+| `lms.db.url`         | JDBC URL of the database.  Will have the form `jdbc:<dbtype>://<host>:<port>/<database>`                               |
+| `lms.db.password`    | Password for the user accessing the database                                                                           |
+| `lms.db.poolType`    | Fully qualified name of the connection pool implementation to use. By default, it is auto-detected from the classpath. |
+
+### Configure support contact information
+The following properties need to be set to configure the contact information on the global error page.
+They can be set in a security.properties file, or overridden as environment variables.
+
+| Property                | Description                                                                                               |
+|-------------------------|-----------------------------------------------------------------------------------------------------------|
+| `lti.errorcontact.name` | Display name for your support organization                                                                |
+| `lti.errorcontact.link` | Contact mechanism - URL or mailto:email (e.g. `http://support.school.edu` or `mailto:support@school.edu`) |
+
+### Configure Tool Specific Properties
+| Property                                            | Default Value                                     | Description                                                                                                                                                      |
+|-----------------------------------------------------|---------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `hierarchyresourcemanager.startingTermId`           | 4218                                              | Earliest term used for displaying syllabus supplement data                                                                                                       |
+| `hierarchyresourcemanager.defaultTermId`            | 9999                                              | Term ID of the "default" term for syllabus supplements.  Should be the biggest number so that it shows at the top of the list.                                   |
+| `hierarchyresourcemanager.templateHostingUrl`       |                                                   | Base URL for where template files will be hosted from.  Could be this application, but may be elsewhere, depending on where the iu-custom endpoints are exposed. |
+
+### Rabbit MQ Configuration
+Job processing happens in the background, via a RabbitMQ job.  Configuring the queue requires the following settings:
+
+| Property                          | Description                                                                                                           |
+|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `lms.rabbitmq.address`            | Address of the Rabbit server, containing protocol, host, and port.  Will have the form `amqps://<host>:<port>`        |
+| `lms.rabbitmq.username`           | Username used to access the Rabbit server                                                                             |                                                                                                                      |
+| `lms.rabbitmq.password`           | Password for the user accessing the Rabbit server                                                                     |
+| `lms.rabbitmq.virtualHost`        | Virtual host of the Rabbit server.  Most likely `/`.                                                                  |
+| `lms.rabbitmq.queue_env_suffix`   | Environment specific queue suffix.  Allows for some "safety" if multiple instances run off of the same rabbit server. |
+
+
+### Redis Configuration (optional)
+If you would like to use Redis for session storage, you will need to enable it by including the value `redis-session` into the `SPRING_PROFILES_ACTIVE` environment variable. Be aware that if the tool requires multiple values, that there could be more than one profile value in there.
+
+Additionally, the following properties need to be set to configure the communication with Redis.
+Then can be set in a properties file, or overridden as environment variables.
+
+| Property                | Description                                    |
+|-------------------------|------------------------------------------------|
+| `spring.redis.host`     | Redis server host.                             |
+| `spring.redis.port`     | Redis server port.                             |
+| `spring.redis.database` | Database index used by the connection factory. |
+| `spring.redis.password` | Login password of the redis server.            |
+
+
+### Vault Configuration (optional)
+If you would like to use HasiCorp's Vault for secure property storage, you will need to enable it by including the value `vault` into the `SPRING_PROFILES_ACTIVE` environment variable. Be aware that if the tool requires multiple values, that there could be more than one profile value in there.
+Include any `spring.cloud.vault.*` properties that your environment requires in a properties file, or override as environment variables.
+
+### Exposing the LTI authz REST endpoints
+If you would like to expose the LTI authz endpoints in this tool (for CRUD operations on the LTI authorizations), you will
+need to enable it by including the value `ltirest` into the `SPRING_PROFILES_ACTIVE` environment variable. Be aware that
+if the tool requires multiple values, that there could be more than one profile value in there.
+
+#### Enabling swagger-ui for the LTI authz REST endpoints
+:warning: Experimental :warning:
+
+If you would like to enable the swagger-ui for interacting with the endpoints, include the value `swagger` into the `SPRING_PROFILES_ACTIVE` environment variable.
+Once enabled, the ui will be available at `/api/lti/swagger-ui.html`.  There are some additional OAuth2 considerations
+that need to be accounted for while using this setup.
+
+This is marked as experimental due to the fact that we aren't running with this option at IU.  We are running into CORS
+issues when trying to talk to our OAuth2 service via swagger, so we can't verify if it really works or not!

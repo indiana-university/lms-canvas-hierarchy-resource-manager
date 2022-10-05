@@ -5,7 +5,7 @@
     <artifactId>lms-lti-hierarchyresourcemanager</artifactId>
     <packaging>jar</packaging>
     <name>lms-lti-hierarchyresourcemanager</name>
-    <version>5.0.0</version>
+    <version>5.0.1-SNAPSHOT</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -62,7 +62,7 @@
         <connection>scm:git:https://github.com/indiana-university/lms-canvas-hierarchy-resource-manager.git</connection>
         <developerConnection>scm:git:https://github.com/indiana-university/lms-canvas-hierarchy-resource-manager.git</developerConnection>
         <url>https://github.com/indiana-university/lms-canvas-hierarchy-resource-manager</url>
-        <tag>lms-lti-hierarchyresourcemanager-5.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>

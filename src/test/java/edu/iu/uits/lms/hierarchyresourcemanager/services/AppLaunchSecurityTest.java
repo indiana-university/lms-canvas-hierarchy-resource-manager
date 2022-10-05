@@ -38,10 +38,10 @@ import edu.iu.uits.lms.email.service.EmailService;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.controller.HierarchyResourceManagerController;
 import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
-import edu.iu.uits.lms.iuonly.IuClientTestConfig;
+import edu.iu.uits.lms.iuonly.jarexport.IuClientTestConfig;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
-import edu.iu.uits.lms.lti.service.TestUtils;
+import edu.iu.uits.lms.lti.config.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -109,7 +109,7 @@ public class AppLaunchSecurityTest {
 
    @Test
    public void randomUrlWithAuth() throws Exception {
-      OidcAuthenticationToken token = edu.iu.uits.lms.lti.service.TestUtils.buildToken("userId",
+      OidcAuthenticationToken token = TestUtils.buildToken("userId",
               "asdf", LTIConstants.INSTRUCTOR_AUTHORITY);
 
       SecurityContextHolder.getContext().setAuthentication(token);

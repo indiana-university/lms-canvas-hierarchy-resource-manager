@@ -54,7 +54,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -152,7 +151,7 @@ public class NodeManagerService {
       throw new HierarchyResourceException(bodyText);
    }
 
-   public ResponseEntity applyTemplateToCourse(String canvasCourseId, Long templateId) {
+   public ResponseEntity applyTemplateToCourse(String canvasCourseId, Long templateId, String activityType, String activityUser) {
       //Make sure our params are good
       if (canvasCourseId == null || canvasCourseId.isEmpty()) {
          return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Canvas Course ID is required but was not provided");
@@ -178,7 +177,7 @@ public class NodeManagerService {
 
       //Trigger a content migration, which will setup the course from the template
       boolean result = applyCourseTemplateMessageHandler.handleMessage(canvasCourseId, course.getTerm().getSisTermId(),
-            course.getAccountId(), course.getSisCourseId(), true, templateId);
+            course.getAccountId(), course.getSisCourseId(), true, templateId, activityType, activityUser);
       if (result) {
          return ResponseEntity.status(HttpStatus.OK).body("Request has been sent for template processing");
       } else {
@@ -186,7 +185,7 @@ public class NodeManagerService {
       }
    }
 
-   public ResponseEntity<String> applyTemplateToCourse(@PathVariable String canvasCourseId) {
+   public ResponseEntity<String> applyTemplateToCourse(String canvasCourseId, String activityType, String activityUser) {
       //Make sure our params are good
       if (canvasCourseId == null || canvasCourseId.isEmpty()) {
          return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Canvas Course ID is required but was not provided");
@@ -205,7 +204,7 @@ public class NodeManagerService {
 
       //Trigger a content migration, which will setup the course from the template
       CourseTemplateMessage ctm = new CourseTemplateMessage(canvasCourseId, course.getTerm().getSisTermId(),
-            course.getAccountId(), course.getSisCourseId(), true);
+            course.getAccountId(), course.getSisCourseId(), true, activityType, activityUser);
 
       // Canvas work around to set the homepage to modules to make sure the template's home page is applied
       courseService.updateCourseFrontPage(canvasCourseId, "modules");

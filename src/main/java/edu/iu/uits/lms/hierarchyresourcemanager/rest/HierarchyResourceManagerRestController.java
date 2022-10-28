@@ -45,6 +45,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,6 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @RestController("hrmRestController")
 @RequestMapping({"/rest/hrm"})
@@ -109,8 +111,12 @@ public class HierarchyResourceManagerRestController {
 
     @PostMapping("/canvasCourseId/{canvasCourseId}")
     @Operation(summary = "Apply a template to a course by the its Canvas ID")
-    public ResponseEntity applyTemplateToCourse(@PathVariable String canvasCourseId) {
-        return hierarchyResourceService.applyTemplateToCourse(canvasCourseId);
+    public ResponseEntity applyTemplateToCourse(@PathVariable String canvasCourseId, Principal principal) {
+        String username = null;
+        if (principal instanceof JwtAuthenticationToken) {
+            username = ((JwtAuthenticationToken) principal).getToken().getClaimAsString("user_name");
+        }
+        return hierarchyResourceService.applyTemplateToCourse(canvasCourseId, "HRM_REST_APPLY", username);
     }
 
     @PostMapping(value="/upload")

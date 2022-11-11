@@ -75,9 +75,9 @@
         <jdk.target>11</jdk.target>
         <jquery.version>3.5.1</jquery.version>
 
-        <lms-canvas-common-configuration.version>5.0.8-SNAPSHOT</lms-canvas-common-configuration.version>
-        <lms-canvas-iu-custom-services.version>5.0.12-SNAPSHOT</lms-canvas-iu-custom-services.version>
-        <lms-canvas-lti-framework.version>5.1.13</lms-canvas-lti-framework.version>
+        <lms-canvas-common-configuration.version>5.0.8</lms-canvas-common-configuration.version>
+        <lms-canvas-iu-custom-services.version>5.0.12</lms-canvas-iu-custom-services.version>
+        <lms-canvas-lti-framework.version>5.1.18</lms-canvas-lti-framework.version>
         <lms-canvas-redis-config.version>5.0.7</lms-canvas-redis-config.version>
         <lms-canvas-rivet.version>5.1.8.2_1</lms-canvas-rivet.version>
         <lms-canvas-services.version>5.0.9</lms-canvas-services.version>

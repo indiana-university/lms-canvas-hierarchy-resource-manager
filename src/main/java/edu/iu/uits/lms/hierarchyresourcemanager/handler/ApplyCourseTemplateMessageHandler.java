@@ -37,6 +37,7 @@ import edu.iu.uits.lms.hierarchyresourcemanager.services.HierarchyResourceExcept
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
 import edu.iu.uits.lms.iuonly.model.HierarchyResource;
 import edu.iu.uits.lms.iuonly.services.CourseTemplatingService;
+import edu.iu.uits.lms.iuonly.services.TemplateAuditService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,11 @@ public class ApplyCourseTemplateMessageHandler {
    @Autowired
    private NodeManagerService nodeManagerService;
 
-   public boolean handleMessage(String courseId, String sisTermId, String accountId, String sisCourseId, boolean forceApply, Long templateId) {
+   @Autowired
+   private TemplateAuditService templateAuditService;
+
+   public boolean handleMessage(String courseId, String sisTermId, String accountId, String sisCourseId, boolean forceApply,
+                                Long templateId, String activityType, String activityUser) {
       log.debug("Message received: CourseId: {}, SisTermId: {}, AccountId: {}, SisCourseId: {}, ForceApply: {}, TemplateId: {}",
             courseId, sisCourseId, accountId, sisCourseId, forceApply, templateId);
 
@@ -60,6 +65,7 @@ public class ApplyCourseTemplateMessageHandler {
          String url = nodeManagerService.getUrlToFile(templateForCourse.getStoredFile());
          log.debug("Course template url: " + url);
          courseTemplatingService.checkAndDoImsCcImport(courseId, sisTermId, accountId, sisCourseId, url, forceApply);
+         templateAuditService.audit(courseId, templateForCourse, activityType, activityUser);
       } catch (HierarchyResourceException e) {
          log.error("Unable to apply template to course - " + sisCourseId, e);
          return false;

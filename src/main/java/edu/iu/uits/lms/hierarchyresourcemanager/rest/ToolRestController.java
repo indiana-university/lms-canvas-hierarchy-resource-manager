@@ -48,6 +48,7 @@ import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeHierarchyRealtimeSe
 import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
 import edu.iu.uits.lms.iuonly.model.HierarchyResource;
 import edu.iu.uits.lms.iuonly.model.StoredFile;
+import edu.iu.uits.lms.lti.service.OidcTokenUtils;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -63,6 +64,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -265,7 +267,9 @@ public class ToolRestController extends HierarchyResourceManagerController {
 
    @PostMapping("/template/apply/{canvasCourseId}/{templateId}")
    public ResponseEntity applyTemplateToCourse(@PathVariable String canvasCourseId, @PathVariable Long templateId) {
-      return nodeManagerService.applyTemplateToCourse(canvasCourseId, templateId);
+      OidcAuthenticationToken token = getValidatedToken(canvasCourseId);
+      OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+       return nodeManagerService.applyTemplateToCourse(canvasCourseId, templateId, "HRM_APPLY", oidcTokenUtils.getUserLoginId());
    }
 
    @PostMapping("/syllabus/submit")

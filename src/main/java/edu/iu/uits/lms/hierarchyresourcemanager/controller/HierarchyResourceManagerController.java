@@ -106,8 +106,10 @@ public class HierarchyResourceManagerController extends OidcTokenAwareController
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
     @ResponseBody
     public ResponseEntity<String> reapply(@PathVariable("context") String context, Model model, HttpSession httpSession) {
-        getValidatedToken(context);
-        return nodeManagerService.applyTemplateToCourse(context);
+        OidcAuthenticationToken token = getValidatedToken(context);
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
+        return nodeManagerService.applyTemplateToCourse(context, "HRM_REAPPLY", oidcTokenUtils.getUserLoginId());
     }
 
     @RequestMapping(value = "/accessDenied")

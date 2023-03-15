@@ -117,3 +117,9 @@ springdoc:
   oAuthFlow:
     authorizationUrl: ${oauth.tokenprovider.url}/oauth/authorize
     tokenUrl: ${oauth.tokenprovider.accessTokenUri}
+
+#---
+#
+#spring:
+#  main:
+#    allow-circular-references: true

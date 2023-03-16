@@ -49,9 +49,6 @@ public class ApplyCourseTemplateMessageHandler {
    @Autowired
    private CourseTemplatingService courseTemplatingService;
 
-//   @Autowired
-//   private NodeManagerService nodeManagerService;
-
    @Autowired
    private TemplateAuditService templateAuditService;
 

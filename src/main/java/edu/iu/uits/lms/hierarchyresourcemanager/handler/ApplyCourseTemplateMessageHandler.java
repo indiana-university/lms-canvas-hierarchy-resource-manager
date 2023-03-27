@@ -50,26 +50,17 @@ public class ApplyCourseTemplateMessageHandler {
    private CourseTemplatingService courseTemplatingService;
 
    @Autowired
-   private NodeManagerService nodeManagerService;
-
-   @Autowired
    private TemplateAuditService templateAuditService;
 
    public boolean handleMessage(String courseId, String sisTermId, String accountId, String sisCourseId, boolean forceApply,
-                                Long templateId, String activityType, String activityUser) {
+                                Long templateId, String activityType, String activityUser,
+                                HierarchyResource templateForCourse, String url) {
       log.debug("Message received: CourseId: {}, SisTermId: {}, AccountId: {}, SisCourseId: {}, ForceApply: {}, TemplateId: {}",
-            courseId, sisCourseId, accountId, sisCourseId, forceApply, templateId);
+              courseId, sisCourseId, accountId, sisCourseId, forceApply, templateId);
 
-      try {
-         HierarchyResource templateForCourse = nodeManagerService.getTemplate(templateId);
-         String url = nodeManagerService.getUrlToFile(templateForCourse.getStoredFile());
-         log.debug("Course template url: " + url);
-         courseTemplatingService.checkAndDoImsCcImport(courseId, sisTermId, accountId, sisCourseId, url, forceApply);
-         templateAuditService.audit(courseId, templateForCourse, activityType, activityUser);
-      } catch (HierarchyResourceException e) {
-         log.error("Unable to apply template to course - " + sisCourseId, e);
-         return false;
-      }
+      log.debug("Course template url: " + url);
+      courseTemplatingService.checkAndDoImsCcImport(courseId, sisTermId, accountId, sisCourseId, url, forceApply);
+      templateAuditService.audit(courseId, templateForCourse, activityType, activityUser);
 
       return true;
    }

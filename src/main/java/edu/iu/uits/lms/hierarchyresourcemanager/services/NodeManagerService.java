@@ -50,6 +50,7 @@ import edu.iu.uits.lms.hierarchyresourcemanager.repository.SyllabusSupplementRep
 import edu.iu.uits.lms.iuonly.model.HierarchyResource;
 import edu.iu.uits.lms.iuonly.model.StoredFile;
 import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +64,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class NodeManagerService {
 
    @Autowired
@@ -175,13 +177,22 @@ public class NodeManagerService {
       // Canvas work around to set the homepage to modules to make sure the template's home page is applied
       courseService.updateCourseFrontPage(canvasCourseId, "modules");
 
-      //Trigger a content migration, which will setup the course from the template
-      boolean result = applyCourseTemplateMessageHandler.handleMessage(canvasCourseId, course.getTerm().getSisTermId(),
-            course.getAccountId(), course.getSisCourseId(), true, templateId, activityType, activityUser);
-      if (result) {
-         return ResponseEntity.status(HttpStatus.OK).body("Request has been sent for template processing");
-      } else {
-         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something bad happened");
+      try {
+         //Trigger a content migration, which will setup the course from the template
+         HierarchyResource templateForCourse = getTemplate(templateId);
+         String url = getUrlToFile(templateForCourse.getStoredFile());
+
+         boolean result = applyCourseTemplateMessageHandler.handleMessage(canvasCourseId, course.getTerm().getSisTermId(),
+                 course.getAccountId(), course.getSisCourseId(), true, templateId, activityType, activityUser,
+                 templateForCourse, url);
+         if (result) {
+            return ResponseEntity.status(HttpStatus.OK).body("Request has been sent for template processing");
+         } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something bad happened");
+         }
+      } catch (HierarchyResourceException hierarchyResourceException) {
+         log.error("Unable to find template - " + templateId, hierarchyResourceException);
+         return null;
       }
    }
 

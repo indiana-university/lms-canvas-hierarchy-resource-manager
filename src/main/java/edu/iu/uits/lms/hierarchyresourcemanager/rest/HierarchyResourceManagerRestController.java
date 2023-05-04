@@ -46,6 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -96,6 +97,7 @@ public class HierarchyResourceManagerRestController {
         }
     }
 
+    @CrossOrigin(origins = {"${lms.js.cors.origin}"})
     @GetMapping("/canvasCourseId/{canvasCourseId}/node")
     @Operation(summary = "Get a HierarchyResource (template) that is in the closest node based on the course's Canvas ID.  Mask out the file content.")
     public ResponseEntity getNodeFromCanvasCourseIdScrubbed(@PathVariable String canvasCourseId) {

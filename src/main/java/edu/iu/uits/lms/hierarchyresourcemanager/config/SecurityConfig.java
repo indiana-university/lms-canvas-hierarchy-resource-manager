@@ -58,7 +58,9 @@ public class SecurityConfig {
     public static class RestSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
         @Override
         public void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers("/rest/**", "/api/**")
+            http
+                  .cors().and()
+                    .requestMatchers().antMatchers("/rest/**", "/api/**")
                     .and()
                     .authorizeRequests()
                     .antMatchers("/api/**").permitAll()

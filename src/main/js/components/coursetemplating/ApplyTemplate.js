@@ -40,7 +40,6 @@ import Collapsible from 'rivet-collapsible/dist/js/rivet-collapsible.min.js';
 import './ApplyTemplate.css';
 import Loading from 'components/Loading.js';
 import ConfirmationModal from 'components/ConfirmationModal.js';
-import { Alert } from 'rivet-react'
 import RvtSvg from 'components/RvtSvg'
 
 class ApplyTemplate extends React.Component {
@@ -60,6 +59,7 @@ class ApplyTemplate extends React.Component {
         this.handleApplyClick.bind(this)
         this.handleModalCancel.bind(this)
         this.handleModalApply.bind(this)
+        this.closeAlert.bind(this)
     }
 
     /**
@@ -114,6 +114,10 @@ class ApplyTemplate extends React.Component {
         this.setState({notificationDisplay: true, applyModalOpen: false, modalData: {}})
     }
 
+    closeAlert = () => {
+        this.setState({notificationDisplay: false});
+    }
+
     render() {
         var stateData = this.state.nodeHierarchy;
 
@@ -126,10 +130,7 @@ class ApplyTemplate extends React.Component {
 
             return (
                 <React.Fragment>
-                    <Alert variant="success" title="Success!" isOpen={this.state.notificationDisplay} className="rvt-m-bottom-md"
-                                        onDismiss={() => this.setState({notificationDisplay: false})}>
-                        Your request to apply the template has been submitted. These changes may take some time to propagate through your Canvas course. You will need to refresh the page for the changes to appear.
-                    </Alert>
+                    <SuccessMessage displayAlert={this.state.notificationDisplay} closeAlert={this.closeAlert} />
                     <p className="limitContentWidth">
                         The following templates are available for you to apply to your course.
                         Templates are grouped by the sponsoring unit (e.g., university, campus, school, department).
@@ -235,6 +236,25 @@ class ApplyTemplate extends React.Component {
             onClick={props.handleApply} disabled={props.coursePublished}
             id={"apply-" + props.templateData.id}>Apply Template</button>
     )
+  }
+
+  function SuccessMessage(props) {
+    if (props.displayAlert) {
+        return (
+            <div class="rvt-alert rvt-alert--success rvt-m-bottom-md" role="alert" aria-labelledby="success-alert-title">
+                <h1 class="rvt-alert__title" id="success-alert-title">Success</h1>
+                <p class="rvt-alert__message">Your request to apply the template has been submitted. These changes may take some time to propagate through your Canvas course. You will need to refresh the page for the changes to appear.</p>
+                <button type="button" class="rvt-alert__dismiss" data-alert-close onClick={props.closeAlert}>
+                    <span class="rvt-sr-only">Close</span>
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                        <path fill="currentColor" d="M9.41,8l5.29-5.29a1,1,0,0,0-1.41-1.41L8,6.59,2.71,1.29A1,1,0,0,0,1.29,2.71L6.59,8,1.29,13.29a1,1,0,1,0,1.41,1.41L8,9.41l5.29,5.29a1,1,0,0,0,1.41-1.41Z"/>
+                    </svg>
+                </button>
+            </div>
+        )
+    } else {
+        return null;
+    }
   }
 
 export default ApplyTemplate;

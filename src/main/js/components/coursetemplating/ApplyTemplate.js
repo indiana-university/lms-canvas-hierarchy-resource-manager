@@ -130,7 +130,9 @@ class ApplyTemplate extends React.Component {
 
             return (
                 <React.Fragment>
-                    <SuccessMessage displayAlert={this.state.notificationDisplay} closeAlert={this.closeAlert} />
+                    <div role="alert">
+                        <SuccessMessage displayAlert={this.state.notificationDisplay} closeAlert={this.closeAlert} />
+                    </div>
                     <p className="limitContentWidth">
                         The following templates are available for you to apply to your course.
                         Templates are grouped by the sponsoring unit (e.g., university, campus, school, department).
@@ -177,7 +179,7 @@ class ApplyTemplate extends React.Component {
         <div className="rvt-collapsible rvt-collapsible--panel limitContentWidth rvt-m-top-xs">
             <h2 className="rvt-collapsible__title">
                 <button id={`${nodeId}-label`} data-collapsible={nodeId} aria-expanded="false">
-                    <svg role="img" aria-labelledby={`${nodeId}-name`} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <svg role="img" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
                         <path fill="currentColor" d="M5.5,15a1,1,0,0,1-.77-1.64L9.2,8,4.73,2.64A1,1,0,0,1,6.27,1.36L11.13,7.2a1.25,1.25,0,0,1,0,1.61L6.27,14.64A1,1,0,0,1,5.5,15ZM9.6,8.48h0Zm0-1h0Z"></path>
                     </svg>
                     <span id={`${nodeId}-name`}>{props.nodeName}</span>
@@ -241,7 +243,7 @@ class ApplyTemplate extends React.Component {
   function SuccessMessage(props) {
     if (props.displayAlert) {
         return (
-            <div class="rvt-alert rvt-alert--success rvt-m-bottom-md" role="alert" aria-labelledby="success-alert-title">
+            <div class="rvt-alert rvt-alert--success rvt-m-bottom-md">
                 <h1 class="rvt-alert__title" id="success-alert-title">Success</h1>
                 <p class="rvt-alert__message">Your request to apply the template has been submitted. These changes may take some time to propagate through your Canvas course. You will need to refresh the page for the changes to appear.</p>
                 <button type="button" class="rvt-alert__dismiss" data-alert-close onClick={props.closeAlert}>

@@ -30,38 +30,28 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-.limitContentWidth {
-    max-width: 90ch;
+import React from 'react'
+
+const SuccessAlert = (props) => {
+    let alertContent = null;
+    if (props.displayAlert) {
+        alertContent = (
+            <div class="rvt-alert rvt-alert--success [ rvt-m-top-md ]" aria-labelledby="success-alert-title" data-rvt-alert="success">
+              <div class="rvt-alert__title" id="success-alert-title">{props.alertTitle}</div>
+              <p class="rvt-alert__message">{props.alertMessage}</p>
+              <button class="rvt-alert__dismiss" data-rvt-alert-close>
+                <span class="rvt-sr-only">Close</span>
+                <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m3.5 2.086 4.5 4.5 4.5-4.5L13.914 3.5 9.414 8l4.5 4.5-1.414 1.414-4.5-4.5-4.5 4.5L2.086 12.5l4.5-4.5-4.5-4.5L3.5 2.086Z"></path></svg>
+              </button>
+            </div>
+        )
+    }
+
+    return (
+        <div role="alert">
+            {alertContent}
+        </div>
+    )
 }
 
-.nameColWidth {
-    width: 20%;
-}
-
-.descriptionColWidth {
-    width: 35%;
-}
-
-.defaultColWidth {
-    width: 8%;
-}
-
-.buttonColWidth {
-    width: 37%;
-}
-
-th, td {
-    vertical-align: top;
-}
-
-/* sets the size of rivet icons */
-.rvt-icon {
-    width: 1rem;
-    height: 1rem;
-}
-
-/* for replacing hr tags */
-.syllabus-divider {
-    border-bottom: 1px solid #e2e7e9;
-    padding-top: .5rem;
-}
+export default SuccessAlert

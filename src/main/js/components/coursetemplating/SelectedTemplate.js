@@ -32,7 +32,6 @@
  */
 import React from 'react'
 import ConfirmationModal from 'components/ConfirmationModal'
-import {File, Form, Input, Textarea} from 'rivet-react'
 import axios from 'axios'
 import { get, isEmpty } from 'lodash';
 
@@ -248,34 +247,59 @@ class SelectedTemplate extends React.Component {
         let editModal;
         if (this.state.templateForEdit) {
             editModal =
-                <ConfirmationModal isOpen={this.state.editTemplateModalOpen} handleConfirm={this.handleEditTemplateModalSave}
+                <ConfirmationModal isOpen={this.state.editTemplateModalOpen} handleConfirm={this.handleEditTemplateModalSave} dialogId="edit-template"
                     title="Edit Template" onDismiss={() => this.handleModalCancel("edit-" + this.state.templateForEdit.id)} yesLabel="Submit" noLabel="Cancel" 
                     showLoading={this.state.disableModalButtons} focusId="editDisplayName">
-                    <Form id="editTemplateForm">
-                        <Input key={`templateId_${this.state.inputKey}`} id="editTemplateId" type="hidden" defaultValue={this.state.templateForEdit.id} />
-                        <Input key={`displayName_${this.state.inputKey}`} id="editDisplayName" type="text" label="Display Name (required)" margin={{bottom: 'sm'}}
+                    <form id="editTemplateForm">
+                        <input type="hidden" id="editTemplateId" key={`templateId_${this.state.inputKey}`} defaultValue={this.state.templateForEdit.id} />
+
+                        <label for="editDisplayName" className="rvt-label">Display Name (required)</label>
+                        <input key={`displayName_${this.state.inputKey}`} id="editDisplayName" type="text" className="rvt-m-bottom-sm"
                             defaultValue={this.state.templateForEdit.displayName} {...this.state.validation.displayName} />
-                        <Input key={`sponsor_${this.state.inputKey}`} id="editSponsor" type="text" label="Sponsor (required)" margin={{bottom: 'sm'}}
+
+                        <label for="editSponsor" className="rvt-label">Sponsor (required)</label>
+                        <input key={`sponsor_${this.state.inputKey}`} id="editSponsor" type="text" className="rvt-text-input rvt-m-bottom-sm"
                             defaultValue={this.state.templateForEdit.sponsor} {...this.state.validation.sponsor} />
-                        <Input key={`contactName_${this.state.inputKey}`} id="editContactName" type="text" label="Contact Name (required)" margin={{bottom: 'sm'}}
+
+                        <label for="editContactName" className="rvt-label">Contact Name (required)</label>
+                        <input key={`contactName_${this.state.inputKey}`} id="editContactName" type="text" className="rvt-text-input rvt-m-bottom-sm"
                             defaultValue={this.state.templateForEdit.contactName} {...this.state.validation.contactName} />
-                        <Input key={`contactUsername_${this.state.inputKey}`} id="editContactUsername" type="text" label="Contact Username (required)" margin={{bottom: 'sm'}}
+
+                        <label for="editContactUsername" className="rvt-label">Contact Username (required)</label>
+                        <input key={`contactUsername_${this.state.inputKey}`} id="editContactUsername" type="text" className="rvt-text-input rvt-m-bottom-sm"
                             defaultValue={this.state.templateForEdit.contactUsername} {...this.state.validation.contactUsername} />
-                        <Input key={`sourceCourseId_${this.state.inputKey}`} id="editSourceCourseId" type="text" label="Source Course ID (required)" margin={{bottom: 'sm'}}
+
+                        <label for="editSourceCourseId" className="rvt-label">Source Course ID (required)</label>
+                        <input key={`sourceCourseId_${this.state.inputKey}`} id="editSourceCourseId" type="text" className="rvt-text-input rvt-m-bottom-sm"
                             defaultValue={this.state.templateForEdit.sourceCourseId} {...this.state.validation.sourceCourseId} />
-                        <Input key={`ccUrl_${this.state.inputKey}`} id="editCcUrl" type="text" label="Preview URL (optional)" margin={{bottom: 'sm'}}
+
+                        <label for="editCcUrl" className="rvt-label">Preview URL (optional)</label>
+                        <input key={`ccUrl_${this.state.inputKey}`} id="editCcUrl" type="text" className="rvt-text-input rvt-m-bottom-sm"
                             defaultValue={this.state.templateForEdit.canvasCommonsUrl} />
-                        <Textarea key={`description_${this.state.inputKey}`} id="editDescription" label="Description (required)" margin={{bottom: 'sm'}}
+
+                        <label for="editDescription" className="rvt-label">Description (required)</label>
+                        <textarea key={`description_${this.state.inputKey}`} id="editDescription" className="rvt-textarea rvt-m-bottom-sm"
                             defaultValue={this.state.templateForEdit.description} {...this.state.validation.description} />
-                        <File key={`file_${this.state.inputKey}`} id="editTemplateFileInput" margin={{bottom: 'sm'}} />
-                    </Form>
+
+                        <div class="rvt-file" data-rvt-file-input="singleFileInput" className="rvt-m-b-sm">
+                          <input type="file" data-rvt-file-input-button="editTemplateFileInput" id="singleFileInput" aria-describedby="file-description"
+                            key={`file_${this.state.inputKey}`} />
+                          <label for="singleFileInput" className="rvt-button">
+                            <span>Upload a file</span>
+                            <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="M2 1h8.414L14 4.586V15H2V1Zm2 2v10h8V7.5H7.5V3H4Zm5.5 0v2.5H12v-.086L9.586 3H9.5Z"></path></svg>
+                          </label>
+                          <div class="rvt-file__preview" data-rvt-file-input-preview="singleFileInput" id="file-description">
+                            No file selected
+                          </div>
+                        </div>
+                    </form>
                 </ConfirmationModal>
         }
     
         return (
             <div>
-                <table id="templateTable">
-                    <caption className="sr-only">Templates for the selected node</caption>
+                <table id="templateTable" className="rvt-table">
+                    <caption className="rvt-sr-only">Templates for the selected node</caption>
                     <thead>
                         <tr className="rvt-vertical-center">
                             <th scope="col" className="tableColumnWidthOverride">Display Name</th>
@@ -292,7 +316,7 @@ class SelectedTemplate extends React.Component {
 
                 {editModal}
 
-                <ConfirmationModal isOpen={this.state.deleteModalOpen} handleConfirm={this.handleModalDelete}
+                <ConfirmationModal isOpen={this.state.deleteModalOpen} handleConfirm={this.handleModalDelete} dialogId="delete-template"
                     title="Delete Template" onDismiss={() => this.handleModalCancel("delete-" + this.state.deleteData.templateId)} 
                     yesLabel="Delete" noLabel="Cancel" focusId={"delete-instr-" + this.state.deleteData.templateId}>
                     <DeleteModalText deleteData={this.state.deleteData} />
@@ -300,7 +324,8 @@ class SelectedTemplate extends React.Component {
 
                 <ConfirmationModal isOpen={this.state.defaultModalOpen} handleConfirm={this.handleModalDefault}
                     title="Change Default Status" focusId={"default-instr-" + this.state.defaultData.templateId}
-                    onDismiss={() => this.handleModalCancel("default-" + this.state.defaultData.templateId)}>
+                    onDismiss={() => this.handleModalCancel("default-" + this.state.defaultData.templateId)}
+                    dialogId="change-default">
                     <DefaultModalText defaultData={this.state.defaultData} />
                 </ConfirmationModal>
             </div>

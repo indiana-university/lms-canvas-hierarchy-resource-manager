@@ -34,8 +34,6 @@
     "react-select": "^4.3.0",
     "regenerator-runtime": "^0.13.7",
     "rivet-icons": "0.4.0",
-    "rivet-react": "^1.5.0",
-    "rivet-uits": "1.7.2",
     "rivet-collapsible": "^0.2.5",
     "styled-components": "^5.2.3",
     "tinymce": "^5.7.1"

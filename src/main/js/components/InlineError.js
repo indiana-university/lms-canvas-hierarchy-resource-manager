@@ -30,38 +30,17 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-.limitContentWidth {
-    max-width: 90ch;
+import React from 'react'
+
+const InlineError = (props) => {
+    return (
+        <div class="rvt-inline-alert rvt-inline-alert--standalone rvt-inline-alert--danger">
+          <span class="rvt-inline-alert__icon">
+            <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m8 6.586-2-2L4.586 6l2 2-2 2L6 11.414l2-2 2 2L11.414 10l-2-2 2-2L10 4.586l-2 2Z"></path><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8Z"></path></svg>
+          </span>
+          <span class="rvt-inline-alert__message" id={props.errorId}>{props.message}</span>
+        </div>
+    )
 }
 
-.nameColWidth {
-    width: 20%;
-}
-
-.descriptionColWidth {
-    width: 35%;
-}
-
-.defaultColWidth {
-    width: 8%;
-}
-
-.buttonColWidth {
-    width: 37%;
-}
-
-th, td {
-    vertical-align: top;
-}
-
-/* sets the size of rivet icons */
-.rvt-icon {
-    width: 1rem;
-    height: 1rem;
-}
-
-/* for replacing hr tags */
-.syllabus-divider {
-    border-bottom: 1px solid #e2e7e9;
-    padding-top: .5rem;
-}
+export default InlineError

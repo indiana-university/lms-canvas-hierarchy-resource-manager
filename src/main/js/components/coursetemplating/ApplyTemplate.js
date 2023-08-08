@@ -40,7 +40,6 @@ import Collapsible from 'rivet-collapsible/dist/js/rivet-collapsible.min.js';
 import './ApplyTemplate.css';
 import Loading from 'components/Loading.js';
 import ConfirmationModal from 'components/ConfirmationModal.js';
-import { Alert } from 'rivet-react'
 import RvtSvg from 'components/RvtSvg'
 
 class ApplyTemplate extends React.Component {
@@ -126,20 +125,21 @@ class ApplyTemplate extends React.Component {
 
             return (
                 <React.Fragment>
-                    <Alert variant="success" title="Success!" isOpen={this.state.notificationDisplay} className="rvt-m-bottom-md"
-                                        onDismiss={() => this.setState({notificationDisplay: false})}>
-                        Your request to apply the template has been submitted. These changes may take some time to propagate through your Canvas course. You will need to refresh the page for the changes to appear.
-                    </Alert>
+                    <div role="alert">
+                        <SuccessMessage displayAlert={this.state.notificationDisplay} closeAlert={this.closeAlert} />
+                    </div>
                     <p className="limitContentWidth">
                         The following templates are available for you to apply to your course.
                         Templates are grouped by the sponsoring unit (e.g., university, campus, school, department).
                         To preview a template in Canvas Commons before applying it to your course, click the "Preview" button, if available.
                         When you are ready to apply a template to your course, click the corresponding <span className="rvt-text-bold">Apply Template</span> button.
                     </p>
-                    {nodes}
+                    <div className="rvt-accordion rvt-m-top-xs" data-rvt-accordion="template-accordion">
+                        {nodes}
+                    </div>
                     <ConfirmationModal isOpen={this.state.applyModalOpen} handleConfirm={this.handleModalApply} title="Apply Template"
                                        onDismiss={() => this.handleModalCancel("apply-" + this.state.modalData.templateId)}
-                                       yesLabel="Apply" noLabel="Cancel" focusId="templateWarning">
+                                       yesLabel="Apply" noLabel="Cancel" focusId="templateWarning" dialogId="apply-template">
                         <React.Fragment>
                             <div id="templateWarning" tabindex="-1">
                                 <span className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
@@ -152,7 +152,7 @@ class ApplyTemplate extends React.Component {
                                 <p>
                                     For more information, see <a href="https://kb.iu.edu/d/bgry" target="_blank">
                                     <cite>Apply a template to your Canvas course</cite> <RvtSvg icon="rvt-icon-link-external" ariahide="true" />
-                                    <span className="sr-only">Opens in new window</span></a> in the IU Knowledge Base.
+                                    <span className="rvt-sr-only">Opens in new window</span></a> in the IU Knowledge Base.
                                 </p>
                             </div>
                         </React.Fragment>
@@ -173,32 +173,39 @@ class ApplyTemplate extends React.Component {
     const nodeId = kebabCase(props.nodeName)
 
     return (
-        <div className="rvt-collapsible rvt-collapsible--panel limitContentWidth rvt-m-top-xs">
-            <h2 className="rvt-collapsible__title">
-                <button id={`${nodeId}-label`} data-collapsible={nodeId} aria-expanded="false">
-                    <svg role="img" aria-labelledby={`${nodeId}-name`} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                        <path fill="currentColor" d="M5.5,15a1,1,0,0,1-.77-1.64L9.2,8,4.73,2.64A1,1,0,0,1,6.27,1.36L11.13,7.2a1.25,1.25,0,0,1,0,1.61L6.27,14.64A1,1,0,0,1,5.5,15ZM9.6,8.48h0Zm0-1h0Z"></path>
+        <>
+        <h2 className="rvt-accordion__summary">
+            <button id={`${nodeId}-label`} className="rvt-accordion__toggle" data-rvt-accordion-trigger={`${nodeId}-accordion`}>
+                <span className="rvt-accordion__toggle-text" id={`${nodeId}-name`}>{props.nodeName}</span>
+                <div class="rvt-accordion__toggle-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                      <g fill="currentColor">
+                        <path class="rvt-accordion__icon-bar" d="M8,15a1,1,0,0,1-1-1V2A1,1,0,0,1,9,2V14A1,1,0,0,1,8,15Z" />
+                        <path d="M14,9H2A1,1,0,0,1,2,7H14a1,1,0,0,1,0,2Z" />
+                      </g>
                     </svg>
-                    <span id={`${nodeId}-name`}>{props.nodeName}</span>
-                </button>
-            </h2>
-            <div className="rvt-collapsible__content rvt-p-top-sm" id={nodeId} aria-hidden="true" aria-labelledby={`${nodeId}-label`}>
-                <table id={`${nodeId}-table`}>
-                    <caption className="sr-only">{`${props.nodeName} templates`}</caption>
-                    <thead>
-                    <tr>
-                        <th scope="col" className="nameColWidth">Template Name</th>
-                        <th scope="col" className="descriptionColWidth">Description</th>
-                        <th scope="col" className="defaultColWidth">Default</th>
-                        <th scope="col" className="buttonColWidth">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                </div>
+            </button>
+        </h2>
+        <div className="rvt-accordion__panel"
+            id={`${nodeId}-accordion`}
+            data-rvt-accordion-panel={`${nodeId}-accordion`}>
+            <table id={`${nodeId}-table`}>
+                <caption className="rvt-sr-only">{`${props.nodeName} templates`}</caption>
+                <thead>
+                <tr>
+                    <th scope="col" className="nameColWidth">Template Name</th>
+                    <th scope="col" className="descriptionColWidth">Description</th>
+                    <th scope="col" className="defaultColWidth">Default</th>
+                    <th scope="col" className="buttonColWidth">Action</th>
+                </tr>
+                </thead>
+                <tbody>
                     {templates}
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
         </div>
+        </>
     );
   }
 
@@ -210,8 +217,8 @@ class ApplyTemplate extends React.Component {
                 <td>{props.templateData.description}</td>
                 <td>{props.templateData.defaultTemplate ? 'Yes' : 'No'}</td>
                 <td>
-                    <ApplyButton templateData={props.templateData} handleApply={props.handleApply} coursePublished={props.coursePublished}/>
-                    <PreviewButton url={props.templateData.canvasCommonsUrl} handlePreview={props.handlePreview} />
+                    <ApplyButton templateData={props.templateData} handleApply={props.handleApply} coursePublished={props.coursePublished} />
+                    <PreviewButton url={props.templateData.canvasCommonsUrl} handlePreview={props.handlePreview} templateName={props.templateData.displayName} />
                 </td>
             </tr>
         )
@@ -222,7 +229,7 @@ class ApplyTemplate extends React.Component {
 
   function PreviewButton(props) {
     if (props.url) {
-        return (<button className="rvt-button rvt-button--secondary rvt-m-top-sm rvt-m-top-none-lg-up" value={props.url} onClick={props.handlePreview}>Preview</button>)
+        return (<button className="rvt-button rvt-button--secondary rvt-m-top-sm rvt-m-top-none-lg-up" value={props.url} onClick={props.handlePreview}>Preview <span className="rvt-sr-only">{props.templateName}</span></button>)
     } else {
         return null;
     }
@@ -233,8 +240,26 @@ class ApplyTemplate extends React.Component {
         <button className="rvt-button rvt-button--secondary rvt-m-right-sm" data-template-id={props.templateData.id}
             data-template-name={props.templateData.displayName} data-node-name={props.templateData.node}
             onClick={props.handleApply} disabled={props.coursePublished}
-            id={"apply-" + props.templateData.id}>Apply Template</button>
+            id={"apply-" + props.templateData.id}
+            data-rvt-dialog-trigger="apply-template-dialog">Apply Template <span className="rvt-sr-only">{props.templateData.displayName}</span></button>
     )
+  }
+
+  function SuccessMessage(props) {
+    if (props.displayAlert) {
+        return (
+        <div className="rvt-alert rvt-alert--success [ rvt-m-top-md ]" aria-labelledby="success-alert-title" data-rvt-alert="success">
+          <div className="rvt-alert__title" id="success-alert-title">Success</div>
+          <p className="rvt-alert__message">Your request to apply the template has been submitted. These changes may take some time to propagate through your Canvas course. You will need to refresh the page for the changes to appear.</p>
+          <button className="rvt-alert__dismiss" data-rvt-alert-close>
+            <span className="rvt-sr-only">Close</span>
+            <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m3.5 2.086 4.5 4.5 4.5-4.5L13.914 3.5 9.414 8l4.5 4.5-1.414 1.414-4.5-4.5-4.5 4.5L2.086 12.5l4.5-4.5-4.5-4.5L3.5 2.086Z"></path></svg>
+          </button>
+        </div>
+        )
+    } else {
+        return null;
+    }
   }
 
 export default ApplyTemplate;

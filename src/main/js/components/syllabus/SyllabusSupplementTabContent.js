@@ -33,9 +33,9 @@
 import React from 'react'
 import Select from 'react-select'
 import ConfirmationModal from 'components/ConfirmationModal'
+import InlineError from 'components/InlineError'
 import tinymce from 'tinymce';
 import { Editor } from '@tinymce/tinymce-react';
-import { Input } from 'rivet-react'
 import axios from 'axios'
 
 class SyllabusSupplementTabContent extends React.Component {
@@ -203,13 +203,13 @@ class SyllabusSupplementTabContent extends React.Component {
     // for the red outline around the content editor.
     handleContentErrorIndicator(isContentValid) {
         if (isContentValid) {
-            document.getElementById('supplementContentContainer').classList.remove('alert-danger-inline');
+            //document.getElementById('supplementContentContainer').classList.remove('alert-danger-inline');
             var editor = document.getElementById('supplementText_ifr');
             if (editor) {
                 editor.removeAttribute('aria-invalid');
             }
         } else {
-            document.getElementById('supplementContentContainer').classList.add('alert-danger-inline');
+            //document.getElementById('supplementContentContainer').classList.add('alert-danger-inline');
             var editor = document.getElementById('supplementText_ifr');
             if (editor) {
                 editor.setAttribute('aria-invalid', 'true');
@@ -357,24 +357,31 @@ render() {
         Could be related to the various babel dependencies, but I didn't have time to mess with it!
     */
     var inputProps = {}
-    var noteNode = <React.Fragment>Title for syllabus supplement</React.Fragment>
+    var noteNode = null;
     if (this.state.titleLengthError) {
-        noteNode = <React.Fragment><strong>Supplement Title</strong> needs to be provided and be 255 characters or less.</React.Fragment>
-        inputProps.variant = 'danger'
+        noteNode = <InlineError message="Supplement Title is required and must be 255 characters or less." errorId="titleError"></InlineError>
+        inputProps = {'aria-describedby': 'titleError', 'aria-invalid': "true"};
     }
 
     var contactUserProps = {}
     var contactUserNote = <React.Fragment></React.Fragment>
     if (this.state.usernameLengthError) {
-        contactUserNote = <React.Fragment><strong>Supplement Contact Username</strong> must be provided.</React.Fragment>
-        contactUserProps.variant = 'danger'
+        contactUserNote = <InlineError message="Supplement Contact Username is required." errorId="usernameError"></InlineError>
+        contactUserProps = {'aria-describedby': 'usernameError', 'aria-invalid': "true"};
     }
 
     var contactEmailProps = {}
     var contactEmailNote = <React.Fragment></React.Fragment>
     if (this.state.emailLengthError) {
-        contactEmailNote = <React.Fragment><strong>Supplement Contact Email</strong> must be provided.</React.Fragment>
-        contactEmailProps.variant = 'danger'
+        contactEmailNote = <InlineError message="Supplement Contact Email is required." errorId="emailError"></InlineError>
+        contactEmailProps = {'aria-describedby': 'emailError', 'aria-invalid': "true"};
+    }
+
+    var contentProps = {}
+    var contentNote = <React.Fragment></React.Fragment>
+    if (this.state.contentLengthError) {
+        contentNote = <InlineError message="Supplement Text is required." errorId="contentError"></InlineError>
+        contactEmailProps = {'aria-describedby': 'contentError', 'aria-invalid': "true"};
     }
 
 
@@ -382,7 +389,7 @@ render() {
         <div id="syllabusTabDiv">
             <span className="rvt-ts-26 rvt-text-bold rvt-display-block rvt-m-bottom-md">Add, update, or delete a syllabus supplement</span>
             <label id="selectNodeLabel">Node:
-                <span class="sr-only">Select a node to add, update, or delete its syllabus supplement.</span>
+                <span className="rvt-sr-only">Select a node to add, update, or delete its syllabus supplement.</span>
             </label>
             <div className="rvt-m-bottom-md">
                 <Select options={this.props.hierarchy} id="hierNodeName" name="hierNodeName" isSearchable={true} isClearable={true} placeholder="Select Node" className="node-select"
@@ -390,18 +397,21 @@ render() {
             </div>
 
             <label id="selectTermLabel">Term:
-                <span class="sr-only">Select the specific term to add, update, or delete its syllabus supplement.</span>
+                <span className="rvt-sr-only">Select the specific term to add, update, or delete its syllabus supplement.</span>
             </label>
             <div className="rvt-m-bottom-md">
                 <Select options={this.props.terms} id="termId" name="termId" isSearchable={true} isClearable={false} className="node-select"
                     onChange={this.handleTermOptionChange} defaultValue={this.props.terms[0]} classNamePrefix="node-rivet" />
             </div>
 
-            <Input type="text" name={this.titleInput} label="Supplement Title (required)" margin={{bottom: 'md'}}
-                    disabled={this.state.inputsDisabled} value={this.state.syllabus.syllabusTitle}
-                    onChange={this.handleTextInputChange} note={noteNode} {...inputProps} />
+            <label for="text-input-default" className="rvt-label rvt-ts-16">Supplement Title (required)</label>
+            <input type="text" id="text-input-default" name={this.titleInput} className="rvt-text-input"
+                disabled={this.state.inputsDisabled} value={this.state.syllabus.syllabusTitle}
+                onChange={this.handleTextInputChange} {...inputProps} />
+            {noteNode}
 
-            <label htmlFor="supplementText">Supplement Text (required)</label>
+
+            <label htmlFor="supplementText" className="rvt-label rvt-ts-16 rvt-m-top-md">Supplement Text (required)</label>
             <div id="supplementContentContainer">
                 <Editor id="supplementText" className="rvt-m-bottom-md" value={this.state.syllabus.syllabusContent}
                     onEditorChange={this.handleEditorChange} onInit={this.handleInit} disabled={this.state.inputsDisabled}
@@ -413,20 +423,23 @@ render() {
                             file_picker_callback: this.filePickerCallback}}
                 />
             </div>
-            <SyllabusContentError contentError={this.state.contentLengthError} />
+            {contentNote}
             
-
-            <Input type="text" name={this.usernameInput} label="Contact Username (required)" margin={{top: 'md', bottom: 'md'}}
+            <label for="contact-username" className="rvt-label rvt-ts-16 rvt-m-top-md">Contact Username (required)</label>
+            <input id="contact-username" type="text" name={this.usernameInput} className="rvt-text-input"
                 disabled={this.state.inputsDisabled} value={this.state.syllabus.contactUsername}
-                onChange={this.handleTextInputChange} note={contactUserNote} {...contactUserProps}
+                onChange={this.handleTextInputChange} {...contactUserProps}
                 maxLength="255" />
+            {contactUserNote}
 
-            <Input type="text" name={this.emailInput} label="Contact Email (required)" margin={{bottom: 'md'}}
+            <label for="contact-email" className="rvt-label rvt-ts-16 rvt-m-top-md">Contact Email (required)</label>
+            <input id="contact-email" type="text" name={this.emailInput} label="Contact Email (required)" className="rvt-text-input"
                 disabled={this.state.inputsDisabled} value={this.state.syllabus.contactEmail}
-                onChange={this.handleTextInputChange} note={contactEmailNote} {...contactEmailProps}
+                onChange={this.handleTextInputChange} {...contactEmailProps}
                 maxLength="255" />
+            {contactEmailNote}
 
-            <div className="rvt-button-group rvt-button-group--right rvt-m-top-sm rvt-m-bottom-sm">
+            <div className="rvt-button-group rvt-button-group--right rvt-m-top-xl rvt-m-bottom-sm">
                 <button id="syllabusSupplementCancelButton" className="rvt-button rvt-button--secondary"
                     disabled={this.state.cancelDisabled} onClick={this.handleCancel}>Cancel</button>
                 <button id="syllabusSupplementDeleteButton" className="rvt-button" onClick={this.handleDeleteDialogOpen}
@@ -436,11 +449,11 @@ render() {
             </div>
 
             <ConfirmationModal isOpen={this.state.saveModalOpen} handleConfirm={this.handleModalSave} title="Save Confirmation"
-                    onDismiss={() => this.handleModalCancel("syllabusSupplementSaveButton")} focusId="confirmSupplementSave">
+                    onDismiss={() => this.handleModalCancel("syllabusSupplementSaveButton")} focusId="confirmSupplementSave" dialogId="save-supplement">
                 <p id="confirmSupplementSave" tabindex="-1">Are you sure you wish to save this supplement to the {this.state.selectedNode} account for the {this.state.selectedTermName} term?</p>
             </ConfirmationModal>
             <ConfirmationModal isOpen={this.state.deleteModalOpen} handleConfirm={this.handleModalDelete} title="Delete Confirmation"
-                    onDismiss={() => this.handleModalCancel("syllabusSupplementDeleteButton")} focusId="confirmSupplementDelete">
+                    onDismiss={() => this.handleModalCancel("syllabusSupplementDeleteButton")} focusId="confirmSupplementDelete" dialogId="delete-supplement">
                 <p id="confirmSupplementDelete" tabindex="-1">Are you sure you wish to delete this supplement from the {this.state.selectedNode} account for the {this.state.selectedTermName} term?</p>
             </ConfirmationModal>
         </div>
@@ -449,26 +462,5 @@ render() {
   }
 }
 
-function SyllabusContentError(props) {
-    if (props.contentError) {
-        return (
-            <div id="supplementContentError" class="rvt-inline-alert rvt-inline-alert--danger">
-                <span class="rvt-inline-alert__icon">
-                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                        <g fill="currentColor">
-                            <path d="M8,0a8,8,0,1,0,8,8A8,8,0,0,0,8,0ZM8,14a6,6,0,1,1,6-6A6,6,0,0,1,8,14Z" />
-                            <path d="M10.83,5.17a1,1,0,0,0-1.41,0L8,6.59,6.59,5.17A1,1,0,0,0,5.17,6.59L6.59,8,5.17,9.41a1,1,0,1,0,1.41,1.41L8,9.41l1.41,1.41a1,1,0,0,0,1.41-1.41L9.41,8l1.41-1.41A1,1,0,0,0,10.83,5.17Z"/>
-                        </g>
-                    </svg>
-                </span>
-                <span class="rvt-inline-alert__message">
-                    <strong>Supplement Text</strong> must be provided.
-                </span>
-            </div>
-        )
-    } else {
-        return null;
-    }
-}
 
 export default SyllabusSupplementTabContent

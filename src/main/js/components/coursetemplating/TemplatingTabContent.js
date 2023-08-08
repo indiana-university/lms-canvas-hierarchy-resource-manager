@@ -35,7 +35,6 @@ import Select from 'react-select'
 import SelectedTemplate from 'components/coursetemplating/SelectedTemplate'
 import ConfirmationModal from 'components/ConfirmationModal'
 import Loading from 'components/Loading.js'
-import {File, Form, InlineAlert, Input, Textarea} from 'rivet-react'
 import axios from 'axios'
 import { isEmpty } from 'lodash';
 
@@ -191,14 +190,14 @@ class TemplatingTabContent extends React.Component {
     let fileAlert = null
     let fileAttributes = {'aria-required': 'true'}
     if (this.state.validation.templateFileInput) {
-        fileAlert = <InlineAlert id="missingFileAlert" variant={this.state.validation.templateFileInput.variant}>{this.state.validation.templateFileInput.note}</InlineAlert>
+        fileAlert = <InlineError id="missingFileAlert" alertMessage={this.state.validation.templateFileInput.note}></InlineError>
         fileAttributes = {'aria-required': 'true', 'aria-describedby': 'missingFileAlert', 'aria-invalid': true}
     }
 
   return (
         <div>
             <span className="rvt-ts-26 rvt-text-bold rvt-display-block rvt-m-bottom-md">Manage templates</span>
-            <label id="nodeSelectCourseTemplate">Node</label>
+            <label id="nodeSelectCourseTemplate" className="rvt-label rvt-ts-16">Node!</label>
             <div className="rvt-m-bottom-md">
                 <Select options={this.props.hierarchy} isSearchable={true} isClearable={true} placeholder="Select Node" className="node-select"
                     onChange={this.handleHierarchyOptionChange} classNamePrefix="node-rivet" aria-labelledby="nodeSelectCourseTemplate" />
@@ -211,27 +210,7 @@ class TemplatingTabContent extends React.Component {
             <NodeTable selectedNode={this.state.selectedNode} nodeListInfo={this.state.nodeListInfo}
                     notificationHandler={this.props.notificationHandler} refreshHandler={this.handleRefresh}/>
 
-            <ConfirmationModal isOpen={this.state.saveNewTemplateModalOpen} handleConfirm={this.handleNewTemplateModalSave}
-                title="New Template" onDismiss={this.handleNewTemplateModalCancel} yesLabel="Submit" noLabel="Cancel" 
-                showLoading={this.state.disableModalButtons} focusId="newDisplayName">
-                <Form id="newTemplateForm">
-                    <Input id="newDisplayName" type="text" label="Display Name (required)" margin={{bottom: 'sm'}}
-                        {...this.state.validation.displayName} />
-                    <Input id="newSponsor" type="text" label="Sponsor (required)" margin={{bottom: 'sm'}}
-                        {...this.state.validation.sponsor} />
-                    <Input id="newContactName" type="text" label="Contact Name (required)" margin={{bottom: 'sm'}}
-                        {...this.state.validation.contactName} />
-                    <Input id="newContactUsername" type="text" label="Contact Username (required)" margin={{bottom: 'sm'}}
-                        {...this.state.validation.contactUsername} />
-                    <Input id="newSourceCourseId" type="text" label="Source Course ID (required)" margin={{bottom: 'sm'}}
-                        {...this.state.validation.sourceCourseId} />
-                    <Input id="newCcUrl" type="text" label="Preview URL (optional)" margin={{bottom: 'sm'}}/>
-                    <Textarea id="newDescription" label="Description (required)" margin={{bottom: 'sm'}}
-                        {...this.state.validation.description} />
-                    <File key={this.state.fileInputKey} id="newTemplateFileInput" margin={{bottom: 'sm'}} {...fileAttributes} />
-                    {fileAlert}
-                </Form>
-            </ConfirmationModal>
+
         </div>
       );
     }
@@ -252,6 +231,17 @@ function NodeTable(props) {
 function resetForm(formId) {
     var theForm = document.getElementById(formId);
     theForm.reset();
+}
+
+function InlineError(props) {
+    return (
+        <div class="rvt-inline-alert rvt-inline-alert--standalone rvt-inline-alert--danger">
+          <span class="rvt-inline-alert__icon">
+            <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m8 6.586-2-2L4.586 6l2 2-2 2L6 11.414l2-2 2 2L11.414 10l-2-2 2-2L10 4.586l-2 2Z"></path><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8Z"></path></svg>
+          </span>
+          <span class="rvt-inline-alert__message" id="{props.id}">{props.alertMessage}</span>
+        </div>
+    )
 }
 
 export default TemplatingTabContent

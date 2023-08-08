@@ -31,7 +31,6 @@
  * #L%
  */
 import React from 'react'
-import {Modal, ModalBody, ModalControls, Button} from "rivet-react"
 
 class ConfirmationModal extends React.Component {
 
@@ -43,14 +42,14 @@ class ConfirmationModal extends React.Component {
     componentDidMount() {  
         // rivet-react modals do not handle focus
         // manually set the focus on opening
-        this.setFocus(this.props.isOpen, this.props.focusId);      
+        //this.setFocus(this.props.isOpen, this.props.focusId);
     }
     
     // the new template modal is mounted immediately so we need to look for update
     componentDidUpdate() {  
         // rivet-react modals do not handle focus
         // manually set the focus on opening
-        this.setFocus(this.props.isOpen, this.props.focusId);       
+        //this.setFocus(this.props.isOpen, this.props.focusId);
     }
     
     setFocus(isOpen, focusId) {
@@ -62,35 +61,39 @@ class ConfirmationModal extends React.Component {
         }     
     }
 
-    render() {
-        let yesButton = <Button key="yes" onClick={this.props.handleConfirm}>{this.props.yesLabel}</Button>
-        let noButton = <Button key="no" onClick={this.props.onDismiss} modifier="secondary">{this.props.noLabel}</Button>
-        if (this.props.showLoading) {
-            yesButton = (
-                <Button key="yes" onClick={this.props.handleConfirm} aria-busy="true" disabled variant="loading">
-                    <span class="rvt-button__content">{this.props.yesLabel}</span>
-                    <div class="rvt-loader rvt-loader--xs" aria-label="Content loading"></div>
-                </Button>
-            )
-    
-            noButton = (
-                <Button key="no" onClick={this.props.onDismiss} modifier="secondary" aria-busy="true" disabled variant="loading">
-                    <span class="rvt-button__content">{this.props.noLabel}</span>
-                    <div class="rvt-loader rvt-loader--xs" aria-label="Content loading"></div>
-                </Button>
-            )
+    testClick() {
+            alert("I work");
         }
 
+    render() {
+
         return (
-            <Modal title={this.props.title} isOpen={this.props.isOpen} onDismiss={this.props.onDismiss}>
-                <ModalBody>
-                    {this.props.children}
-                </ModalBody>
-                <ModalControls>
-                    {yesButton}
-                    {noButton}
-                </ModalControls>
-            </Modal>
+            <div className="rvt-dialog" id={this.props.dialogId} role="dialog" tabindex="-1" aria-labelledby={`${this.props.dialogId}-title`}
+                aria-describedby={`${this.props.dialogId}-description`}
+                data-rvt-dialog={`${this.props.dialogId}-dialog`}
+                data-rvt-dialog-modal
+                data-rvt-dialog-darken-page
+                data-rvt-dialog-disable-page-interaction
+                hidden>
+              <header className="rvt-dialog__header">
+                <h1 className="rvt-dialog__title" id={`${this.props.dialogId}-title`}>{this.props.title}</h1>
+              </header>
+              <div className="rvt-dialog__body">
+                <p id={`${this.props.dialogId}-description`}>{this.props.children}</p>
+              </div>
+              <div class="rvt-dialog__controls">
+                <button key="yes" type="button" class="rvt-button" onClick={this.testClick}>
+                  <span>{this.props.yesLabel}</span>
+                </button>
+                <button type="button" class="rvt-button rvt-button--secondary" data-rvt-dialog-close={`${this.props.dialogId}-dialog`} >
+                  <span>{this.props.noLabel}</span>
+                </button>
+              </div>
+              <button className="rvt-button rvt-button--plain rvt-dialog__close" data-rvt-dialog-close={`${this.props.dialogId}-dialog`} role="button">
+                <span className="rvt-sr-only">Close</span>
+                <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m3.5 2.086 4.5 4.5 4.5-4.5L13.914 3.5 9.414 8l4.5 4.5-1.414 1.414-4.5-4.5-4.5 4.5L2.086 12.5l4.5-4.5-4.5-4.5L3.5 2.086Z"></path></svg>
+              </button>
+            </div>
         )
     }
 }

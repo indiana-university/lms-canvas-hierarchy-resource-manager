@@ -66,7 +66,7 @@ class PreviewModal extends React.Component {
             items = <p id="preview-title" tabindex="-1">No supplements apply to this course.</p>
         }
         return (
-            <div class="rvt-dialog" id="preview-dialog" role="dialog" tabindex="-1" aria-labelledby="preview-dialog-title"
+            <div class="rvt-dialog" id="preview-dialog" role="dialog" aria-labelledby="preview-dialog-title"
                 data-rvt-dialog="preview-dialog"
                 data-rvt-dialog-modal
                 data-rvt-dialog-darken-page
@@ -83,8 +83,7 @@ class PreviewModal extends React.Component {
                     <span>Close</span>
                 </button>
               </div>
-              <button class="rvt-button rvt-button--plain rvt-dialog__close" data-rvt-dialog-close="preview-dialog" role="button"
-                onClick={this.props.onDismiss}>
+              <button class="rvt-button rvt-button--plain rvt-dialog__close" data-rvt-dialog-close="preview-dialog" role="button">
                 <span class="rvt-sr-only">Close</span>
                 <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m3.5 2.086 4.5 4.5 4.5-4.5L13.914 3.5 9.414 8l4.5 4.5-1.414 1.414-4.5-4.5-4.5 4.5L2.086 12.5l4.5-4.5-4.5-4.5L3.5 2.086Z"></path></svg>
               </button>

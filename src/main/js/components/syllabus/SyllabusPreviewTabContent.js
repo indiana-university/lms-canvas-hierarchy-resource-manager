@@ -45,8 +45,15 @@ class SyllabusPreviewTabContent extends React.Component {
         this.state = {previewItems: [], loading: true, modalOpen: false, courseIdError: false}
 
         this.handlePreview.bind(this)
-        this.handleModalCancel.bind(this)
     }
+
+    componentDidMount() {
+        // Instead of handling this preview via an onclick event on the Preview button, we need to listen for the
+        // rvtDialogOpened event. Otherwise, the modal will open first, then the validation will happen. This
+        // way we can validate first and then stop the opening event if needed
+        document.body.addEventListener('rvtDialogOpened', this.handlePreview);
+    }
+
 
     handlePreview = (event) => {
         
@@ -63,11 +70,9 @@ class SyllabusPreviewTabContent extends React.Component {
 
         } else {
             this.setState({courseIdError: true})
+            // stop the modal from opening
+            event.preventDefault();
         }
-    }
-
-    handleModalCancel(triggerId) {
-        this.setState({modalOpen: false})
     }
 
     render() {
@@ -92,11 +97,10 @@ class SyllabusPreviewTabContent extends React.Component {
                 {courseIdAlert}
 
                 <div className="rvt-button-group rvt-m-top-sm rvt-m-bottom-sm">
-                    <button id="previewButton" className="rvt-button" data-rvt-dialog-trigger="preview-dialog" onClick={this.handlePreview}>Preview</button>
+                    <button id="previewButton" className="rvt-button" data-rvt-dialog-trigger="preview-dialog">Preview</button>
                 </div>
 
-                <PreviewModal loading={this.state.loading} isOpen={this.state.modalOpen} onDismiss={() => this.handleModalCancel("previewButton")}
-                    previewItems={this.state.previewItems} />
+                <PreviewModal loading={this.state.loading} isOpen={this.state.modalOpen} previewItems={this.state.previewItems} />
             </div>
         )
     }

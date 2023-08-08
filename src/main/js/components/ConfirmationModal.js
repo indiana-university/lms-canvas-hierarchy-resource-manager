@@ -40,16 +40,12 @@ class ConfirmationModal extends React.Component {
     
     // the edit/delete/default template modals aren't mounted until they are triggered
     componentDidMount() {  
-        // rivet-react modals do not handle focus
-        // manually set the focus on opening
-        //this.setFocus(this.props.isOpen, this.props.focusId);
+
     }
     
     // the new template modal is mounted immediately so we need to look for update
     componentDidUpdate() {  
-        // rivet-react modals do not handle focus
-        // manually set the focus on opening
-        //this.setFocus(this.props.isOpen, this.props.focusId);
+
     }
     
     setFocus(isOpen, focusId) {
@@ -60,10 +56,6 @@ class ConfirmationModal extends React.Component {
             }
         }     
     }
-
-    testClick() {
-            alert("I work");
-        }
 
     render() {
 

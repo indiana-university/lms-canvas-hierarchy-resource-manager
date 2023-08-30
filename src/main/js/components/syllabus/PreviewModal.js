@@ -66,25 +66,25 @@ class PreviewModal extends React.Component {
             items = <p id="preview-title" tabindex="-1">No supplements apply to this course.</p>
         }
         return (
-            <div class="rvt-dialog" id="preview-dialog" role="dialog" aria-labelledby="preview-dialog-title"
+            <div className="rvt-dialog" id="preview-dialog" role="dialog" aria-labelledby="preview-dialog-title"
                 data-rvt-dialog="preview-dialog"
                 data-rvt-dialog-modal
                 data-rvt-dialog-darken-page
                 data-rvt-dialog-disable-page-interaction
                 hidden>
-              <header class="rvt-dialog__header">
-                <h1 class="rvt-dialog__title" id="preview-dialog-title">Supplements Preview</h1>
+              <header className="rvt-dialog__header">
+                <h1 className="rvt-dialog__title" id="preview-dialog-title">Supplements Preview</h1>
               </header>
-              <div class="rvt-dialog__body">
+              <div className="rvt-dialog__body">
                 {items}
               </div>
-              <div class="rvt-dialog__controls">
-                <button type="button" class="rvt-button rvt-button--secondary" data-rvt-dialog-close="preview-dialog" role="button">
+              <div className="rvt-dialog__controls">
+                <button type="button" className="rvt-button rvt-button--secondary" data-rvt-dialog-close="preview-dialog" role="button">
                     <span>Close</span>
                 </button>
               </div>
-              <button class="rvt-button rvt-button--plain rvt-dialog__close" data-rvt-dialog-close="preview-dialog" role="button">
-                <span class="rvt-sr-only">Close</span>
+              <button className="rvt-button rvt-button--plain rvt-dialog__close" data-rvt-dialog-close="preview-dialog" role="button">
+                <span className="rvt-sr-only">Close</span>
                 <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m3.5 2.086 4.5 4.5 4.5-4.5L13.914 3.5 9.414 8l4.5 4.5-1.414 1.414-4.5-4.5-4.5 4.5L2.086 12.5l4.5-4.5-4.5-4.5L3.5 2.086Z"></path></svg>
               </button>
             </div>

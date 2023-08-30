@@ -113,10 +113,9 @@ class App extends React.Component {
     return (
         <div>
             <div className="rvt-container-xl" id="main-container" role="main">
-                <SuccessAlert displayAlert={this.state.notification.display} alertTitle="Success!" alertMessage={this.state.notification.text} />
-
+                <SuccessAlert displayAlert={this.state.notification.display} alertTitle="Success!" alertMessage={this.state.notification.text}
+                    onDismiss={() => this.setState({notification: {display: false}})} />
                 <h1 className="rvt-ts-36 rvt-p-top-sm rvt-m-bottom-md">{title}</h1>
-
                 {content}
             </div>
             <ScrollUpButton />
@@ -131,7 +130,6 @@ class App extends React.Component {
 }
 
 function NodeManager(props) {
-    //return null;
     return (
         <div className="rvt-tabs" data-rvt-tabs="tabset-1">
           <div className="rvt-tabs__tablist" aria-label="Canvas Node Manager Options" data-rvt-tablist>

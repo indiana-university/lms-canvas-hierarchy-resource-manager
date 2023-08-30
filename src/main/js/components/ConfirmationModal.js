@@ -36,25 +36,68 @@ class ConfirmationModal extends React.Component {
 
     constructor(props) {
         super(props);
+        this.handleLoadingButton.bind(this);
     }
-    
-    // the edit/delete/default template modals aren't mounted until they are triggered
-    componentDidMount() {  
 
+    componentDidMount() {
+        /* The onclick handler on the actual button is ignored or causes an error (maybe a rivet issue?) so add the listener here */
+        const submitButton = document.getElementById(this.props.dialogId + '-yes');
+        if (submitButton) {
+            if(this.props.handleConfirm) {
+                submitButton.addEventListener('click', this.props.handleConfirm);
+            }
+
+            if (this.props.showLoading) {
+                submitButton.addEventListener('click', this.handleLoadingButton);
+            }
+        }
+
+        /* Listen for the dialog close event */
+        const dataId = '[data-rvt-dialog=\"' + this.props.dialogId + '-dialog\"]';
+        const thisDialog = document.querySelector(dataId);
+        if (thisDialog) {
+            if (this.props.onDismiss) {
+                thisDialog.addEventListener('rvtDialogClosed', this.props.onDismiss);
+            }
+
+            if (this.props.showLoading) {
+                thisDialog.addEventListener('rvtDialogClosed', this.resetDialog.bind(this, this.props.dialogId));
+            }
+        }
+    }
+
+    handleLoadingButton(event) {
+        event.target.setAttribute("aria-busy", true);
+        event.target.classList.add("rvt-button--loading");
+        event.target.getElementsByTagName('div')[0].classList.remove("rvt-display-none");
+
+        // disable the buttons in the modal
+        $('.loading-btn').prop('disabled', true);
+
+    }
+
+    resetDialog(dialogId) {
+        var yesButton = $('#' + dialogId + '-yes');
+        yesButton.removeClass("rvt-button--loading");
+        yesButton.removeAttr("aria-busy");
+
+        const loader = yesButton.find(".rvt-loader");
+        loader.removeClass("rvt-display-none");
+
+        // enable the buttons
+        $('.loading-btn').prop('disabled', false);
     }
     
     // the new template modal is mounted immediately so we need to look for update
-    componentDidUpdate() {  
-
+    componentDidUpdate() {
+        alert("dialog updated");
     }
     
-    setFocus(isOpen, focusId) {
-        if (isOpen) {
-            var focusId = document.getElementById(focusId);
-            if (focusId) {
-                focusId.focus();
-            }
-        }     
+    setFocus(focusId) {
+        var focusId = document.getElementById(focusId);
+        if (focusId) {
+            focusId.focus();
+        }
     }
 
     render() {
@@ -71,17 +114,18 @@ class ConfirmationModal extends React.Component {
                 <h1 className="rvt-dialog__title" id={`${this.props.dialogId}-title`}>{this.props.title}</h1>
               </header>
               <div className="rvt-dialog__body">
-                <p id={`${this.props.dialogId}-description`}>{this.props.children}</p>
+                <div id={`${this.props.dialogId}-description`}>{this.props.children}</div>
               </div>
-              <div class="rvt-dialog__controls">
-                <button key="yes" type="button" class="rvt-button" onClick={this.testClick}>
-                  <span>{this.props.yesLabel}</span>
+              <div className="rvt-dialog__controls">
+                <button id={`${this.props.dialogId}-yes`} key="yes" type="button" className="rvt-button loading-btn">
+                  <span className="rvt-button__content">{this.props.yesLabel}</span>
+                  <div className="rvt-loader rvt-loader--xs rvt-display-none" aria-label="Content loading"></div>
                 </button>
-                <button type="button" class="rvt-button rvt-button--secondary" data-rvt-dialog-close={`${this.props.dialogId}-dialog`} >
+                <button type="button" className="rvt-button rvt-button--secondary loading-btn" data-rvt-dialog-close={`${this.props.dialogId}-dialog`} >
                   <span>{this.props.noLabel}</span>
                 </button>
               </div>
-              <button className="rvt-button rvt-button--plain rvt-dialog__close" data-rvt-dialog-close={`${this.props.dialogId}-dialog`} role="button">
+              <button className="rvt-button rvt-button--plain rvt-dialog__close loading-btn" data-rvt-dialog-close={`${this.props.dialogId}-dialog`} role="button">
                 <span className="rvt-sr-only">Close</span>
                 <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m3.5 2.086 4.5 4.5 4.5-4.5L13.914 3.5 9.414 8l4.5 4.5-1.414 1.414-4.5-4.5-4.5 4.5L2.086 12.5l4.5-4.5-4.5-4.5L3.5 2.086Z"></path></svg>
               </button>
@@ -89,6 +133,8 @@ class ConfirmationModal extends React.Component {
         )
     }
 }
+
+
 
 // Set defaults that can be overridden
 ConfirmationModal.defaultProps = {

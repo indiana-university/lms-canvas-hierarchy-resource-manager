@@ -34,6 +34,7 @@ import React from 'react'
 import Select from 'react-select'
 import SelectedTemplate from 'components/coursetemplating/SelectedTemplate'
 import ConfirmationModal from 'components/ConfirmationModal'
+import InlineError from 'components/InlineError'
 import Loading from 'components/Loading.js'
 import axios from 'axios'
 import { isEmpty } from 'lodash';
@@ -58,6 +59,12 @@ class TemplatingTabContent extends React.Component {
         this.handleNewTemplateModalSave.bind(this)
         this.handleNewTemplateModalCancel.bind(this)
         this.handleRefresh.bind(this)
+    }
+
+    componentDidMount() {
+        // the onclick events on the buttons in the modal are never triggered (possibly a rivet issue?)
+        // so we are adding the event listeners here
+
     }
 
     handleHierarchyOptionChange = (selectedOption) => {
@@ -95,7 +102,6 @@ class TemplatingTabContent extends React.Component {
     handleNewTemplateModalCancel = () => {
         resetForm("newTemplateForm");
         this.setState({saveNewTemplateModalOpen: false, defaultModalOpen: false, validation: {}, fileInputKey: Date.now()})
-        document.getElementById('addNewTemplate').focus();
     }
 
     handleNewTemplateModalSave = () => {
@@ -119,38 +125,38 @@ class TemplatingTabContent extends React.Component {
 
         if (isEmpty(formData.get('displayName'))) {
             validationPassed = false;
-            validation['displayName'] = {variant: 'danger', note: <React.Fragment><strong>Display Name</strong> is required</React.Fragment>};
+            validation['displayName'] = {note: <React.Fragment><strong>Display Name</strong> is required</React.Fragment>};
         }
 
         if (isEmpty(formData.get('contactName'))) {
             validationPassed = false;
-            validation['contactName'] = {variant: 'danger', note: <React.Fragment><strong>Contact Name</strong> is required</React.Fragment>};
+            validation['contactName'] = {note: <React.Fragment><strong>Contact Name</strong> is required</React.Fragment>};
         }
 
         if (isEmpty(formData.get('contactUsername'))) {
             validationPassed = false;
-            validation['contactUsername'] = {variant: 'danger', note: <React.Fragment><strong>Contact Username</strong> is required</React.Fragment>};
+            validation['contactUsername'] = {note: <React.Fragment><strong>Contact Username</strong> is required</React.Fragment>};
         }
 
         if (isEmpty(formData.get('sourceCourseId'))) {
             validationPassed = false;
-            validation['sourceCourseId'] = {variant: 'danger', note: <React.Fragment><strong>Source Course ID</strong> is required</React.Fragment>};
+            validation['sourceCourseId'] = {note: <React.Fragment><strong>Source Course ID</strong> is required</React.Fragment>};
         }
 
         if (isEmpty(formData.get('sponsor'))) {
             validationPassed = false;
-            validation['sponsor'] = {variant: 'danger', note: <React.Fragment><strong>Sponsor</strong> is required</React.Fragment>};
+            validation['sponsor'] = {note: <React.Fragment><strong>Sponsor</strong> is required</React.Fragment>};
         }
 
         if (isEmpty(formData.get('description'))) {
             validationPassed = false;
-            validation['description'] = {variant: 'danger', note: <React.Fragment><strong>Description</strong> is required</React.Fragment>};
+            validation['description'] = {note: <React.Fragment><strong>Description</strong> is required</React.Fragment>};
         }
 
         //Can't check the results from formData here as it turns an undefined result into the string "undefined"
         if (_.isEmpty(fileInput)) {
             validationPassed = false;
-            validation['templateFileInput'] = {variant: 'danger', note: 'Please upload a file'};
+            validation['templateFileInput'] = {note: 'Please upload a file'};
         }
 
         if (validationPassed) {
@@ -175,6 +181,12 @@ class TemplatingTabContent extends React.Component {
                     }
                     this.setState({validation: validation, disableModalButtons: false})
                 })
+
+                //TODO how are the errors above triggered?
+
+                const newTemplateDialog = document.querySelector('[data-rvt-dialog="new-template-dialog"]')
+                newTemplateDialog.close();
+
         } else {
             this.setState({validation: validation})
         }
@@ -190,27 +202,118 @@ class TemplatingTabContent extends React.Component {
     let fileAlert = null
     let fileAttributes = {'aria-required': 'true'}
     if (this.state.validation.templateFileInput) {
-        fileAlert = <InlineError id="missingFileAlert" alertMessage={this.state.validation.templateFileInput.note}></InlineError>
+        fileAlert = <InlineError errorId="missingFileAlert" message={this.state.validation.templateFileInput.note}></InlineError>
         fileAttributes = {'aria-required': 'true', 'aria-describedby': 'missingFileAlert', 'aria-invalid': true}
+    }
+
+    let displayNameAlert = null
+    let displayNameProps = {};
+    if (this.state.validation.displayName) {
+        displayNameAlert = <InlineError errorId="displayNameError" message={this.state.validation.displayName.note}></InlineError>
+        displayNameProps = {'aria-describedby': 'displayNameError', 'aria-invalid': "true"};
+    }
+
+    let sponsorAlert = null
+    let sponsorProps = {};
+    if (this.state.validation.sponsor) {
+        sponsorAlert = <InlineError errorId="sponsorError" message={this.state.validation.sponsor.note}></InlineError>
+        sponsorProps = {'aria-describedby': 'sponsorError', 'aria-invalid': "true"};
+    }
+
+    let contactNameAlert = null
+    let contactNameProps = {};
+    if (this.state.validation.contactName) {
+        contactNameAlert = <InlineError errorId="contactNameError" message={this.state.validation.contactName.note}></InlineError>
+        contactNameProps = {'aria-describedby': 'contactNameError', 'aria-invalid': "true"};
+    }
+
+    let contactUsernameAlert = null
+    let contactUsernameProps = {};
+    if (this.state.validation.contactUsername) {
+        contactUsernameAlert = <InlineError errorId="contactUsernameError" message={this.state.validation.contactUsername.note}></InlineError>
+        contactUsernameProps = {'aria-describedby': 'contactUsernameError', 'aria-invalid': "true"};
+    }
+
+    let sourceCourseIdAlert = null
+    let sourceCourseIdProps = {};
+    if (this.state.validation.sourceCourseId) {
+        sourceCourseIdAlert = <InlineError errorId="sourceCourseIdError" message={this.state.validation.sourceCourseId.note}></InlineError>
+        sourceCourseIdProps = {'aria-describedby': 'sourceCourseIdError', 'aria-invalid': "true"};
+    }
+
+    let descriptionAlert = null
+    let descriptionProps = {};
+    if (this.state.validation.description) {
+        descriptionAlert = <InlineError errorId="descriptionError" message={this.state.validation.description.note}></InlineError>
+        descriptionProps = {'aria-describedby': 'descriptionError', 'aria-invalid': "true"};
     }
 
   return (
         <div>
             <span className="rvt-ts-26 rvt-text-bold rvt-display-block rvt-m-bottom-md">Manage templates</span>
-            <label id="nodeSelectCourseTemplate" className="rvt-label rvt-ts-16">Node!</label>
+            <label id="nodeSelectCourseTemplate" className="rvt-label rvt-ts-16">Node</label>
             <div className="rvt-m-bottom-md">
                 <Select options={this.props.hierarchy} isSearchable={true} isClearable={true} placeholder="Select Node" className="node-select"
                     onChange={this.handleHierarchyOptionChange} classNamePrefix="node-rivet" aria-labelledby="nodeSelectCourseTemplate" />
             </div>
 
             <button id="addNewTemplate" className="rvt-button rvt-button--secondary rvt-m-bottom-sm" onClick={this.handleNewTemplateModalOpen}
-                disabled={!this.state.selectedNode} aria-disabled={!this.state.selectedNode}>New Template</button>
+                disabled={!this.state.selectedNode} aria-disabled={!this.state.selectedNode} data-rvt-dialog-trigger="new-template-dialog">
+                New Template
+            </button>
 
             <Loading loading={this.state.loading} />
             <NodeTable selectedNode={this.state.selectedNode} nodeListInfo={this.state.nodeListInfo}
                     notificationHandler={this.props.notificationHandler} refreshHandler={this.handleRefresh}/>
 
+            {/* this container below is important. React will give a rendering error without it */}
+            <div>
+                <ConfirmationModal isOpen={this.state.saveNewTemplateModalOpen} handleConfirm={this.handleNewTemplateModalSave}
+                    title="New Template" onDismiss={this.handleNewTemplateModalCancel} yesLabel="Submit" noLabel="Cancel"
+                    showLoading={this.state.disableModalButtons} focusId="newDisplayName" dialogId="new-template">
+                    <form id="newTemplateForm">
+                        <label for="newDisplayName" className="rvt-label rvt-ts-16">Display Name (required)</label>
+                        <input id="newDisplayName" type="text" className="rvt-text-input" {...displayNameProps} />
+                        {displayNameAlert}
 
+                        <label for="newSponsor" className="rvt-label rvt-ts-16 rvt-m-top-sm">Sponsor (required)</label>
+                        <input id="newSponsor" type="text" className="rvt-text-input" {...sponsorProps} />
+                        {sponsorAlert}
+
+                        <label for="newContactName" className="rvt-label rvt-ts-16 rvt-m-top-sm">Contact Name (required)</label>
+                        <input id="newContactName" type="text" className="rvt-text-input" {...contactNameProps} />
+                        {contactNameAlert}
+
+                        <label for="newContactUsername" className="rvt-label rvt-ts-16 rvt-m-top-sm">Contact Username (required)</label>
+                        <input id="newContactUsername" type="text" className="rvt-text-input" {...contactUsernameProps} />
+                        {contactUsernameAlert}
+
+                        <label for="newSourceCourseId" className="rvt-label rvt-ts-16 rvt-m-top-sm">Source Course ID (required)</label>
+                        <input id="newSourceCourseId" type="text" className="rvt-text-input" {...sourceCourseIdProps} />
+                        {sourceCourseIdAlert}
+
+                        <label for="newCcUrl" className="rvt-label rvt-ts-16 rvt-m-top-sm">Preview URL (optional)</label>
+                        <input id="newCcUrl" type="text" className="rvt-text-input" />
+
+                        <label for="newDescription" className="rvt-label rvt-ts-16 rvt-m-top-sm">Description (required)</label>
+                        <textarea id="newDescription" className="rvt-textarea" {...descriptionProps} />
+                        {descriptionAlert}
+
+                        <div className="rvt-file rvt-m-top-sm" data-rvt-file-input="newTemplateFileInput">
+                          <input type="file" data-rvt-file-input-button="newTemplateFileInput" id="newTemplateFileInput" aria-describedby="new-file-description"
+                              {...fileAttributes} key={this.state.fileInputKey} />
+                          <label for="newTemplateFileInput" className="rvt-button">
+                            <span>Upload a file</span>
+                            <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="M2 1h8.414L14 4.586V15H2V1Zm2 2v10h8V7.5H7.5V3H4Zm5.5 0v2.5H12v-.086L9.586 3H9.5Z"></path></svg>
+                          </label>
+                          <div className="rvt-file__preview" data-rvt-file-input-preview="newTemplateFileInput" id="new-file-description">
+                            No file selected
+                          </div>
+                        </div>
+                        {fileAlert}
+                    </form>
+                </ConfirmationModal>
+            </div>
         </div>
       );
     }
@@ -222,7 +325,10 @@ function NodeTable(props) {
               return "";
           } else if (props.nodeListInfo != null && props.nodeListInfo.length > 0) {
               return <SelectedTemplate nodeListInfo={props.nodeListInfo} selectedNode={props.selectedNode}
-                                        notificationHandler={props.notificationHandler} refreshHandler={props.refreshHandler}/>;
+                                        notificationHandler={props.notificationHandler}
+                                        refreshHandler={props.refreshHandler}
+                                        key={"templates-" + props.nodeListInfo.length} />;
+            {/*This key is important because it forces a re-mount otherwise the modal triggers on any new templates won't work}*/}
           }
           return <p>No templates for selected node</p>;
 
@@ -231,17 +337,6 @@ function NodeTable(props) {
 function resetForm(formId) {
     var theForm = document.getElementById(formId);
     theForm.reset();
-}
-
-function InlineError(props) {
-    return (
-        <div class="rvt-inline-alert rvt-inline-alert--standalone rvt-inline-alert--danger">
-          <span class="rvt-inline-alert__icon">
-            <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m8 6.586-2-2L4.586 6l2 2-2 2L6 11.414l2-2 2 2L11.414 10l-2-2 2-2L10 4.586l-2 2Z"></path><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8Z"></path></svg>
-          </span>
-          <span class="rvt-inline-alert__message" id="{props.id}">{props.alertMessage}</span>
-        </div>
-    )
 }
 
 export default TemplatingTabContent

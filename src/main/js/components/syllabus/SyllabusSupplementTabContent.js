@@ -79,6 +79,8 @@ class SyllabusSupplementTabContent extends React.Component {
         this.handleCancel.bind(this)
         this.handleModalCancel.bind(this)
         this.filePickerCallback.bind(this)
+
+
     }
     
     componentDidMount() {
@@ -88,7 +90,19 @@ class SyllabusSupplementTabContent extends React.Component {
         var nodeSelect = document.querySelector('*[id^="react-select"]');
         if (nodeSelect) {
             nodeSelect.setAttribute('aria-labelledby', 'selectNodeLabel');
-        }    
+        }
+
+        // the onclick events on the buttons in the modal are never triggered (possibly a rivet issue?)
+        // so we are adding the event listeners here
+        const saveSupplementButton = document.getElementById("save-supplement-yes");
+        if (saveSupplementButton) {
+            /*saveSupplementButton.addEventListener('click', this.handleModalSave);*/
+        }
+
+        const deleteSupplementButton = document.getElementById("delete-supplement-yes");
+        if (deleteSupplementButton) {
+            /*deleteSupplementButton.addEventListener('click', this.handleModalDelete);*/
+        }
     }
 
     handleInit = (event) => {
@@ -278,6 +292,9 @@ class SyllabusSupplementTabContent extends React.Component {
           this.dialogSaved(data, "The syllabus supplement has been saved to the " + this.state.selectedNode + " account in the " + this.state.selectedTermName + " term.",
             true, false, true);
         })
+
+    const saveDialog = document.querySelector('[data-rvt-dialog="save-supplement-dialog"]')
+    saveDialog.close();
   }
 
   handleModalDelete = () => {
@@ -291,6 +308,9 @@ class SyllabusSupplementTabContent extends React.Component {
           this.dialogSaved(data, "The syllabus supplement for " + this.state.selectedNode + " has been deleted.",
             true, true, true)
         })
+
+    const deleteDialog = document.querySelector('[data-rvt-dialog="delete-supplement-dialog"]')
+    deleteDialog.close();
   }
 
     dialogSaved = (syllabusData, notificationText, saveDisabled, deleteDisabled, cancelDisabled) => {
@@ -364,24 +384,24 @@ render() {
     }
 
     var contactUserProps = {}
-    var contactUserNote = <React.Fragment></React.Fragment>
+    var contactUserNote = null
     if (this.state.usernameLengthError) {
         contactUserNote = <InlineError message="Supplement Contact Username is required." errorId="usernameError"></InlineError>
         contactUserProps = {'aria-describedby': 'usernameError', 'aria-invalid': "true"};
     }
 
     var contactEmailProps = {}
-    var contactEmailNote = <React.Fragment></React.Fragment>
+    var contactEmailNote = null
     if (this.state.emailLengthError) {
         contactEmailNote = <InlineError message="Supplement Contact Email is required." errorId="emailError"></InlineError>
         contactEmailProps = {'aria-describedby': 'emailError', 'aria-invalid': "true"};
     }
 
     var contentProps = {}
-    var contentNote = <React.Fragment></React.Fragment>
+    var contentNote = null
     if (this.state.contentLengthError) {
         contentNote = <InlineError message="Supplement Text is required." errorId="contentError"></InlineError>
-        contactEmailProps = {'aria-describedby': 'contentError', 'aria-invalid': "true"};
+        contentProps = {'aria-describedby': 'contentError', 'aria-invalid': "true"};
     }
 
 
@@ -433,7 +453,7 @@ render() {
             {contactUserNote}
 
             <label for="contact-email" className="rvt-label rvt-ts-16 rvt-m-top-md">Contact Email (required)</label>
-            <input id="contact-email" type="text" name={this.emailInput} label="Contact Email (required)" className="rvt-text-input"
+            <input id="contact-email" type="text" name={this.emailInput} className="rvt-text-input"
                 disabled={this.state.inputsDisabled} value={this.state.syllabus.contactEmail}
                 onChange={this.handleTextInputChange} {...contactEmailProps}
                 maxLength="255" />
@@ -442,9 +462,9 @@ render() {
             <div className="rvt-button-group rvt-button-group--right rvt-m-top-xl rvt-m-bottom-sm">
                 <button id="syllabusSupplementCancelButton" className="rvt-button rvt-button--secondary"
                     disabled={this.state.cancelDisabled} onClick={this.handleCancel}>Cancel</button>
-                <button id="syllabusSupplementDeleteButton" className="rvt-button" onClick={this.handleDeleteDialogOpen}
-                    disabled={this.state.deleteDisabled}>Delete</button>
-                <button id="syllabusSupplementSaveButton" className="rvt-button" onClick={this.handleSaveDialogOpen}
+                <button id="syllabusSupplementDeleteButton" type="button" className="rvt-button" onClick={this.handleDeleteDialogOpen}
+                    disabled={this.state.deleteDisabled} data-rvt-dialog-trigger="delete-supplement-dialog">Delete</button>
+                <button id="syllabusSupplementSaveButton" data-rvt-dialog-trigger="save-supplement-dialog"type="button" className="rvt-button" onClick={this.handleSaveDialogOpen}
                     disabled={this.state.saveDisabled}>Save</button>
             </div>
 

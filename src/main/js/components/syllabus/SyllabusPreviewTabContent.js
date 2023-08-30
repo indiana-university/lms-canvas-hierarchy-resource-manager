@@ -50,8 +50,12 @@ class SyllabusPreviewTabContent extends React.Component {
     componentDidMount() {
         // Instead of handling this preview via an onclick event on the Preview button, we need to listen for the
         // rvtDialogOpened event. Otherwise, the modal will open first, then the validation will happen. This
-        // way we can validate first and then stop the opening event if needed
-        document.body.addEventListener('rvtDialogOpened', this.handlePreview);
+        // way we can validate first and then stop the opening event if needed.
+        const previewDialog = document.querySelector('[data-rvt-dialog="preview-dialog"]');
+        if (previewDialog) {
+            previewDialog.addEventListener('rvtDialogOpened', this.handlePreview);
+        }
+
     }
 
 

@@ -40,6 +40,7 @@ import Collapsible from 'rivet-collapsible/dist/js/rivet-collapsible.min.js';
 import './ApplyTemplate.css';
 import Loading from 'components/Loading.js';
 import ConfirmationModal from 'components/ConfirmationModal.js';
+import SuccessAlert from 'components/SuccessAlert.js'
 import RvtSvg from 'components/RvtSvg'
 
 class ApplyTemplate extends React.Component {
@@ -92,6 +93,7 @@ class ApplyTemplate extends React.Component {
     }
 
     handleModalCancel(triggerId) {
+        alert("cancel triggered");
         this.setState({applyModalOpen: false, modalData: {}})
         
         // return focus to the trigger element
@@ -106,7 +108,10 @@ class ApplyTemplate extends React.Component {
             .then(response => response.data)
             .then((data) => {
                 this.dialogSaved();
+                const applyTemplateDialog = document.querySelector('[data-rvt-dialog="apply-template-dialog"]');
+                applyTemplateDialog.close();
             })
+
     }
 
     dialogSaved = () => {
@@ -125,10 +130,10 @@ class ApplyTemplate extends React.Component {
 
             return (
                 <React.Fragment>
-                    <div role="alert">
-                        <SuccessMessage displayAlert={this.state.notificationDisplay} closeAlert={this.closeAlert} />
-                    </div>
-                    <p className="limitContentWidth">
+                    <SuccessAlert displayAlert={this.state.notificationDisplay} alertTitle="Success!"
+                        alertMessage="Your request to apply the template has been submitted. These changes may take some time to propagate through your Canvas course. You will need to refresh the page for the changes to appear."
+                        onDismiss={() => this.setState({notificationDisplay: false})} />
+                    <p className="">
                         The following templates are available for you to apply to your course.
                         Templates are grouped by the sponsoring unit (e.g., university, campus, school, department).
                         To preview a template in Canvas Commons before applying it to your course, click the "Preview" button, if available.
@@ -137,9 +142,11 @@ class ApplyTemplate extends React.Component {
                     <div className="rvt-accordion rvt-m-top-xs" data-rvt-accordion="template-accordion">
                         {nodes}
                     </div>
+
                     <ConfirmationModal isOpen={this.state.applyModalOpen} handleConfirm={this.handleModalApply} title="Apply Template"
                                        onDismiss={() => this.handleModalCancel("apply-" + this.state.modalData.templateId)}
-                                       yesLabel="Apply" noLabel="Cancel" focusId="templateWarning" dialogId="apply-template">
+                                       yesLabel="Apply" noLabel="Cancel" triggerId={`apply-${this.state.modalData.templateId}`} dialogId="apply-template"
+                                       showLoading="true">
                         <React.Fragment>
                             <div id="templateWarning" tabindex="-1">
                                 <span className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
@@ -177,10 +184,10 @@ class ApplyTemplate extends React.Component {
         <h2 className="rvt-accordion__summary">
             <button id={`${nodeId}-label`} className="rvt-accordion__toggle" data-rvt-accordion-trigger={`${nodeId}-accordion`}>
                 <span className="rvt-accordion__toggle-text" id={`${nodeId}-name`}>{props.nodeName}</span>
-                <div class="rvt-accordion__toggle-icon">
+                <div className="rvt-accordion__toggle-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
                       <g fill="currentColor">
-                        <path class="rvt-accordion__icon-bar" d="M8,15a1,1,0,0,1-1-1V2A1,1,0,0,1,9,2V14A1,1,0,0,1,8,15Z" />
+                        <path className="rvt-accordion__icon-bar" d="M8,15a1,1,0,0,1-1-1V2A1,1,0,0,1,9,2V14A1,1,0,0,1,8,15Z" />
                         <path d="M14,9H2A1,1,0,0,1,2,7H14a1,1,0,0,1,0,2Z" />
                       </g>
                     </svg>
@@ -243,23 +250,6 @@ class ApplyTemplate extends React.Component {
             id={"apply-" + props.templateData.id}
             data-rvt-dialog-trigger="apply-template-dialog">Apply Template <span className="rvt-sr-only">{props.templateData.displayName}</span></button>
     )
-  }
-
-  function SuccessMessage(props) {
-    if (props.displayAlert) {
-        return (
-        <div className="rvt-alert rvt-alert--success [ rvt-m-top-md ]" aria-labelledby="success-alert-title" data-rvt-alert="success">
-          <div className="rvt-alert__title" id="success-alert-title">Success</div>
-          <p className="rvt-alert__message">Your request to apply the template has been submitted. These changes may take some time to propagate through your Canvas course. You will need to refresh the page for the changes to appear.</p>
-          <button className="rvt-alert__dismiss" data-rvt-alert-close>
-            <span className="rvt-sr-only">Close</span>
-            <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m3.5 2.086 4.5 4.5 4.5-4.5L13.914 3.5 9.414 8l4.5 4.5-1.414 1.414-4.5-4.5-4.5 4.5L2.086 12.5l4.5-4.5-4.5-4.5L3.5 2.086Z"></path></svg>
-          </button>
-        </div>
-        )
-    } else {
-        return null;
-    }
   }
 
 export default ApplyTemplate;

@@ -5,7 +5,7 @@
     <artifactId>lms-lti-hierarchyresourcemanager</artifactId>
     <packaging>jar</packaging>
     <name>lms-lti-hierarchyresourcemanager</name>
-    <version>0.99.1-SNAPSHOT</version>
+    <version>5.0.3-SNAPSHOT</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

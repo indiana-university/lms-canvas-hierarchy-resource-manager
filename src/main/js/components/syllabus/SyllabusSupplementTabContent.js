@@ -79,8 +79,6 @@ class SyllabusSupplementTabContent extends React.Component {
         this.handleCancel.bind(this)
         this.handleModalCancel.bind(this)
         this.filePickerCallback.bind(this)
-
-
     }
     
     componentDidMount() {
@@ -90,18 +88,6 @@ class SyllabusSupplementTabContent extends React.Component {
         var nodeSelect = document.querySelector('*[id^="react-select"]');
         if (nodeSelect) {
             nodeSelect.setAttribute('aria-labelledby', 'selectNodeLabel');
-        }
-
-        // the onclick events on the buttons in the modal are never triggered (possibly a rivet issue?)
-        // so we are adding the event listeners here
-        const saveSupplementButton = document.getElementById("save-supplement-yes");
-        if (saveSupplementButton) {
-            /*saveSupplementButton.addEventListener('click', this.handleModalSave);*/
-        }
-
-        const deleteSupplementButton = document.getElementById("delete-supplement-yes");
-        if (deleteSupplementButton) {
-            /*deleteSupplementButton.addEventListener('click', this.handleModalDelete);*/
         }
     }
 
@@ -217,13 +203,11 @@ class SyllabusSupplementTabContent extends React.Component {
     // for the red outline around the content editor.
     handleContentErrorIndicator(isContentValid) {
         if (isContentValid) {
-            //document.getElementById('supplementContentContainer').classList.remove('alert-danger-inline');
             var editor = document.getElementById('supplementText_ifr');
             if (editor) {
                 editor.removeAttribute('aria-invalid');
             }
         } else {
-            //document.getElementById('supplementContentContainer').classList.add('alert-danger-inline');
             var editor = document.getElementById('supplementText_ifr');
             if (editor) {
                 editor.setAttribute('aria-invalid', 'true');
@@ -469,12 +453,12 @@ render() {
             </div>
 
             <ConfirmationModal isOpen={this.state.saveModalOpen} handleConfirm={this.handleModalSave} title="Save Confirmation"
-                    onDismiss={() => this.handleModalCancel("syllabusSupplementSaveButton")} focusId="confirmSupplementSave" dialogId="save-supplement">
-                <p id="confirmSupplementSave" tabindex="-1">Are you sure you wish to save this supplement to the {this.state.selectedNode} account for the {this.state.selectedTermName} term?</p>
+                    onDismiss={() => this.handleModalCancel("syllabusSupplementSaveButton")} dialogId="save-supplement">
+                <p id="confirmSupplementSave">Are you sure you wish to save this supplement to the {this.state.selectedNode} account for the {this.state.selectedTermName} term?</p>
             </ConfirmationModal>
             <ConfirmationModal isOpen={this.state.deleteModalOpen} handleConfirm={this.handleModalDelete} title="Delete Confirmation"
-                    onDismiss={() => this.handleModalCancel("syllabusSupplementDeleteButton")} focusId="confirmSupplementDelete" dialogId="delete-supplement">
-                <p id="confirmSupplementDelete" tabindex="-1">Are you sure you wish to delete this supplement from the {this.state.selectedNode} account for the {this.state.selectedTermName} term?</p>
+                    onDismiss={() => this.handleModalCancel("syllabusSupplementDeleteButton")} dialogId="delete-supplement">
+                <p id="confirmSupplementDelete">Are you sure you wish to delete this supplement from the {this.state.selectedNode} account for the {this.state.selectedTermName} term?</p>
             </ConfirmationModal>
         </div>
 

@@ -40,7 +40,6 @@ import TemplatingTabContent from 'components/coursetemplating/TemplatingTabConte
 import SyllabusSupplementTabContent from 'components/syllabus/SyllabusSupplementTabContent'
 import SyllabusPreviewTabContent from 'components/syllabus/SyllabusPreviewTabContent'
 import {CircleArrow as ScrollUpButton} from 'react-scroll-up-button';
-//import {Alert, Tabs, Tab} from "rivet-react"
 
 class App extends React.Component {
   /**
@@ -79,18 +78,9 @@ class App extends React.Component {
   }
   
   componentDidUpdate() {
-    // add aria-describedby to the alert message so the content is read by the screenreader
     // move focus to the msg or else focus disappears on success
     if (this.state.notification.display) {
-        var messageText = document.querySelector('.rvt-alert__message');
-        if (messageText) {
-            messageText.id = "alertMsgId";
-            var alertDialog = document.querySelector('.rvt-alert');
-            if (alertDialog) {
-                alertDialog.setAttribute('aria-describedby', messageText.id);
-            }
-        }
-        var notification = document.querySelector('.rvt-alert__dismiss');
+        var notification = document.querySelector('.rvt-alert');
         if (notification) {
             notification.focus();
         }

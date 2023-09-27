@@ -36,7 +36,6 @@ class ConfirmationModal extends React.Component {
 
     constructor(props) {
         super(props);
-        this.handleLoadingButton.bind(this);
     }
 
     componentDidMount() {
@@ -48,7 +47,7 @@ class ConfirmationModal extends React.Component {
             }
 
             if (this.props.showLoading) {
-                submitButton.addEventListener('click', this.handleLoadingButton);
+                submitButton.addEventListener('click', this.handleLoadingButton.bind(this, this.props.loadingText));
             }
         }
 
@@ -66,14 +65,56 @@ class ConfirmationModal extends React.Component {
         }
     }
 
-    handleLoadingButton(event) {
-        event.target.setAttribute("aria-busy", true);
-        event.target.classList.add("rvt-button--loading");
-        event.target.getElementsByTagName('div')[0].classList.remove("rvt-display-none");
+    componentWillUnmount() {
+        // clean up the event listeners
+        const submitButton = document.getElementById(this.props.dialogId + '-yes');
+        if (submitButton) {
+            if (this.props.handleConfirm) {
+                submitButton.removeEventListener('click', this.props.handleConfirm);
+            }
+
+            if (this.props.showLoading) {
+                submitButton.removeEventListener('click', this.handleLoadingButton.bind(this, this.props.loadingText));
+            }
+        }
+
+        const dataId = '[data-rvt-dialog=\"' + this.props.dialogId + '-dialog\"]';
+        const thisDialog = document.querySelector(dataId);
+        if (thisDialog) {
+            if (this.props.onDismiss) {
+                thisDialog.removeEventListener('rvtDialogClosed', this.props.onDismiss);
+            }
+
+            if (this.props.showLoading) {
+                thisDialog.removeEventListener('rvtDialogClosed', this.resetDialog.bind(this, this.props.dialogId));
+            }
+        }
+    }
+
+    handleLoadingButton(loadingText, event) {
+        var loadingButton = $(event.target);
+        loadingButton.attr("aria-busy", true);
+        loadingButton.addClass("rvt-button--loading");
+
+        var rvtLoader = loadingButton.find('.rvt-loader').first();
+        if (rvtLoader) {
+            rvtLoader.removeClass("rvt-display-none");
+        }
+
+        // Screenreader-only text to notify there is some loading action happening
+        var spinner = loadingButton.find('.spinner-sr-text').first();
+        if (spinner) {
+            if (loadingText) {
+                spinner.text(loadingText);
+            } else {
+                spinner.text("Loading");
+            }
+
+            spinner.removeClass("rvt-display-none");
+        }
 
         // disable the buttons in the modal
         $('.loading-btn').prop('disabled', true);
-
     }
 
     resetDialog(dialogId) {
@@ -82,44 +123,38 @@ class ConfirmationModal extends React.Component {
         yesButton.removeAttr("aria-busy");
 
         const loader = yesButton.find(".rvt-loader");
-        loader.removeClass("rvt-display-none");
+        loader.addClass("rvt-display-none");
+
+        var spinner = yesButton.find('.spinner-sr-text').first();
+        if (spinner) {
+            spinner.addClass("rvt-display-none");
+        }
 
         // enable the buttons
         $('.loading-btn').prop('disabled', false);
-    }
-    
-    // the new template modal is mounted immediately so we need to look for update
-    componentDidUpdate() {
-        alert("dialog updated");
-    }
-    
-    setFocus(focusId) {
-        var focusId = document.getElementById(focusId);
-        if (focusId) {
-            focusId.focus();
-        }
     }
 
     render() {
 
         return (
-            <div className="rvt-dialog" id={this.props.dialogId} role="dialog" tabindex="-1" aria-labelledby={`${this.props.dialogId}-title`}
+            <div className="rvt-dialog" id={this.props.dialogId} role="dialog" aria-labelledby={`${this.props.dialogId}-title`}
                 aria-describedby={`${this.props.dialogId}-description`}
                 data-rvt-dialog={`${this.props.dialogId}-dialog`}
                 data-rvt-dialog-modal
                 data-rvt-dialog-darken-page
                 data-rvt-dialog-disable-page-interaction
                 hidden>
-              <header className="rvt-dialog__header">
-                <h1 className="rvt-dialog__title" id={`${this.props.dialogId}-title`}>{this.props.title}</h1>
-              </header>
+
+              <h1 className="rvt-dialog__header rvt-dialog__title" id={`${this.props.dialogId}-title`} tabIndex="-1">{this.props.title}</h1>
+
               <div className="rvt-dialog__body">
                 <div id={`${this.props.dialogId}-description`}>{this.props.children}</div>
               </div>
               <div className="rvt-dialog__controls">
                 <button id={`${this.props.dialogId}-yes`} key="yes" type="button" className="rvt-button loading-btn">
                   <span className="rvt-button__content">{this.props.yesLabel}</span>
-                  <div className="rvt-loader rvt-loader--xs rvt-display-none" aria-label="Content loading"></div>
+                  <span className="rvt-loader rvt-loader--xs rvt-display-none"></span>
+                  <p aria-live="polite"><span class="rvt-sr-only spinner-sr-text rvt-display-none">Loading</span></p>
                 </button>
                 <button type="button" className="rvt-button rvt-button--secondary loading-btn" data-rvt-dialog-close={`${this.props.dialogId}-dialog`} >
                   <span>{this.props.noLabel}</span>
@@ -133,8 +168,6 @@ class ConfirmationModal extends React.Component {
         )
     }
 }
-
-
 
 // Set defaults that can be overridden
 ConfirmationModal.defaultProps = {

@@ -148,6 +148,12 @@ class SelectedTemplate extends React.Component {
             editDialog.close();
         } else {
             this.setState({validation: validation})
+
+            // move focus to the first invalid form element
+            var invalidInputs = $("input[aria-invalid='true']");
+            if (invalidInputs.length > 0) {
+                invalidInputs.first().focus();
+            }
         }
     }
 
@@ -162,15 +168,42 @@ class SelectedTemplate extends React.Component {
         });
     }
 
+    handleModalOpening = (triggerId, dialogId) => {
+       // since multiple buttons trigger the same modal, we have to remove the data-rvt-dialog-trigger attribute
+       // from all buttons except the one clicked to ensure rivet focuses on the correct button when the
+       // modal is cancelled
+       var triggerButtons = $('button[data-rvt-dialog-trigger="' + dialogId + '"]');
+       triggerButtons.removeAttr("data-rvt-dialog-trigger");
+
+       // add it back to the trigger
+       $("#" + triggerId).attr('data-rvt-dialog-trigger', dialogId);
+
+       // move focus to the modal title
+       var dialogHeading = $('[data-rvt-dialog="' + dialogId + '"]').find("h1.rvt-dialog__title").first();
+       dialogHeading.focus();
+    }
+
     handleEditTemplateModalOpen = (event) => {
         var templateId = event.target.getAttribute("data-id");
         var templateForEdit = this.lookupTemplate(templateId);
+
+        const triggerId = "edit-" + templateId;
+        const dialogId = "edit-template-dialog";
+
+        this.handleModalOpening(triggerId, dialogId);
+
         this.setState({editTemplateModalOpen: true, templateForEdit: templateForEdit, validation: {}})
     }
 
     handleDeleteDialogOpen = () => {
         const templateId = event.target.getAttribute("data-id");
         var templateForDelete = this.lookupTemplate(templateId);
+
+        const triggerId = "delete-" + templateId;
+        const dialogId = "delete-template-dialog"
+
+        this.handleModalOpening(triggerId, dialogId);
+
         this.setState({deleteModalOpen: true, deleteData: {templateId: templateId, displayName: templateForDelete.displayName,
                 nodeName: this.props.selectedNode, isdefault: templateForDelete.defaultTemplate}})
     }
@@ -194,6 +227,11 @@ class SelectedTemplate extends React.Component {
     handleDefaultModalOpen = () => {
         const templateId = event.target.getAttribute("data-id");
         var templateForDefaultChanges = this.lookupTemplate(templateId);
+
+        const triggerId = "default-" + templateId;
+        const dialogId = "change-default-dialog";
+
+        this.handleModalOpening(triggerId, dialogId);
 
         const nodehasdefault = event.target.getAttribute("data-nodehasdefault");
         this.setState({defaultModalOpen: true, defaultData: {templateId: templateId, displayName: templateForDefaultChanges.displayName,
@@ -293,7 +331,7 @@ class SelectedTemplate extends React.Component {
         let editModal =
             <ConfirmationModal isOpen={this.state.editTemplateModalOpen} handleConfirm={this.handleEditTemplateModalSave} dialogId="edit-template"
                 title="Edit Template" onDismiss={() => this.handleModalCancel("edit-" + this.state.templateForEdit?.id)} yesLabel="Submit" noLabel="Cancel"
-                showLoading={this.state.disableModalButtons} focusId="editDisplayName">
+                showLoading={this.state.disableModalButtons}>
                 <form id="editTemplateForm">
                     <input type="hidden" id="editTemplateId" key={`templateId_${this.state.inputKey}`} defaultValue={this.state.templateForEdit?.id} />
 
@@ -331,7 +369,7 @@ class SelectedTemplate extends React.Component {
                         defaultValue={this.state.templateForEdit?.description} {...descriptionProps} />
                     {descriptionAlert}
 
-                    <div className="rvt-file rvt-m-top-sm" data-rvt-file-input="editTemplateFileInput">
+                    <div className="rvt-file rvt-m-top-md" data-rvt-file-input="editTemplateFileInput">
                       <input type="file" data-rvt-file-input-button="editTemplateFileInput" id="editTemplateFileInput"
                         aria-describedby="edit-file-description" key={`file_${this.state.inputKey}`} />
                       <label for="editTemplateFileInput" className="rvt-button">
@@ -344,8 +382,6 @@ class SelectedTemplate extends React.Component {
                     </div>
                 </form>
             </ConfirmationModal>
-
-
 
         return (
             <div>
@@ -371,12 +407,12 @@ class SelectedTemplate extends React.Component {
 
                 <ConfirmationModal isOpen={this.state.deleteModalOpen} handleConfirm={this.handleModalDelete} dialogId="delete-template"
                     title="Delete Template" onDismiss={() => this.handleModalCancel("delete-" + this.state.deleteData.templateId)}
-                    yesLabel="Delete" noLabel="Cancel" focusId={"delete-instr-" + this.state.deleteData.templateId}>
+                    yesLabel="Delete" noLabel="Cancel">
                     <DeleteModalText deleteData={this.state.deleteData} />
                 </ConfirmationModal>
 
                 <ConfirmationModal isOpen={this.state.defaultModalOpen} handleConfirm={this.handleModalDefault}
-                    title="Change Default Status" focusId={"default-instr-" + this.state.defaultData.templateId}
+                    title="Change Default Status"
                     onDismiss={() => this.handleModalCancel("default-" + this.state.defaultData.templateId)}
                     dialogId="change-default">
                     <DefaultModalText defaultData={this.state.defaultData} />
@@ -399,39 +435,6 @@ class SelectedTemplate extends React.Component {
             title.innerText = headers[header_index].textContent + ": ";
             cell.prepend(title);
         });
-
-        // Delete dialog
-        const deleteDialog = document.querySelector('[data-rvt-dialog="delete-template-dialog"]');
-        if (deleteDialog) {
-            /*deleteDialog.addEventListener('rvtDialogOpened', this.handleDeleteDialogOpen);*/
-            /*deleteDialog.addEventListener('rvtDialogClosed', this.handleModalCancel);*/
-        }
-
-        const deleteTemplateConfirm = document.getElementById("delete-template-yes");
-        if (deleteTemplateConfirm) {
-            /*deleteTemplateConfirm.addEventListener('click', this.handleModalDelete);*/
-        }
-
-        // Submit and cancel in edit modal
-        const editDialog = document.querySelector('[data-rvt-dialog="edit-template-dialog"]');
-        if (editDialog) {
-            /*editDialog.addEventListener('rvtDialogClosed', this.handleModalCancel);*/
-        }
-        const editTemplateConfirm = document.getElementById("edit-template-yes");
-        if (editTemplateConfirm) {
-            /*editTemplateConfirm.addEventListener('click', this.handleEditTemplateModalSave);*/
-        }
-
-        // Submit and cancel in default modal
-        const defaultDialog = document.querySelector('[data-rvt-dialog="change-default-dialog"]');
-        if (defaultDialog) {
-            /*defaultDialog.addEventListener('rvtDialogClosed', this.handleModalCancel);*/
-        }
-        const defaultTemplateConfirm = document.getElementById("change-default-yes");
-        if (defaultTemplateConfirm) {
-            /*defaultTemplateConfirm.addEventListener('click', this.handleModalDefault);*/
-        }
-
     }
 }
 
@@ -458,20 +461,21 @@ function Template(props) {
                             data-rvt-dialog-trigger="edit-template-dialog" onClick={props.handleEditTemplateModalOpen}>
                         Edit <span className="rvt-sr-only">{props.templateData.displayName}</span>
                     </button>
-                    <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm rvt-m-top-sm rvt-m-top-none-xl-up"
+                    <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm"
                         data-id={props.templateData.id} id={"delete-" + props.templateData.id}
                         onClick={props.handleDeleteDialogOpen}  data-rvt-dialog-trigger="delete-template-dialog">
                         Delete <span className="rvt-sr-only">{props.templateData.displayName}</span>
                     </button>
-                    <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm rvt-m-top-sm rvt-m-top-none-xl-up"
+                    <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm"
                         onClick={props.handleDefaultModalOpen} data-id={props.templateData.id} data-nodehasdefault={props.nodeHasDefault}
                         id={"default-" + props.templateData.id} data-rvt-dialog-trigger="change-default-dialog">
                         <span>{props.templateData.defaultTemplate ? 'Disable Default' : 'Enable Default'}</span>
                         <span className="rvt-sr-only"> for {props.templateData.displayName}</span>
                     </button>
-                    <button type="button" className="rvt-button rvt-button--secondary rvt-m-top-sm rvt-m-top-none-xl-up" onClick={props.handleMoreClick}
+                    <button type="button" className="rvt-button rvt-button--secondary" onClick={props.handleMoreClick}
                             aria-expanded="false" aria-controls={props.templateData.id}>
-                        More Details <span className="rvt-sr-only"> for {props.templateData.displayName}</span>
+                        <span>More Details </span>
+                        <span className="rvt-sr-only"> for {props.templateData.displayName}</span>
                     </button>
                 </td>
                 <td role="cell" id={props.templateData.id} hidden>

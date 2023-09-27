@@ -61,12 +61,6 @@ class TemplatingTabContent extends React.Component {
         this.handleRefresh.bind(this)
     }
 
-    componentDidMount() {
-        // the onclick events on the buttons in the modal are never triggered (possibly a rivet issue?)
-        // so we are adding the event listeners here
-
-    }
-
     handleHierarchyOptionChange = (selectedOption) => {
       var stateVal = ""
       if (selectedOption) {
@@ -97,6 +91,10 @@ class TemplatingTabContent extends React.Component {
     handleNewTemplateModalOpen = () => {
         resetForm("newTemplateForm");
         this.setState({saveNewTemplateModalOpen: true})
+
+        // move focus to the dialog heading
+        var dialogHeading = $("h1.rvt-dialog__title").first();
+        dialogHeading.focus();
     }
 
     handleNewTemplateModalCancel = () => {
@@ -270,7 +268,7 @@ class TemplatingTabContent extends React.Component {
             <div>
                 <ConfirmationModal isOpen={this.state.saveNewTemplateModalOpen} handleConfirm={this.handleNewTemplateModalSave}
                     title="New Template" onDismiss={this.handleNewTemplateModalCancel} yesLabel="Submit" noLabel="Cancel"
-                    showLoading={this.state.disableModalButtons} focusId="newDisplayName" dialogId="new-template">
+                    showLoading={this.state.disableModalButtons} dialogId="new-template">
                     <form id="newTemplateForm">
                         <label for="newDisplayName" className="rvt-label rvt-ts-16">Display Name (required)</label>
                         <input id="newDisplayName" type="text" className="rvt-text-input" {...displayNameProps} />

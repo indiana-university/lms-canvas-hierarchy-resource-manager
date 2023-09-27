@@ -49,7 +49,7 @@ class SuccessAlert extends React.Component {
         let alertContent = null;
         if (this.props.displayAlert) {
             alertContent = (
-                <div className="rvt-alert rvt-alert--success [ rvt-m-top-md ]" aria-labelledby="success-alert-title" data-rvt-alert="success">
+                <div className="rvt-alert rvt-alert--success [ rvt-m-top-md ]" aria-labelledby="success-alert-title" data-rvt-alert="success" tabIndex="-1">
                   <div className="rvt-alert__title" id="success-alert-title">{this.props.alertTitle}</div>
                   <p className="rvt-alert__message">{this.props.alertMessage}</p>
                   <button className="rvt-alert__dismiss" data-rvt-alert-close>
@@ -59,8 +59,6 @@ class SuccessAlert extends React.Component {
                 </div>
             )
         }
-
-
 
         return (
             <div role="alert">

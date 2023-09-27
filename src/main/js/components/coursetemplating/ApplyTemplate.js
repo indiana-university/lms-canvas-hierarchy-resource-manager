@@ -88,30 +88,45 @@ class ApplyTemplate extends React.Component {
         const templateId = event.target.getAttribute("data-template-id");
         const templateName = event.target.getAttribute("data-template-name");
         const nodeName = event.target.getAttribute("data-node-name");
+        const triggerId = "apply-" + templateId;
+
+        // move focus to the dialog heading
+        var dialogHeading = $("#apply-template").find("h1.rvt-dialog__title").first();
+        dialogHeading.focus();
+
+        // When the rivet dialog closes, it always is the last event.  So when we try to manually move
+        // the focus on cancel, it gets overridden when the modal closes (the first instance of data-rvt-dialog-trigger always gets focus).
+        // To combat this, we remove the trigger from every button except the one that was just clicked. We trick rivet so it
+        // returns focus to the correct button
+
+        // remove the data-rvt-dialog-trigger from all buttons
+        var triggerButtons = $('button[data-rvt-dialog-trigger="apply-template-dialog"]');
+        triggerButtons.removeAttr("data-rvt-dialog-trigger");
+
+        // add it back to the trigger
+        $("#" + triggerId).attr('data-rvt-dialog-trigger', 'apply-template-dialog');
 
         this.setState({applyModalOpen: true, modalData: {templateId: templateId, templateName: templateName, nodeName: nodeName}})
     }
 
-    handleModalCancel(triggerId) {
-        alert("cancel triggered");
+    handleModalCancel() {
         this.setState({applyModalOpen: false, modalData: {}})
-        
-        // return focus to the trigger element
-        var trigger = document.getElementById(triggerId);
-        if (trigger) {
-            trigger.focus();
-        }
     }
 
     handleModalApply = () => {
         axios.post(`/app/tool/template/apply/${courseId}/${this.state.modalData.templateId}`)
             .then(response => response.data)
             .then((data) => {
-                this.dialogSaved();
+
                 const applyTemplateDialog = document.querySelector('[data-rvt-dialog="apply-template-dialog"]');
                 applyTemplateDialog.close();
-            })
 
+                this.dialogSaved();
+
+                const notificationText = "Your request to apply the template has been submitted. These changes may take some time to propagate through your Canvas course. You will need to refresh the page for the changes to appear."
+                this.props.notificationHandler({display: true, text: notificationText});
+
+            })
     }
 
     dialogSaved = () => {
@@ -130,10 +145,7 @@ class ApplyTemplate extends React.Component {
 
             return (
                 <React.Fragment>
-                    <SuccessAlert displayAlert={this.state.notificationDisplay} alertTitle="Success!"
-                        alertMessage="Your request to apply the template has been submitted. These changes may take some time to propagate through your Canvas course. You will need to refresh the page for the changes to appear."
-                        onDismiss={() => this.setState({notificationDisplay: false})} />
-                    <p className="">
+                    <p>
                         The following templates are available for you to apply to your course.
                         Templates are grouped by the sponsoring unit (e.g., university, campus, school, department).
                         To preview a template in Canvas Commons before applying it to your course, click the "Preview" button, if available.
@@ -144,11 +156,10 @@ class ApplyTemplate extends React.Component {
                     </div>
 
                     <ConfirmationModal isOpen={this.state.applyModalOpen} handleConfirm={this.handleModalApply} title="Apply Template"
-                                       onDismiss={() => this.handleModalCancel("apply-" + this.state.modalData.templateId)}
-                                       yesLabel="Apply" noLabel="Cancel" triggerId={`apply-${this.state.modalData.templateId}`} dialogId="apply-template"
-                                       showLoading="true">
+                               onDismiss={() => this.handleModalCancel()} yesLabel="Apply" noLabel="Cancel"
+                               dialogId="apply-template" showLoading="true" loadingText="Applying template">
                         <React.Fragment>
-                            <div id="templateWarning" tabindex="-1">
+                            <div id="templateWarning">
                                 <span className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
                                 <p>
                                     Please note that this action may make changes to your course navigation (including removing the IU
@@ -184,14 +195,14 @@ class ApplyTemplate extends React.Component {
         <h2 className="rvt-accordion__summary">
             <button id={`${nodeId}-label`} className="rvt-accordion__toggle" data-rvt-accordion-trigger={`${nodeId}-accordion`}>
                 <span className="rvt-accordion__toggle-text" id={`${nodeId}-name`}>{props.nodeName}</span>
-                <div className="rvt-accordion__toggle-icon">
+                <span className="rvt-accordion__toggle-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
                       <g fill="currentColor">
                         <path className="rvt-accordion__icon-bar" d="M8,15a1,1,0,0,1-1-1V2A1,1,0,0,1,9,2V14A1,1,0,0,1,8,15Z" />
                         <path d="M14,9H2A1,1,0,0,1,2,7H14a1,1,0,0,1,0,2Z" />
                       </g>
                     </svg>
-                </div>
+                </span>
             </button>
         </h2>
         <div className="rvt-accordion__panel"

@@ -58,6 +58,14 @@ class SyllabusPreviewTabContent extends React.Component {
 
     }
 
+    componentWillUnmount() {
+        // clean up the listener
+        const previewDialog = document.querySelector('[data-rvt-dialog="preview-dialog"]');
+        if (previewDialog) {
+            previewDialog.removeEventListener('rvtDialogOpened', this.handlePreview);
+        }
+    }
+
 
     handlePreview = (event) => {
         
@@ -74,6 +82,12 @@ class SyllabusPreviewTabContent extends React.Component {
 
         } else {
             this.setState({courseIdError: true})
+
+            var invalidInputs = $("input[aria-invalid='true']");
+            if (invalidInputs.length > 0) {
+                invalidInputs.first().focus();
+            }
+
             // stop the modal from opening
             event.preventDefault();
         }

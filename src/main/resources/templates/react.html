@@ -39,11 +39,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Canvas Node Manager</title>
     <link rel="stylesheet" type="text/css" th:href="@{/app/css/hrm.css}"/>
-    <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/rivet.min.css}" />
+    <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/css/rivet.min.css}" />
 </head>
 <body>
 
-<div id="root"></div>
+<div id="root" data-rvt-dialog-mount></div>
 
 <footer class="rvt-ts-12 rvt-container-xl rvt-m-top-lg">
     <div id="footer" th:text="${@serverInfo}"></div>
@@ -61,7 +61,7 @@
 
 <script th:src="@{/app/jsreact/lms-lti-hierarchyresourcemanager/lms-lti-hierarchyresourcemanager.js}"></script>
 <script type="text/javascript" th:src="@{/app/webjars/jquery/jquery.min.js}"></script>
-<script type="text/javascript" th:src="@{/app/jsrivet/rivet.min.js}"></script>
+<script type="text/javascript" th:src="@{/app/js/rivet.min.js}"></script>
 <script>
   Rivet.init();
 </script>

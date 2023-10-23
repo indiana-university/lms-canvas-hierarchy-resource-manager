@@ -36,62 +36,40 @@ class ConfirmationModal extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.confirmationActions.bind(this);
+        this.handleLoadingButton.bind(this);
     }
 
     componentDidMount() {
-        /* The onclick handler on the actual button is ignored or causes an error (maybe a rivet issue?) so add the listener here */
-        const submitButton = document.getElementById(this.props.dialogId + '-yes');
-        if (submitButton) {
-            if(this.props.handleConfirm) {
-                submitButton.addEventListener('click', this.props.handleConfirm);
-            }
-
-            if (this.props.showLoading) {
-                submitButton.addEventListener('click', this.handleLoadingButton.bind(this, this.props.loadingText));
-            }
-        }
-
         /* Listen for the dialog close event */
         const dataId = '[data-rvt-dialog=\"' + this.props.dialogId + '-dialog\"]';
         const thisDialog = document.querySelector(dataId);
         if (thisDialog) {
-            if (this.props.onDismiss) {
-                thisDialog.addEventListener('rvtDialogClosed', this.props.onDismiss);
-            }
-
-            if (this.props.showLoading) {
-                thisDialog.addEventListener('rvtDialogClosed', this.resetDialog.bind(this, this.props.dialogId));
-            }
+           thisDialog.addEventListener('rvtDialogClosed', this.resetDialog.bind(this, this.props.dialogId));
         }
     }
 
     componentWillUnmount() {
         // clean up the event listeners
-        const submitButton = document.getElementById(this.props.dialogId + '-yes');
-        if (submitButton) {
-            if (this.props.handleConfirm) {
-                submitButton.removeEventListener('click', this.props.handleConfirm);
-            }
-
-            if (this.props.showLoading) {
-                submitButton.removeEventListener('click', this.handleLoadingButton.bind(this, this.props.loadingText));
-            }
-        }
-
         const dataId = '[data-rvt-dialog=\"' + this.props.dialogId + '-dialog\"]';
         const thisDialog = document.querySelector(dataId);
         if (thisDialog) {
-            if (this.props.onDismiss) {
-                thisDialog.removeEventListener('rvtDialogClosed', this.props.onDismiss);
-            }
-
             if (this.props.showLoading) {
                 thisDialog.removeEventListener('rvtDialogClosed', this.resetDialog.bind(this, this.props.dialogId));
             }
         }
     }
 
-    handleLoadingButton(loadingText, event) {
+    confirmationActions(event, confirmationHandler, showLoading, loadingText, dialogId) {
+        confirmationHandler();
+
+        if (showLoading) {
+            this.handleLoadingButton(dialogId, loadingText, event);
+        }
+    }
+
+    handleLoadingButton(dialogId, loadingText, event) {
         var loadingButton = $(event.target);
         loadingButton.attr("aria-busy", true);
         loadingButton.addClass("rvt-button--loading");
@@ -114,7 +92,9 @@ class ConfirmationModal extends React.Component {
         }
 
         // disable the buttons in the modal
-        $('.loading-btn').prop('disabled', true);
+        var mainDialog = $('#' + dialogId);
+        var dialogControls = mainDialog.find('.loading-btn');
+        dialogControls.prop('disabled', true);
     }
 
     resetDialog(dialogId) {
@@ -151,16 +131,17 @@ class ConfirmationModal extends React.Component {
                 <div id={`${this.props.dialogId}-description`}>{this.props.children}</div>
               </div>
               <div className="rvt-dialog__controls">
-                <button id={`${this.props.dialogId}-yes`} key="yes" type="button" className="rvt-button loading-btn">
+                <button id={`${this.props.dialogId}-yes`} key="yes" type="button" className="rvt-button loading-btn" onClick={(event) => this.confirmationActions(event, this.props.handleConfirm, this.props.showLoading, this.props.loadingText, this.props.dialogId)}>
                   <span className="rvt-button__content">{this.props.yesLabel}</span>
                   <span className="rvt-loader rvt-loader--xs rvt-display-none"></span>
                   <p aria-live="polite"><span class="rvt-sr-only spinner-sr-text rvt-display-none">Loading</span></p>
                 </button>
-                <button type="button" className="rvt-button rvt-button--secondary loading-btn" data-rvt-dialog-close={`${this.props.dialogId}-dialog`} >
+                <button type="button" className="rvt-button rvt-button--secondary loading-btn" data-rvt-dialog-close={`${this.props.dialogId}-dialog`} onClick={this.props.onDismiss} >
                   <span>{this.props.noLabel}</span>
                 </button>
               </div>
-              <button className="rvt-button rvt-button--plain rvt-dialog__close loading-btn" data-rvt-dialog-close={`${this.props.dialogId}-dialog`} role="button">
+              <button className="rvt-button rvt-button--plain rvt-dialog__close loading-btn" data-rvt-dialog-close={`${this.props.dialogId}-dialog`} role="button"
+                onClick={this.props.onDismiss}>
                 <span className="rvt-sr-only">Close</span>
                 <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m3.5 2.086 4.5 4.5 4.5-4.5L13.914 3.5 9.414 8l4.5 4.5-1.414 1.414-4.5-4.5-4.5 4.5L2.086 12.5l4.5-4.5-4.5-4.5L3.5 2.086Z"></path></svg>
               </button>

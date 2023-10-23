@@ -57,8 +57,6 @@ class SyllabusSupplementTabContent extends React.Component {
             deleteDisabled: true,
             saveDisabled: true,
             inputsDisabled: true,
-            saveModalOpen: false,
-            deleteModalOpen: false,
             titleLengthError: false,
             usernameLengthError: false,
             emailLengthError: false,
@@ -72,8 +70,6 @@ class SyllabusSupplementTabContent extends React.Component {
         this.handleTermOptionChange.bind(this)
         this.handleTextInputChange.bind(this)
         this.handleEditorChange.bind(this)
-        this.handleSaveDialogOpen.bind(this)
-        this.handleDeleteDialogOpen.bind(this)
         this.handleModalSave.bind(this)
         this.handleModalDelete.bind(this)
         this.handleCancel.bind(this)
@@ -248,17 +244,7 @@ class SyllabusSupplementTabContent extends React.Component {
         return cancelDisabled
     }
 
-  handleSaveDialogOpen = () => {
-    this.setState({saveModalOpen: true})
-  }
-
-  handleDeleteDialogOpen = () => {
-    this.setState({deleteModalOpen: true})
-  }
-
   handleModalCancel(triggerId) {
-    this.setState({saveModalOpen: false, deleteModalOpen: false})
-    
     // return focus to the trigger element
     var trigger = document.getElementById(triggerId);
     if (trigger) {
@@ -300,7 +286,7 @@ class SyllabusSupplementTabContent extends React.Component {
     dialogSaved = (syllabusData, notificationText, saveDisabled, deleteDisabled, cancelDisabled) => {
         this.props.notificationHandler({display: true, text: notificationText})
         this.setState({initialSyllabus: this.cloneObject(syllabusData), syllabus: this.cloneObject(syllabusData), saveDisabled: saveDisabled,
-            deleteDisabled: deleteDisabled, cancelDisabled: cancelDisabled, saveModalOpen: false, deleteModalOpen: false})
+            deleteDisabled: deleteDisabled, cancelDisabled: cancelDisabled})
     }
 
     handleCancel = () => {
@@ -445,18 +431,18 @@ render() {
 
             <div className="rvt-button-group rvt-button-group--right rvt-m-top-xl rvt-m-bottom-sm">
                 <button id="syllabusSupplementCancelButton" className="rvt-button rvt-button--secondary"
-                    disabled={this.state.cancelDisabled} onClick={this.handleCancel}>Cancel</button>
-                <button id="syllabusSupplementDeleteButton" type="button" className="rvt-button" onClick={this.handleDeleteDialogOpen}
+                    disabled={this.state.cancelDisabled} onClick={this.handleCancel}>Reset</button>
+                <button id="syllabusSupplementDeleteButton" type="button" className="rvt-button"
                     disabled={this.state.deleteDisabled} data-rvt-dialog-trigger="delete-supplement-dialog">Delete</button>
-                <button id="syllabusSupplementSaveButton" data-rvt-dialog-trigger="save-supplement-dialog"type="button" className="rvt-button" onClick={this.handleSaveDialogOpen}
+                <button id="syllabusSupplementSaveButton" data-rvt-dialog-trigger="save-supplement-dialog"type="button" className="rvt-button"
                     disabled={this.state.saveDisabled}>Save</button>
             </div>
 
-            <ConfirmationModal isOpen={this.state.saveModalOpen} handleConfirm={this.handleModalSave} title="Save Confirmation"
+            <ConfirmationModal handleConfirm={this.handleModalSave} title="Save Confirmation"
                     onDismiss={() => this.handleModalCancel("syllabusSupplementSaveButton")} dialogId="save-supplement">
                 <p id="confirmSupplementSave">Are you sure you wish to save this supplement to the {this.state.selectedNode} account for the {this.state.selectedTermName} term?</p>
             </ConfirmationModal>
-            <ConfirmationModal isOpen={this.state.deleteModalOpen} handleConfirm={this.handleModalDelete} title="Delete Confirmation"
+            <ConfirmationModal handleConfirm={this.handleModalDelete} title="Delete Confirmation"
                     onDismiss={() => this.handleModalCancel("syllabusSupplementDeleteButton")} dialogId="delete-supplement">
                 <p id="confirmSupplementDelete">Are you sure you wish to delete this supplement from the {this.state.selectedNode} account for the {this.state.selectedTermName} term?</p>
             </ConfirmationModal>

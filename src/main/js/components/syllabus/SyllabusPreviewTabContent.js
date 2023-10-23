@@ -42,7 +42,7 @@ class SyllabusPreviewTabContent extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {previewItems: [], loading: true, modalOpen: false, courseIdError: false}
+        this.state = {previewItems: [], loading: true, courseIdError: false}
 
         this.handlePreview.bind(this)
     }
@@ -73,7 +73,7 @@ class SyllabusPreviewTabContent extends React.Component {
         var courseId = courseIdInput.value
         
         if (courseId && courseId.trim().length > 0) {
-            this.setState({ previewItems: [], loading: true, modalOpen: true, courseIdError: false })
+            this.setState({ previewItems: [], loading: true, courseIdError: false })
             axios.get(`/app/tool/syllabus/preview/${courseId}`)
                       .then(response => response.data)
                       .then((data) => {
@@ -118,7 +118,7 @@ class SyllabusPreviewTabContent extends React.Component {
                     <button id="previewButton" className="rvt-button" data-rvt-dialog-trigger="preview-dialog">Preview</button>
                 </div>
 
-                <PreviewModal loading={this.state.loading} isOpen={this.state.modalOpen} previewItems={this.state.previewItems} />
+                <PreviewModal loading={this.state.loading} previewItems={this.state.previewItems} />
             </div>
         )
     }

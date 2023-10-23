@@ -51,7 +51,6 @@ class ApplyTemplate extends React.Component {
             nodeHierarchy: [],
             coursePublished: true,
             loading: true,
-            applyModalOpen: false,
             modalData: {},
             notificationDisplay: false
         }
@@ -106,11 +105,11 @@ class ApplyTemplate extends React.Component {
         // add it back to the trigger
         $("#" + triggerId).attr('data-rvt-dialog-trigger', 'apply-template-dialog');
 
-        this.setState({applyModalOpen: true, modalData: {templateId: templateId, templateName: templateName, nodeName: nodeName}})
+        this.setState({modalData: {templateId: templateId, templateName: templateName, nodeName: nodeName}})
     }
 
     handleModalCancel() {
-        this.setState({applyModalOpen: false, modalData: {}})
+        this.setState({modalData: {}})
     }
 
     handleModalApply = () => {
@@ -130,7 +129,7 @@ class ApplyTemplate extends React.Component {
     }
 
     dialogSaved = () => {
-        this.setState({notificationDisplay: true, applyModalOpen: false, modalData: {}})
+        this.setState({notificationDisplay: true, modalData: {}})
     }
 
     render() {
@@ -155,9 +154,9 @@ class ApplyTemplate extends React.Component {
                         {nodes}
                     </div>
 
-                    <ConfirmationModal isOpen={this.state.applyModalOpen} handleConfirm={this.handleModalApply} title="Apply Template"
+                    <ConfirmationModal handleConfirm={this.handleModalApply} title="Apply Template"
                                onDismiss={() => this.handleModalCancel()} yesLabel="Apply" noLabel="Cancel"
-                               dialogId="apply-template" showLoading="true" loadingText="Applying template">
+                               dialogId="apply-template" showLoading loadingText="Applying template">
                         <React.Fragment>
                             <div id="templateWarning">
                                 <span className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
@@ -206,8 +205,7 @@ class ApplyTemplate extends React.Component {
             </button>
         </h2>
         <div className="rvt-accordion__panel"
-            id={`${nodeId}-accordion`}
-            data-rvt-accordion-panel={`${nodeId}-accordion`}>
+            id={`${nodeId}-accordion`} data-rvt-accordion-panel={`${nodeId}-accordion`}>
             <table id={`${nodeId}-table`}>
                 <caption className="rvt-sr-only">{`${props.nodeName} templates`}</caption>
                 <thead>

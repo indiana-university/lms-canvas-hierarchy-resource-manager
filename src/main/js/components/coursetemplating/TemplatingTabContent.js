@@ -47,7 +47,6 @@ class TemplatingTabContent extends React.Component {
             selectedNode: "",
             nodeListInfo: [],
             fileUploadDisabled: true,
-            saveNewTemplateModalOpen: false,
             loading: false,
             validation: {},
             fileInputKey: Date.now(),
@@ -90,7 +89,6 @@ class TemplatingTabContent extends React.Component {
 
     handleNewTemplateModalOpen = () => {
         resetForm("newTemplateForm");
-        this.setState({saveNewTemplateModalOpen: true})
 
         // move focus to the dialog heading
         var dialogHeading = $("h1.rvt-dialog__title").first();
@@ -99,7 +97,7 @@ class TemplatingTabContent extends React.Component {
 
     handleNewTemplateModalCancel = () => {
         resetForm("newTemplateForm");
-        this.setState({saveNewTemplateModalOpen: false, defaultModalOpen: false, validation: {}, fileInputKey: Date.now()})
+        this.setState({validation: {}, fileInputKey: Date.now()})
     }
 
     handleNewTemplateModalSave = () => {
@@ -170,30 +168,26 @@ class TemplatingTabContent extends React.Component {
                     resetForm("newTemplateForm");
                     this.dialogSaved("The template " + data.displayName + " has been associated with the " + this.state.selectedNode + " account.");
                     this.nodeDataLookup(this.state.selectedNode);
+
+                    const newTemplateDialog = document.querySelector('[data-rvt-dialog="new-template-dialog"]')
+                    newTemplateDialog.close();
                 })
                 .catch((error) => {
                     if (error.response.status == 413) {
-                        validation['templateFileInput'] = {variant: 'danger', note: 'Template file is too large and cannot be processed by the server'};
+                        validation['templateFileInput'] = {note: 'Template file is too large and cannot be processed by the server'};
                     } else {
-                        validation['templateFileInput'] = {variant: 'danger', note: 'There was an unknown error while processing your file upload'};
+                        validation['templateFileInput'] = {note: 'There was an unknown error while processing your file upload'};
                     }
                     this.setState({validation: validation, disableModalButtons: false})
                 })
-
-                //TODO how are the errors above triggered?
-
-                const newTemplateDialog = document.querySelector('[data-rvt-dialog="new-template-dialog"]')
-                newTemplateDialog.close();
-
         } else {
             this.setState({validation: validation})
         }
     }
 
   dialogSaved = (notificationText) => {
-  //      console.log(inputKey)
         this.props.notificationHandler({display: true, text: notificationText})
-        this.setState({saveNewTemplateModalOpen: false, validation: {}, fileInputKey: Date.now(), disableModalButtons: false})
+        this.setState({validation: {}, fileInputKey: Date.now(), disableModalButtons: false})
     }
 
   render() {
@@ -268,7 +262,7 @@ class TemplatingTabContent extends React.Component {
             <div>
                 <ConfirmationModal isOpen={this.state.saveNewTemplateModalOpen} handleConfirm={this.handleNewTemplateModalSave}
                     title="New Template" onDismiss={this.handleNewTemplateModalCancel} yesLabel="Submit" noLabel="Cancel"
-                    showLoading={this.state.disableModalButtons} dialogId="new-template">
+                    loadingText="Saving template" dialogId="new-template">
                     <form id="newTemplateForm">
                         <label for="newDisplayName" className="rvt-label rvt-ts-16">Display Name (required)</label>
                         <input id="newDisplayName" type="text" className="rvt-text-input" {...displayNameProps} />
@@ -304,7 +298,7 @@ class TemplatingTabContent extends React.Component {
                             <span>Upload a file</span>
                             <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="M2 1h8.414L14 4.586V15H2V1Zm2 2v10h8V7.5H7.5V3H4Zm5.5 0v2.5H12v-.086L9.586 3H9.5Z"></path></svg>
                           </label>
-                          <div className="rvt-file__preview" data-rvt-file-input-preview="newTemplateFileInput" id="new-file-description">
+                          <div className="rvt-file__preview" data-rvt-file-input-preview="newTemplateFileInput" id="new-file-description" key={this.state.fileInputKey}>
                             No file selected
                           </div>
                         </div>

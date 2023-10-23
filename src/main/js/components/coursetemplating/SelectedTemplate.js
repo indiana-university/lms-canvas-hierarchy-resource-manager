@@ -41,9 +41,6 @@ class SelectedTemplate extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            deleteModalOpen: false,
-            defaultModalOpen: false,
-            editTemplateModalOpen: false,
             deleteData: {},
             defaultData: {},
             templateForEdit: null,
@@ -61,7 +58,7 @@ class SelectedTemplate extends React.Component {
         this.handleModalDefault.bind(this)
         this.handleDefaultModalOpen.bind(this)
 
-        /*this.handleModalCancel.bind(this)*/
+        this.handleModalCancel.bind(this)
         this.handleMoreClick.bind(this)
     }
 
@@ -134,18 +131,20 @@ class SelectedTemplate extends React.Component {
                     resetForm("editTemplateForm");
                     this.dialogSaved("The template " + data.displayName + " has been updated in the " + this.props.selectedNode + " account.");
                     this.props.refreshHandler();
+
+                    const editDialog = document.querySelector('[data-rvt-dialog="edit-template-dialog"]');
+                    editDialog.close();
+
+                    this.focusOnAlert();
                 })
                 .catch((error) => {
                     if (error.response.status == 413) {
-                        validation['templateFileInput'] = {variant: 'danger', note: 'Template file is too large and cannot be processed by the server'};
+                        validation['templateFileInput'] = {note: 'Template file is too large and cannot be processed by the server'};
                     } else {
-                        validation['templateFileInput'] = {variant: 'danger', note: 'There was an unknown error while processing your file upload'};
+                        validation['templateFileInput'] = {note: 'There was an unknown error while processing your file upload'};
                     }
                     this.setState({validation: validation, disableModalButtons: false})
                 })
-
-            const editDialog = document.querySelector('[data-rvt-dialog="edit-template-dialog"]');
-            editDialog.close();
         } else {
             this.setState({validation: validation})
 
@@ -159,7 +158,14 @@ class SelectedTemplate extends React.Component {
 
     dialogSaved = (notificationText) => {
         this.props.notificationHandler({display: true, text: notificationText})
-        this.setState({editTemplateModalOpen: false, validation: {}, inputKey: Date.now(), templateForEdit: null, disableModalButtons: false})
+        this.setState({validation: {}, inputKey: Date.now(), templateForEdit: null, disableModalButtons: false})
+    }
+
+    focusOnAlert() {
+        var notification = document.querySelector('.rvt-alert');
+        if (notification) {
+            notification.focus();
+        }
     }
 
     lookupTemplate = (templateId) => {
@@ -192,7 +198,7 @@ class SelectedTemplate extends React.Component {
 
         this.handleModalOpening(triggerId, dialogId);
 
-        this.setState({editTemplateModalOpen: true, templateForEdit: templateForEdit, validation: {}})
+        this.setState({templateForEdit: templateForEdit, validation: {}})
     }
 
     handleDeleteDialogOpen = () => {
@@ -204,7 +210,7 @@ class SelectedTemplate extends React.Component {
 
         this.handleModalOpening(triggerId, dialogId);
 
-        this.setState({deleteModalOpen: true, deleteData: {templateId: templateId, displayName: templateForDelete.displayName,
+        this.setState({deleteData: {templateId: templateId, displayName: templateForDelete.displayName,
                 nodeName: this.props.selectedNode, isdefault: templateForDelete.defaultTemplate}})
     }
 
@@ -215,13 +221,15 @@ class SelectedTemplate extends React.Component {
         axios.post("/app/tool/template/delete", formData)
             .then(response => response.data)
             .then((data) => {
-                this.setState({deleteModalOpen: false, deleteData: {}})    
+                this.setState({deleteData: {}})
                 this.props.notificationHandler({display: true, text: "The template was deleted from the " + this.props.selectedNode + " account."})
                 this.props.refreshHandler();
-            })
 
-        const deleteDialog = document.querySelector('[data-rvt-dialog="delete-template-dialog"]');
-        deleteDialog.close();
+                const deleteDialog = document.querySelector('[data-rvt-dialog="delete-template-dialog"]');
+                deleteDialog.close();
+
+                this.focusOnAlert();
+            })
     }
 
     handleDefaultModalOpen = () => {
@@ -234,7 +242,7 @@ class SelectedTemplate extends React.Component {
         this.handleModalOpening(triggerId, dialogId);
 
         const nodehasdefault = event.target.getAttribute("data-nodehasdefault");
-        this.setState({defaultModalOpen: true, defaultData: {templateId: templateId, displayName: templateForDefaultChanges.displayName,
+        this.setState({defaultData: {templateId: templateId, displayName: templateForDefaultChanges.displayName,
                 nodeName: this.props.selectedNode, disabling: templateForDefaultChanges.defaultTemplate, nodehasdefault: nodehasdefault}})
     }
 
@@ -245,18 +253,19 @@ class SelectedTemplate extends React.Component {
         axios.post("/app/tool/template/defaultchange", formData)
             .then(response => response.data)
             .then((data) => {
-                this.setState({defaultModalOpen: false, defaultData: {}})
+                this.setState({defaultData: {}})
                 this.props.notificationHandler({display: true, text: "Default settings were updated."})
                 this.props.refreshHandler();
-            })
 
-        const defaultDialog = document.querySelector('[data-rvt-dialog="change-default-dialog"]');
-        defaultDialog.close();
+                const defaultDialog = document.querySelector('[data-rvt-dialog="change-default-dialog"]');
+                defaultDialog.close();
+
+                this.focusOnAlert();
+            })
     }
 
     handleModalCancel = () => {
-        this.setState({editTemplateModalOpen: false, deleteModalOpen: false, deleteData: {}, defaultModalOpen: false,
-                defaultData: {}, templateForEdit: null, validation: {}, inputKey: Date.now()})
+        this.setState({deleteData: {}, defaultData: {}, templateForEdit: null, validation: {}, inputKey: Date.now()})
     }
 
     handleMoreClick = (event) => {
@@ -329,9 +338,8 @@ class SelectedTemplate extends React.Component {
         }
 
         let editModal =
-            <ConfirmationModal isOpen={this.state.editTemplateModalOpen} handleConfirm={this.handleEditTemplateModalSave} dialogId="edit-template"
-                title="Edit Template" onDismiss={() => this.handleModalCancel("edit-" + this.state.templateForEdit?.id)} yesLabel="Submit" noLabel="Cancel"
-                showLoading={this.state.disableModalButtons}>
+            <ConfirmationModal handleConfirm={this.handleEditTemplateModalSave} dialogId="edit-template"
+                title="Edit Template" onDismiss={() => this.handleModalCancel("edit-" + this.state.templateForEdit?.id)} yesLabel="Submit" noLabel="Cancel">
                 <form id="editTemplateForm">
                     <input type="hidden" id="editTemplateId" key={`templateId_${this.state.inputKey}`} defaultValue={this.state.templateForEdit?.id} />
 
@@ -405,16 +413,16 @@ class SelectedTemplate extends React.Component {
                     {editModal}
                 </div>
 
-                <ConfirmationModal isOpen={this.state.deleteModalOpen} handleConfirm={this.handleModalDelete} dialogId="delete-template"
+                <ConfirmationModal handleConfirm={this.handleModalDelete} dialogId="delete-template"
                     title="Delete Template" onDismiss={() => this.handleModalCancel("delete-" + this.state.deleteData.templateId)}
-                    yesLabel="Delete" noLabel="Cancel">
+                    yesLabel="Delete" noLabel="Cancel" showLoading loadingText="Deleting template">
                     <DeleteModalText deleteData={this.state.deleteData} />
                 </ConfirmationModal>
 
-                <ConfirmationModal isOpen={this.state.defaultModalOpen} handleConfirm={this.handleModalDefault}
+                <ConfirmationModal handleConfirm={this.handleModalDefault}
                     title="Change Default Status"
                     onDismiss={() => this.handleModalCancel("default-" + this.state.defaultData.templateId)}
-                    dialogId="change-default">
+                    dialogId="change-default" showLoading loadingText="Changing default status">
                     <DefaultModalText defaultData={this.state.defaultData} />
                 </ConfirmationModal>
             </div>

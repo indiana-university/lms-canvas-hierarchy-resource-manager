@@ -75,6 +75,7 @@
         <springdoc-openapi-ui.version>1.6.9</springdoc-openapi-ui.version>
         <spring-cloud.version>2021.0.5</spring-cloud.version>
         <spring-security-bom.version>5.5.2</spring-security-bom.version>
+        <tinymce.version>6.7.0</tinymce.version>
         <webjars-locator.version>0.46</webjars-locator.version>
     </properties>
 
@@ -208,6 +209,11 @@
             <groupId>org.webjars</groupId>
             <artifactId>jquery</artifactId>
             <version>${jquery.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>tinymce</artifactId>
+            <version>${tinymce.version}</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>

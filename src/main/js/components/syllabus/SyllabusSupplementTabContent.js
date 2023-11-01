@@ -404,7 +404,7 @@ render() {
             <div id="supplementContentContainer" className="rvt-m-bottom-md" >
                  <TextEditor id="supplementText" value={this.state.syllabus.syllabusContent}
                      onEditorChange={this.handleEditorChange} onInit={this.handleInit} disabled={this.state.inputsDisabled}
-                     filePickerCallback={this.filePickerCallback} />
+                     filePickerCallback={this.filePickerCallback} ariaText="Supplement title (required)"/>
             </div>
             <SyllabusContentError contentError={this.state.contentLengthError} />
             

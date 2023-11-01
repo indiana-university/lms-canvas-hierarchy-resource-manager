@@ -36,6 +36,7 @@ import { Editor } from '@tinymce/tinymce-react';
 export default function TextEditor(props) {
   const editorRef = useRef(null);
   const handleFilePickerCallback = props.filePickerCallback;
+  const ariaText = props.ariaText;
 
   return (
     <>
@@ -57,7 +58,7 @@ export default function TextEditor(props) {
           automatic_uploads: true,
           file_picker_types: 'image',
           file_picker_callback: handleFilePickerCallback,
-          iframe_aria_text: 'Supplement title (required)',
+          iframe_aria_text: ariaText,
           promotion: false
         }}
       />

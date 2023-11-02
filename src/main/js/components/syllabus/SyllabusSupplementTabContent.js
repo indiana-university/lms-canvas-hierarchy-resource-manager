@@ -33,8 +33,7 @@
 import React from 'react'
 import Select from 'react-select'
 import ConfirmationModal from 'components/ConfirmationModal'
-import tinymce from 'tinymce';
-import { Editor } from '@tinymce/tinymce-react';
+import TextEditor from 'components/TextEditor'
 import { Input } from 'rivet-react'
 import axios from 'axios'
 
@@ -402,16 +401,10 @@ render() {
                     onChange={this.handleTextInputChange} note={noteNode} {...inputProps} />
 
             <label htmlFor="supplementText">Supplement Text (required)</label>
-            <div id="supplementContentContainer">
-                <Editor id="supplementText" className="rvt-m-bottom-md" value={this.state.syllabus.syllabusContent}
-                    onEditorChange={this.handleEditorChange} onInit={this.handleInit} disabled={this.state.inputsDisabled}
-                    init={{ plugins: 'advlist code image link lists table',
-                            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link image table | bullist numlist outdent indent | code',
-                            image_title: true,
-                            automatic_uploads: true,
-                            file_picker_types: 'image',
-                            file_picker_callback: this.filePickerCallback}}
-                />
+            <div id="supplementContentContainer" className="rvt-m-bottom-md" >
+                 <TextEditor id="supplementText" value={this.state.syllabus.syllabusContent}
+                     onEditorChange={this.handleEditorChange} onInit={this.handleInit} disabled={this.state.inputsDisabled}
+                     filePickerCallback={this.filePickerCallback} ariaText="Supplement title (required)"/>
             </div>
             <SyllabusContentError contentError={this.state.contentLengthError} />
             

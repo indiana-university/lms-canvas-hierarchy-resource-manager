@@ -24,7 +24,7 @@
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
-    "@tinymce/tinymce-react": "^3.12.2",
+    "@tinymce/tinymce-react": "^4.3.0",
     "axios": "^0.21.1",
     "core-js": "^3.10.0",
     "lodash": "^4.17.21",
@@ -35,8 +35,7 @@
     "regenerator-runtime": "^0.13.7",
     "rivet-icons": "0.4.0",
     "rivet-collapsible": "^0.2.5",
-    "styled-components": "^5.2.3",
-    "tinymce": "^5.7.1"
+    "styled-components": "^5.2.3"
   },
   "comments": {
     "dependencies": {}

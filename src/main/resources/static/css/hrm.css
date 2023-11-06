@@ -139,4 +139,10 @@ button > * {
     border-radius: 0.25rem !important;
 }
 
+/* If our self-hosted tinymce is unavailable for some reason, it will try to get it from the
+    cloud and display a warning. This hides that warning if that happens */
+.tox-notifications-container{
+    display:none !important;
+}
+
 

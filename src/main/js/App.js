@@ -61,7 +61,6 @@ class App extends React.Component {
 
   /**
    * Call off to the REST endpoints to load data
-   * Also set a listener for cleaning up the modal after close
    */
   componentDidMount(){
   var self = this;

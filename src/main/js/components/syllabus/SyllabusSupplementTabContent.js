@@ -424,7 +424,7 @@ render() {
 
             <div className="rvt-button-group rvt-button-group--right rvt-m-top-xl rvt-m-bottom-sm">
                 <button id="syllabusSupplementCancelButton" className="rvt-button rvt-button--secondary"
-                    disabled={this.state.cancelDisabled} onClick={this.handleCancel}>Reset</button>
+                    disabled={this.state.cancelDisabled} onClick={this.handleCancel}>Cancel</button>
                 <button id="syllabusSupplementDeleteButton" type="button" className="rvt-button"
                     disabled={this.state.deleteDisabled} data-rvt-dialog-trigger="delete-supplement-dialog">Delete</button>
                 <button id="syllabusSupplementSaveButton" data-rvt-dialog-trigger="save-supplement-dialog"type="button" className="rvt-button"

@@ -134,7 +134,7 @@ class ConfirmationModal extends React.Component {
                 <button id={`${this.props.dialogId}-yes`} key="yes" type="button" className="rvt-button loading-btn" onClick={(event) => this.confirmationActions(event, this.props.handleConfirm, this.props.showLoading, this.props.loadingText, this.props.dialogId)}>
                   <span className="rvt-button__content">{this.props.yesLabel}</span>
                   <span className="rvt-loader rvt-loader--xs rvt-display-none"></span>
-                  <p aria-live="polite"><span class="rvt-sr-only spinner-sr-text rvt-display-none">Loading</span></p>
+                  <p aria-live="polite"><span className="rvt-sr-only spinner-sr-text rvt-display-none">Loading</span></p>
                 </button>
                 <button type="button" className="rvt-button rvt-button--secondary loading-btn" data-rvt-dialog-close={`${this.props.dialogId}-dialog`} onClick={this.props.onDismiss} >
                   <span>{this.props.noLabel}</span>

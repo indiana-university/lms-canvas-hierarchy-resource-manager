@@ -45,6 +45,13 @@ class SuccessAlert extends React.Component {
         }
     }
 
+    componentDidUnmount() {
+        const thisAlert = document.querySelector('[data-rvt-alert="success"]');
+        if (thisAlert && this.props.onDismiss) {
+            thisAlert.removeEventListener('rvtAlertDismissed', this.props.onDismiss);
+        }
+    }
+
     render() {
         let alertContent = null;
         if (this.props.displayAlert) {

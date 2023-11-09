@@ -377,9 +377,9 @@ class SelectedTemplate extends React.Component {
                         defaultValue={this.state.templateForEdit?.description} {...descriptionProps} />
                     {descriptionAlert}
 
-                    <div className="rvt-file rvt-m-top-md" data-rvt-file-input="editTemplateFileInput">
+                    <div className="rvt-file rvt-m-top-md" data-rvt-file-input="editTemplateFileInput" key={`file_${this.state.inputKey}`} >
                       <input type="file" data-rvt-file-input-button="editTemplateFileInput" id="editTemplateFileInput"
-                        aria-describedby="edit-file-description" key={`file_${this.state.inputKey}`} />
+                        aria-describedby="edit-file-description" />
                       <label for="editTemplateFileInput" className="rvt-button">
                         <span>Upload a file</span>
                         <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="M2 1h8.414L14 4.586V15H2V1Zm2 2v10h8V7.5H7.5V3H4Zm5.5 0v2.5H12v-.086L9.586 3H9.5Z"></path></svg>

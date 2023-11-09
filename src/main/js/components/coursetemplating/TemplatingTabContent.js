@@ -291,14 +291,14 @@ class TemplatingTabContent extends React.Component {
                         <textarea id="newDescription" className="rvt-textarea" {...descriptionProps} />
                         {descriptionAlert}
 
-                        <div className="rvt-file rvt-m-top-sm" data-rvt-file-input="newTemplateFileInput">
+                        <div className="rvt-file rvt-m-top-sm" data-rvt-file-input="newTemplateFileInput" key={this.state.fileInputKey} >
                           <input type="file" data-rvt-file-input-button="newTemplateFileInput" id="newTemplateFileInput" aria-describedby="new-file-description"
-                              {...fileAttributes} key={this.state.fileInputKey} />
+                              {...fileAttributes} />
                           <label for="newTemplateFileInput" className="rvt-button">
                             <span>Upload a file</span>
                             <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="M2 1h8.414L14 4.586V15H2V1Zm2 2v10h8V7.5H7.5V3H4Zm5.5 0v2.5H12v-.086L9.586 3H9.5Z"></path></svg>
                           </label>
-                          <div className="rvt-file__preview" data-rvt-file-input-preview="newTemplateFileInput" id="new-file-description" key={this.state.fileInputKey}>
+                          <div className="rvt-file__preview" data-rvt-file-input-preview="newTemplateFileInput" id="new-file-description">
                             No file selected
                           </div>
                         </div>

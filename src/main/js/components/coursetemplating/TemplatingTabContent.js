@@ -49,8 +49,7 @@ class TemplatingTabContent extends React.Component {
             fileUploadDisabled: true,
             loading: false,
             validation: {},
-            fileInputKey: Date.now(),
-            disableModalButtons: false
+            fileInputKey: Date.now()
         }
 
         this.handleHierarchyOptionChange.bind(this)
@@ -161,7 +160,7 @@ class TemplatingTabContent extends React.Component {
                     'content-type': 'multipart/form-data'
                 }
             }
-            this.setState({disableModalButtons: true})
+
             axios.post("/app/tool/template/submit", formData, config)
                 .then(response => response.data)
                 .then((data) => {
@@ -178,16 +177,22 @@ class TemplatingTabContent extends React.Component {
                     } else {
                         validation['templateFileInput'] = {note: 'There was an unknown error while processing your file upload'};
                     }
-                    this.setState({validation: validation, disableModalButtons: false})
+                    this.setState({validation: validation})
                 })
         } else {
             this.setState({validation: validation})
+
+            // move focus to the first invalid form element
+            var invalidInputs = $("input[aria-invalid='true']");
+            if (invalidInputs.length > 0) {
+                invalidInputs.first().focus();
+            }
         }
     }
 
   dialogSaved = (notificationText) => {
         this.props.notificationHandler({display: true, text: notificationText})
-        this.setState({validation: {}, fileInputKey: Date.now(), disableModalButtons: false})
+        this.setState({validation: {}, fileInputKey: Date.now()})
     }
 
   render() {

@@ -45,8 +45,7 @@ class SelectedTemplate extends React.Component {
             defaultData: {},
             templateForEdit: null,
             validation: {},
-            inputKey: Date.now(),
-            disableModalButtons: false
+            inputKey: Date.now()
         }
 
         this.handleEditTemplateModalOpen.bind(this)
@@ -124,7 +123,7 @@ class SelectedTemplate extends React.Component {
                     'content-type': 'multipart/form-data'
                 }
             }
-            this.setState({disableModalButtons: true})
+
             axios.post(`/app/tool/template/${templateId}/update`, formData, config)
                 .then(response => response.data)
                 .then((data) => {
@@ -143,7 +142,7 @@ class SelectedTemplate extends React.Component {
                     } else {
                         validation['templateFileInput'] = {note: 'There was an unknown error while processing your file upload'};
                     }
-                    this.setState({validation: validation, disableModalButtons: false})
+                    this.setState({validation: validation})
                 })
         } else {
             this.setState({validation: validation})
@@ -158,7 +157,7 @@ class SelectedTemplate extends React.Component {
 
     dialogSaved = (notificationText) => {
         this.props.notificationHandler({display: true, text: notificationText})
-        this.setState({validation: {}, inputKey: Date.now(), templateForEdit: null, disableModalButtons: false})
+        this.setState({validation: {}, inputKey: Date.now(), templateForEdit: null})
     }
 
     focusOnAlert() {

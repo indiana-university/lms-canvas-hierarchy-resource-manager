@@ -83,6 +83,7 @@ class SyllabusPreviewTabContent extends React.Component {
         } else {
             this.setState({courseIdError: true})
 
+            // focus on the first invalid input
             var invalidInputs = $("input[aria-invalid='true']");
             if (invalidInputs.length > 0) {
                 invalidInputs.first().focus();

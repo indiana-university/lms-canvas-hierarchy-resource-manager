@@ -39,7 +39,6 @@ import ApplyTemplate from 'components/coursetemplating/ApplyTemplate'
 import TemplatingTabContent from 'components/coursetemplating/TemplatingTabContent'
 import SyllabusSupplementTabContent from 'components/syllabus/SyllabusSupplementTabContent'
 import SyllabusPreviewTabContent from 'components/syllabus/SyllabusPreviewTabContent'
-import {CircleArrow as ScrollUpButton} from 'react-scroll-up-button';
 
 class App extends React.Component {
   /**
@@ -104,10 +103,10 @@ class App extends React.Component {
             <div className="rvt-container-xl" id="main-container" role="main">
                 <SuccessAlert displayAlert={this.state.notification.display} alertTitle="Success!" alertMessage={this.state.notification.text}
                     onDismiss={() => this.setState({notification: {display: false}})} />
-                <h1 className="rvt-ts-36 rvt-p-top-sm rvt-m-bottom-md">{title}</h1>
+                <h1 id="tool-title" className="rvt-ts-36 rvt-p-top-sm rvt-m-bottom-md">{title}</h1>
                 {content}
             </div>
-            <ScrollUpButton />
+            <scroll-to-top focusid="tool-title"></scroll-to-top>
         </div>
     );
   }

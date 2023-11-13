@@ -30,7 +30,6 @@
     "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-scroll-up-button": "^1.6.4",
     "react-select": "^4.3.0",
     "regenerator-runtime": "^0.13.7",
     "rivet-icons": "0.4.0",

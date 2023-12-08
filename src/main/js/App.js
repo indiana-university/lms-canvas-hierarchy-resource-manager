@@ -100,7 +100,7 @@ class App extends React.Component {
     }
     return (
         <div>
-            <div className="rvt-container-xl" id="main-container" role="main">
+            <div className="rvt-container-xl" id="main-container" role="main" aria-labelledby="tool-title">
                 <SuccessAlert displayAlert={this.state.notification.display} alertTitle="Success!" alertMessage={this.state.notification.text}
                     onDismiss={() => this.setState({notification: {display: false}})} />
                 <h1 id="tool-title" className="rvt-ts-36 rvt-p-top-sm rvt-m-bottom-md">{title}</h1>

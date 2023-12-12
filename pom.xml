@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.8</version>
+        <version>2.7.18</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -54,29 +54,29 @@
 
     <properties>
         <app.version>${project.version}</app.version>
-        <frontend-maven-plugin.version>1.11.0</frontend-maven-plugin.version>
+        <frontend-maven-plugin.version>1.15.0</frontend-maven-plugin.version>
         <git-commit-id-maven-plugin.version>5.0.0</git-commit-id-maven-plugin.version>
         <hibernate5-ddl-maven-plugin.version>2.5.0</hibernate5-ddl-maven-plugin.version>
         <java.version>17</java.version>
         <jdk.source>17</jdk.source>
         <jdk.target>17</jdk.target>
-        <jquery.version>3.5.1</jquery.version>
+        <jquery.version>3.7.1</jquery.version>
 
-        <lms-embedded-services.version>5.2.7</lms-embedded-services.version>
+        <lms-embedded-services.version>5.2.26</lms-embedded-services.version>
         <lms-canvas-rivet.version>5.1.8.2_1</lms-canvas-rivet.version>
 
-        <lms-team-spring-boot-it12>4.7</lms-team-spring-boot-it12>
+        <lms-team-spring-boot-it12>4.8</lms-team-spring-boot-it12>
 
         <nodejs.version>v14.15.5</nodejs.version>
         <npm.version>6.14.11</npm.version>
-        <plugins.compiler.version>3.10.1</plugins.compiler.version>
-        <plugins.license.version>2.0.0</plugins.license.version>
-        <plugins.release.version>2.5.3</plugins.release.version>
-        <springdoc-openapi-ui.version>1.6.9</springdoc-openapi-ui.version>
-        <spring-cloud.version>2021.0.5</spring-cloud.version>
+        <plugins.compiler.version>3.11.0</plugins.compiler.version>
+        <plugins.license.version>2.3.0</plugins.license.version>
+        <plugins.release.version>3.0.1</plugins.release.version>
+        <springdoc-openapi-ui.version>1.7.0</springdoc-openapi-ui.version>
+        <spring-cloud.version>2021.0.8</spring-cloud.version>
         <spring-security-bom.version>5.5.2</spring-security-bom.version>
         <tinymce.version>6.7.0</tinymce.version>
-        <webjars-locator.version>0.46</webjars-locator.version>
+        <webjars-locator.version>0.50</webjars-locator.version>
     </properties>
 
     <dependencyManagement>

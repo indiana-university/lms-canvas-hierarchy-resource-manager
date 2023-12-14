@@ -123,7 +123,7 @@ public class SecurityConfig {
                     .contentSecurityPolicy("style-src 'self' 'unsafe-inline'; form-action 'self'; frame-ancestors 'self' https://*.instructure.com")
                     .and()
                     .referrerPolicy(referrer -> referrer
-                            .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN));;
+                            .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN));
 
             http.exceptionHandling().accessDeniedPage("/app/accessDenied");
         }
@@ -145,7 +145,14 @@ public class SecurityConfig {
             http.requestMatchers().antMatchers("/**")
                   .and()
                   .authorizeRequests()
-                  .anyRequest().authenticated();
+                  .anyRequest().authenticated()
+                    .withObjectPostProcessor(new LmsFilterSecurityInterceptorObjectPostProcessor())
+                    .and()
+                    .headers()
+                    .contentSecurityPolicy("style-src 'self' 'unsafe-inline'; form-action 'self'; frame-ancestors 'self' https://*.instructure.com")
+                    .and()
+                    .referrerPolicy(referrer -> referrer
+                            .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN));
         }
     }
 }

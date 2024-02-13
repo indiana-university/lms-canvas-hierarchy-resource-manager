@@ -5,7 +5,7 @@
     <artifactId>lms-lti-hierarchyresourcemanager</artifactId>
     <packaging>jar</packaging>
     <name>lms-lti-hierarchyresourcemanager</name>
-    <version>5.0.3-SNAPSHOT</version>
+    <version>5.0.4-SNAPSHOT</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -62,8 +62,8 @@
         <jdk.target>17</jdk.target>
         <jquery.version>3.7.1</jquery.version>
 
-        <lms-embedded-services.version>5.2.27</lms-embedded-services.version>
-        <lms-canvas-rivet.version>5.2.5.2_2</lms-canvas-rivet.version>
+        <lms-embedded-services.version>5.2.30</lms-embedded-services.version>
+        <lms-canvas-rivet.version>5.1.8.2_1</lms-canvas-rivet.version>
 
         <lms-team-spring-boot-it12>4.8</lms-team-spring-boot-it12>
 
@@ -73,7 +73,7 @@
         <plugins.license.version>2.3.0</plugins.license.version>
         <plugins.release.version>3.0.1</plugins.release.version>
         <springdoc-openapi-ui.version>1.7.0</springdoc-openapi-ui.version>
-        <spring-cloud.version>2021.0.8</spring-cloud.version>
+        <spring-cloud.version>2021.0.9</spring-cloud.version>
         <spring-security-bom.version>5.5.2</spring-security-bom.version>
         <tinymce.version>6.7.0</tinymce.version>
         <webjars-locator.version>0.50</webjars-locator.version>

@@ -414,14 +414,14 @@ class SelectedTemplate extends React.Component {
 
                 <ConfirmationModal handleConfirm={this.handleModalDelete} dialogId="delete-template"
                     title="Delete Template" onDismiss={() => this.handleModalCancel("delete-" + this.state.deleteData.templateId)}
-                    yesLabel="Delete" noLabel="Cancel" showLoading loadingText="Deleting template">
+                    yesLabel="Delete" noLabel="Cancel" loadingText="Deleting template">
                     <DeleteModalText deleteData={this.state.deleteData} />
                 </ConfirmationModal>
 
                 <ConfirmationModal handleConfirm={this.handleModalDefault}
                     title="Change Default Status"
                     onDismiss={() => this.handleModalCancel("default-" + this.state.defaultData.templateId)}
-                    dialogId="change-default" showLoading loadingText="Changing default status">
+                    dialogId="change-default" loadingText="Changing default status">
                     <DefaultModalText defaultData={this.state.defaultData} />
                 </ConfirmationModal>
             </div>

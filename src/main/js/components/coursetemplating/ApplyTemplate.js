@@ -90,7 +90,7 @@ class ApplyTemplate extends React.Component {
         const triggerId = "apply-" + templateId;
 
         // move focus to the dialog heading
-        var dialogHeading = $("#apply-template").find("h1.rvt-dialog__title").first();
+        var dialogHeading = $("#apply-template-dialog").find("h1.rvt-dialog__title").first();
         dialogHeading.focus();
 
         // When the rivet dialog closes, it always is the last event.  So when we try to manually move
@@ -147,7 +147,7 @@ class ApplyTemplate extends React.Component {
                     <p>
                         The following templates are available for you to apply to your course.
                         Templates are grouped by the sponsoring unit (e.g., university, campus, school, department).
-                        To preview a template in Canvas Commons before applying it to your course, click the "Preview" button, if available.
+                        To preview a template in Canvas Commons before applying it to your course, click the template name, if available.
                         When you are ready to apply a template to your course, click the corresponding <span className="rvt-text-bold">Apply Template</span> button.
                     </p>
                     <div className="rvt-accordion rvt-m-top-xs" data-rvt-accordion="template-accordion">
@@ -168,8 +168,9 @@ class ApplyTemplate extends React.Component {
                                 </p>
                                 <p>
                                     For more information, see <a href="https://kb.iu.edu/d/bgry" target="_blank">
-                                    <cite>Apply a template to your Canvas course</cite> <RvtSvg icon="rvt-icon-link-external" ariahide="true" />
-                                    <span className="rvt-sr-only">Opens in new window</span></a> in the IU Knowledge Base.
+                                    Apply a template to your Canvas course
+                                    <RvtSvg icon="rvt-icon-link-external" classes="external-link-icon" title="Opens in new window"/>
+                                    </a> in the IU Knowledge Base.
                                 </p>
                             </div>
                         </React.Fragment>
@@ -229,12 +230,13 @@ class ApplyTemplate extends React.Component {
     if (props.templateData) {
         return (
             <tr>
-                <th scope="row">{props.templateData.displayName}</th>
+                <th scope="row">
+                    <PreviewLink templateName={props.templateData.displayName} previewUrl={props.templateData.canvasCommonsUrl} />
+                </th>
                 <td>{props.templateData.description}</td>
                 <td>{props.templateData.defaultTemplate ? 'Yes' : 'No'}</td>
                 <td>
                     <ApplyButton templateData={props.templateData} handleApply={props.handleApply} coursePublished={props.coursePublished} />
-                    <PreviewButton url={props.templateData.canvasCommonsUrl} handlePreview={props.handlePreview} templateName={props.templateData.displayName} />
                 </td>
             </tr>
         )
@@ -243,11 +245,19 @@ class ApplyTemplate extends React.Component {
     }
   }
 
-  function PreviewButton(props) {
-    if (props.url) {
-        return (<button className="rvt-button rvt-button--secondary rvt-m-top-sm rvt-m-top-none-lg-up" value={props.url} onClick={props.handlePreview}>Preview <span className="rvt-sr-only">{props.templateName}</span></button>)
+  function PreviewLink(props) {
+    if (props.previewUrl) {
+        return (
+            <>
+               <a href={props.previewUrl} target="_blank" aria-describedby="preview-desc">
+                   {props.templateName}
+                   <RvtSvg icon="rvt-icon-link-external" classes="external-link-icon" />
+               </a>
+               <span hidden id="preview-desc">Preview opens in new window</span>
+            </>
+        )
     } else {
-        return null;
+        return props.templateName;
     }
   }
 

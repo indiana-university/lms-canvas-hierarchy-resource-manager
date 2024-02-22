@@ -117,10 +117,12 @@ class ConfirmationModal extends React.Component {
     render() {
 
         return (
-            <div className="rvt-dialog" id={this.props.dialogId} role="dialog" aria-labelledby={`${this.props.dialogId}-title`}
+            // The data-rvt-dialog-modal allows the user to close the modal by clicking outside of it. However, this
+            // is causing issues with forms and properties not being reset properly in react, so don't use that attribute
+            // on the dialogs
+            <div className="rvt-dialog" id={`${this.props.dialogId}-dialog`} role="dialog" aria-labelledby={`${this.props.dialogId}-title`}
                 aria-describedby={`${this.props.dialogId}-description`}
                 data-rvt-dialog={`${this.props.dialogId}-dialog`}
-                data-rvt-dialog-modal
                 data-rvt-dialog-darken-page
                 data-rvt-dialog-disable-page-interaction
                 hidden>

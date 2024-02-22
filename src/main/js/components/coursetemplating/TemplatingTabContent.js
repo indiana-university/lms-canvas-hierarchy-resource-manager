@@ -89,9 +89,11 @@ class TemplatingTabContent extends React.Component {
     handleNewTemplateModalOpen = () => {
         resetForm("newTemplateForm");
 
-        // move focus to the dialog heading
-        var dialogHeading = $("h1.rvt-dialog__title").first();
-        dialogHeading.focus();
+        // move focus to the first input
+        var firstInput = document.querySelector('#new-template-dialog input');
+        if (firstInput) {
+            firstInput.focus();
+        }
     }
 
     handleNewTemplateModalCancel = () => {

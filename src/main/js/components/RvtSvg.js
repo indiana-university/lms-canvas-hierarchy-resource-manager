@@ -32,24 +32,16 @@
  */
 import React from 'react'
 
-import icons from 'rivet-icons/dist/rvt-icons.svg'
-
 const RvtSvg = (props) => {
     var title = ""
     if (props.title) {
         title = <title>{props.title}</title>
     }
 
-    var classes = ""
-    if (props.className) {
-        classes = props.className
-    }
-
     return (
-        <svg className={`rvt-icon ${classes}`} onClick={props.onClick} aria-hidden={props.ariahide}>
-            <use href={`${rvtSvgBase}#${props.icon}`}>
-                {title}
-            </use>
+        <svg className={`rvt-icon ${props.classes}`} onClick={props.onClick}>
+            {title}
+            <use href={`#${props.icon}`}>One which is better</use>
         </svg>
     )
 }

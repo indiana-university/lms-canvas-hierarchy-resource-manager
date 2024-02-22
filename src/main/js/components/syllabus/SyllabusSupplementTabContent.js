@@ -298,6 +298,12 @@ class SyllabusSupplementTabContent extends React.Component {
         this.handleContentErrorIndicator(this.isContentValid(this.state.initialSyllabus.syllabusContent));
     }
 
+    handleModalOpen = (dialogId) => {
+       // move focus to the modal title
+       var dialogHeading = $('[data-rvt-dialog="' + dialogId + '"]').find("h1.rvt-dialog__title").first();
+       dialogHeading.focus();
+    }
+
     cloneObject(input) {
         return JSON.parse(JSON.stringify(input));
     }
@@ -426,9 +432,10 @@ render() {
                 <button id="syllabusSupplementCancelButton" className="rvt-button rvt-button--secondary"
                     disabled={this.state.cancelDisabled} onClick={this.handleCancel}>Cancel</button>
                 <button id="syllabusSupplementDeleteButton" type="button" className="rvt-button"
-                    disabled={this.state.deleteDisabled} data-rvt-dialog-trigger="delete-supplement-dialog">Delete</button>
-                <button id="syllabusSupplementSaveButton" data-rvt-dialog-trigger="save-supplement-dialog"type="button" className="rvt-button"
-                    disabled={this.state.saveDisabled}>Save</button>
+                    disabled={this.state.deleteDisabled} data-rvt-dialog-trigger="delete-supplement-dialog"
+                    onClick={() => this.handleModalOpen("delete-supplement-dialog")}>Delete</button>
+                <button id="syllabusSupplementSaveButton" data-rvt-dialog-trigger="save-supplement-dialog" type="button" className="rvt-button"
+                    disabled={this.state.saveDisabled} onClick={() => this.handleModalOpen("save-supplement-dialog")}>Save</button>
             </div>
 
             <ConfirmationModal handleConfirm={this.handleModalSave} title="Save Confirmation"
@@ -436,7 +443,7 @@ render() {
                 <p id="confirmSupplementSave">Are you sure you wish to save this supplement to the {this.state.selectedNode} account for the {this.state.selectedTermName} term?</p>
             </ConfirmationModal>
             <ConfirmationModal handleConfirm={this.handleModalDelete} title="Delete Confirmation"
-                    onDismiss={() => this.handleModalCancel("syllabusSupplementDeleteButton")} dialogId="delete-supplement">
+                    onDismiss={() => this.handleModalCancel("syllabusSupplementDeleteButton")} yesLabel="Delete" noLabel="Cancel" dialogId="delete-supplement">
                 <p id="confirmSupplementDelete">Are you sure you wish to delete this supplement from the {this.state.selectedNode} account for the {this.state.selectedTermName} term?</p>
             </ConfirmationModal>
         </div>

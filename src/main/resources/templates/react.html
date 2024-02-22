@@ -38,8 +38,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Canvas Node Manager</title>
-    <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/rivet.min.css}" />
     <link rel="stylesheet" type="text/css" th:href="@{/app/css/hrm.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/rivet.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/rivet-icons.css}" />
 </head>
 <body>
 
@@ -52,7 +53,6 @@
 <script th:inline="javascript">
       /*<![CDATA[*/
          var courseId = /*[[${courseId}]]*/ '12345';
-         const rvtSvgBase = /*[[@{/app/jsreact/lms-lti-hierarchyresourcemanager/rvt-icons.svg}]]*/;
          const customId = /*[[${customId}]]*/
          const csrfHeaderName = /*[[${_csrf.headerName}]]*/
          const csrfValue = /*[[${_csrf.token}]]*/
@@ -64,6 +64,7 @@
 <script type="text/javascript" th:src="@{/app/jsrivet/rivet.min.js}"></script>
 <script type="text/javascript" defer th:src="@{/app/jsrivet/scrolltotop/scrolltotop.js}"></script>
 <script type="text/javascript" th:src="@{/app/webjars/tinymce/tinymce.min.js}"></script>
+<script defer th:src="@{/app/jsrivet/rivet-icons.js}"></script>
 <script>
   Rivet.init();
 </script>

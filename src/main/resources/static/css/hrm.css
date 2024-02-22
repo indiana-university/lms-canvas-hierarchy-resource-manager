@@ -145,4 +145,10 @@ button > * {
     display:none !important;
 }
 
+.external-link-icon {
+    margin-left: 0.2rem;
+    padding: 0.07rem;
+    vertical-align: middle;
+}
+
 

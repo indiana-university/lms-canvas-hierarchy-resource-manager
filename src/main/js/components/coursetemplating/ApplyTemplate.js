@@ -249,11 +249,10 @@ class ApplyTemplate extends React.Component {
     if (props.previewUrl) {
         return (
             <>
-               <a href={props.previewUrl} target="_blank" aria-describedby="preview-desc">
+               <a href={props.previewUrl} target="_blank">
                    {props.templateName}
-                   <RvtSvg icon="rvt-icon-link-external" classes="external-link-icon" />
+                   <RvtSvg icon="rvt-icon-link-external" classes="external-link-icon" title="Preview opens in new window"/>
                </a>
-               <span hidden id="preview-desc">Preview opens in new window</span>
             </>
         )
     } else {

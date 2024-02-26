@@ -92,7 +92,7 @@ class ConfirmationModal extends React.Component {
         }
 
         // disable the buttons in the modal
-        var mainDialog = $('#' + dialogId);
+        var mainDialog = $('#' + dialogId + '-dialog');
         var dialogControls = mainDialog.find('.loading-btn');
         dialogControls.prop('disabled', true);
     }

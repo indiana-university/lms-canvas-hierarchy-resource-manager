@@ -448,7 +448,7 @@ class SelectedTemplate extends React.Component {
 function CanvasCommonsUrl(props) {
     if (props.url != null && props.url.trim().length > 0) {
         return (
-            <a href={props.url} target="_blank">{props.url}</a>
+            <a href={props.url} target="_blank" rel="noopener noreferrer">{props.url}</a>
         )
     } else {
         return "No URL available";

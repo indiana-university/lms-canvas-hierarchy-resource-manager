@@ -40,7 +40,6 @@ import Collapsible from 'rivet-collapsible/dist/js/rivet-collapsible.min.js';
 import './ApplyTemplate.css';
 import Loading from 'components/Loading.js';
 import ConfirmationModal from 'components/ConfirmationModal.js';
-import SuccessAlert from 'components/SuccessAlert.js'
 import RvtSvg from 'components/RvtSvg'
 
 class ApplyTemplate extends React.Component {
@@ -249,7 +248,7 @@ class ApplyTemplate extends React.Component {
     if (props.previewUrl) {
         return (
             <>
-               <a href={props.previewUrl} target="_blank">
+               <a href={props.previewUrl} target="_blank" rel="noopener noreferrer">
                    {props.templateName}
                    <RvtSvg icon="rvt-icon-link-external" classes="external-link-icon" title="Preview opens in new window"/>
                </a>

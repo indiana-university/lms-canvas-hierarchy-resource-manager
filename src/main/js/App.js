@@ -34,13 +34,11 @@ import React from 'react'
 import styled from 'styled-components'
 import axios from 'axios'
 
+import SuccessAlert from 'components/SuccessAlert'
 import ApplyTemplate from 'components/coursetemplating/ApplyTemplate'
 import TemplatingTabContent from 'components/coursetemplating/TemplatingTabContent'
 import SyllabusSupplementTabContent from 'components/syllabus/SyllabusSupplementTabContent'
 import SyllabusPreviewTabContent from 'components/syllabus/SyllabusPreviewTabContent'
-import {CircleArrow as ScrollUpButton} from 'react-scroll-up-button';
-import {Alert, Tabs, Tab} from "rivet-react"
-import 'rivet-uits/css/rivet.min.css'
 
 class App extends React.Component {
   /**
@@ -62,7 +60,6 @@ class App extends React.Component {
 
   /**
    * Call off to the REST endpoints to load data
-   * Also set a listener for cleaning up the modal after close
    */
   componentDidMount(){
   var self = this;
@@ -79,18 +76,9 @@ class App extends React.Component {
   }
   
   componentDidUpdate() {
-    // add aria-describedby to the alert message so the content is read by the screenreader
     // move focus to the msg or else focus disappears on success
     if (this.state.notification.display) {
-        var messageText = document.querySelector('.rvt-alert__message');
-        if (messageText) {
-            messageText.id = "alertMsgId";
-            var alertDialog = document.querySelector('.rvt-alert');
-            if (alertDialog) {
-                alertDialog.setAttribute('aria-describedby', messageText.id);
-            }
-        }
-        var notification = document.querySelector('.rvt-alert__dismiss');
+        var notification = document.querySelector('.rvt-alert');
         if (notification) {
             notification.focus();
         }
@@ -112,17 +100,13 @@ class App extends React.Component {
     }
     return (
         <div>
-            <div className="rvt-container" id="main-container" role="main">
-                <h1 className="rvt-ts-36 rvt-p-top-sm rvt-m-bottom-md">{title}</h1>
-
-                <Alert variant="success" title="Success!" isOpen={this.state.notification.display} className="rvt-m-bottom-md"
-                    onDismiss={() => this.setState({notification: {display: false}})}>
-                      {this.state.notification.text}
-                </Alert>
-
+            <div className="rvt-container-xl" id="main-container" role="main" aria-labelledby="tool-title">
+                <SuccessAlert displayAlert={this.state.notification.display} alertTitle="Success!" alertMessage={this.state.notification.text}
+                    onDismiss={() => this.setState({notification: {display: false}})} />
+                <h1 id="tool-title" className="rvt-ts-36 rvt-p-top-sm rvt-m-bottom-md">{title}</h1>
                 {content}
             </div>
-            <ScrollUpButton />
+            <scroll-to-top focusid="tool-title"></scroll-to-top>
         </div>
     );
   }
@@ -135,17 +119,22 @@ class App extends React.Component {
 
 function NodeManager(props) {
     return (
-        <Tabs variant="fitted">
-            <Tab id="tab-templates" title="Course Templating">
-                <TemplatingTabContent hierarchy={props.hierarchy} notificationHandler={props.notificationHandler} />
-            </Tab>
-            <Tab id="tab-supplements" title="Syllabus Supplements">
-                <SyllabusSupplementTabContent hierarchy={props.hierarchy} terms={props.terms} notificationHandler={props.notificationHandler} />
-            </Tab>
-            <Tab id="tab-preview" title="Preview Supplements">
-                <SyllabusPreviewTabContent />
-            </Tab>
-        </Tabs>
+        <div className="rvt-tabs" data-rvt-tabs="tabset-1">
+          <div className="rvt-tabs__tablist" aria-label="Canvas Node Manager Options" data-rvt-tablist>
+            <button className="rvt-tabs__tab" data-rvt-tab="template-tab">Course Templating</button>
+            <button className="rvt-tabs__tab" data-rvt-tab="syllabus-tab">Syllabus Supplements</button>
+            <button className="rvt-tabs__tab" data-rvt-tab="preview-tab">Preview Supplements</button>
+          </div>
+          <div className="rvt-tabs__panel" id="template-tab" data-rvt-tab-panel="template-tab" data-rvt-tab-init>
+            <TemplatingTabContent hierarchy={props.hierarchy} notificationHandler={props.notificationHandler} />
+          </div>
+          <div className="rvt-tabs__panel" id="syllabus-tab" data-rvt-tab-panel="syllabus-tab">
+            <SyllabusSupplementTabContent hierarchy={props.hierarchy} terms={props.terms} notificationHandler={props.notificationHandler} />
+          </div>
+          <div className="rvt-tabs__panel" id="preview-tab" data-rvt-tab-panel="preview-tab">
+            <SyllabusPreviewTabContent />
+          </div>
+        </div>
     )
 }
 

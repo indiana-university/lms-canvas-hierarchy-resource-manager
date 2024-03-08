@@ -31,7 +31,6 @@
  * #L%
  */
 import React from 'react'
-import {Modal, ModalBody, ModalControls, Button} from "rivet-react"
 
 class PreviewModal extends React.Component {
 
@@ -39,40 +38,60 @@ class PreviewModal extends React.Component {
         super(props);
     }
     
-    componentDidUpdate() {    
-        if (this.props.isOpen) {
-            var previewModal = document.getElementById('preview-title');
-            if (previewModal) {
-                previewModal.focus();
-            }
-        }    
+    componentDidUpdate() {
+        // move focus to the top of the modal when it opens. On closing, rivet will move focus to the preview button
+        var previewModal = document.getElementById('preview-dialog-title');
+        if (previewModal) {
+            previewModal.focus();
+        }
     }
 
     render() {
         let items
+        let loader
         if (this.props.loading) {
-            items = <div className="rvt-loader" aria-label="Content loading"></div>
+            loader = (
+                <div className="rvt-flex rvt-justify-center rvt-p-tb-xxl">
+                  <div className="rvt-loader rvt-loader--lg"></div>
+                  <span className="rvt-sr-only">Syllabus preview loading</span>
+                </div>
+            )
         } else if (this.props.previewItems.length > 0) {
             items = this.props.previewItems.map((previewItem) => (
-                <div key={previewItem.nodeName}>
-                    <h2 id="preview-title" tabindex="-1">{previewItem.syllabusTitle} ({previewItem.nodeName})</h2>
+                <div key={previewItem.nodeName} className="syllabus-divider">
+                    <h2 id="preview-title">{previewItem.syllabusTitle} ({previewItem.nodeName})</h2>
                     <div dangerouslySetInnerHTML={{__html: previewItem.syllabusContent}} />
-                    <br clear="all"/>
-                    <hr className="rvt-p-top-xs"/>
                 </div>
             ))
         } else {
             items = <p id="preview-title" tabindex="-1">No supplements apply to this course.</p>
         }
         return (
-            <Modal title="Supplements Preview" isOpen={this.props.isOpen} onDismiss={this.props.onDismiss}>
-                <ModalBody>
-                    {items}
-                </ModalBody>
-                <ModalControls>
-                    <Button onClick={this.props.onDismiss} modifier="secondary">Close</Button>
-                </ModalControls>
-            </Modal>
+            <div className="rvt-dialog" id="preview-dialog" role="dialog" aria-labelledby="preview-dialog-title"
+                data-rvt-dialog="preview-dialog"
+                data-rvt-dialog-modal
+                data-rvt-dialog-darken-page
+                data-rvt-dialog-disable-page-interaction
+                hidden>
+              <header className="rvt-dialog__header">
+                <h1 className="rvt-dialog__title" id="preview-dialog-title" tabindex="-1">Supplements Preview</h1>
+              </header>
+              <div className="rvt-dialog__body">
+                <div id="loading-section" aria-live="polite">
+                    {loader}
+                </div>
+                {items}
+              </div>
+              <div className="rvt-dialog__controls">
+                <button type="button" className="rvt-button rvt-button--secondary" data-rvt-dialog-close="preview-dialog" role="button">
+                    <span>Close</span>
+                </button>
+              </div>
+              <button className="rvt-button rvt-button--plain rvt-dialog__close" data-rvt-dialog-close="preview-dialog" role="button">
+                <span className="rvt-sr-only">Close</span>
+                <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m3.5 2.086 4.5 4.5 4.5-4.5L13.914 3.5 9.414 8l4.5 4.5-1.414 1.414-4.5-4.5-4.5 4.5L2.086 12.5l4.5-4.5-4.5-4.5L3.5 2.086Z"></path></svg>
+              </button>
+            </div>
         )
     }
 

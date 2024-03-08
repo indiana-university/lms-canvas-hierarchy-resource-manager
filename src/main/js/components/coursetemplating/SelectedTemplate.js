@@ -32,7 +32,7 @@
  */
 import React from 'react'
 import ConfirmationModal from 'components/ConfirmationModal'
-import {File, Form, Input, Textarea} from 'rivet-react'
+import InlineError from 'components/InlineError'
 import axios from 'axios'
 import { get, isEmpty } from 'lodash';
 
@@ -41,15 +41,11 @@ class SelectedTemplate extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            deleteModalOpen: false,
-            defaultModalOpen: false,
-            editTemplateModalOpen: false,
             deleteData: {},
             defaultData: {},
             templateForEdit: null,
             validation: {},
-            inputKey: Date.now(),
-            disableModalButtons: false
+            inputKey: Date.now()
         }
 
         this.handleEditTemplateModalOpen.bind(this)
@@ -87,32 +83,32 @@ class SelectedTemplate extends React.Component {
 
         if (isEmpty(formData.get('displayName'))) {
             validationPassed = false;
-            validation['displayName'] = {variant: 'danger', note: <React.Fragment><strong>Display Name</strong> is required</React.Fragment>};
+            validation['displayName'] = {note: <React.Fragment><strong>Display Name</strong> is required</React.Fragment>};
         }
 
         if (isEmpty(formData.get('contactName'))) {
             validationPassed = false;
-            validation['contactName'] = {variant: 'danger', note: <React.Fragment><strong>Contact Name</strong> is required</React.Fragment>};
+            validation['contactName'] = {note: <React.Fragment><strong>Contact Name</strong> is required</React.Fragment>};
         }
 
         if (isEmpty(formData.get('contactUsername'))) {
             validationPassed = false;
-            validation['contactUsername'] = {variant: 'danger', note: <React.Fragment><strong>Contact Username</strong> is required</React.Fragment>};
+            validation['contactUsername'] = {note: <React.Fragment><strong>Contact Username</strong> is required</React.Fragment>};
         }
 
         if (isEmpty(formData.get('sourceCourseId'))) {
             validationPassed = false;
-            validation['sourceCourseId'] = {variant: 'danger', note: <React.Fragment><strong>Source Course ID</strong> is required</React.Fragment>};
+            validation['sourceCourseId'] = {note: <React.Fragment><strong>Source Course ID</strong> is required</React.Fragment>};
         }
 
         if (isEmpty(formData.get('sponsor'))) {
             validationPassed = false;
-            validation['sponsor'] = {variant: 'danger', note: <React.Fragment><strong>Sponsor</strong> is required</React.Fragment>};
+            validation['sponsor'] = {note: <React.Fragment><strong>Sponsor</strong> is required</React.Fragment>};
         }
 
         if (isEmpty(formData.get('description'))) {
             validationPassed = false;
-            validation['description'] = {variant: 'danger', note: <React.Fragment><strong>Description</strong> is required</React.Fragment>};
+            validation['description'] = {note: <React.Fragment><strong>Description</strong> is required</React.Fragment>};
         }
 
 //        //Can't check the results from formData here as it turns an undefined result into the string "undefined"
@@ -127,30 +123,48 @@ class SelectedTemplate extends React.Component {
                     'content-type': 'multipart/form-data'
                 }
             }
-            this.setState({disableModalButtons: true})
+
             axios.post(`/app/tool/template/${templateId}/update`, formData, config)
                 .then(response => response.data)
                 .then((data) => {
                     resetForm("editTemplateForm");
                     this.dialogSaved("The template " + data.displayName + " has been updated in the " + this.props.selectedNode + " account.");
                     this.props.refreshHandler();
+
+                    const editDialog = document.querySelector('[data-rvt-dialog="edit-template-dialog"]');
+                    editDialog.close();
+
+                    this.focusOnAlert();
                 })
                 .catch((error) => {
                     if (error.response.status == 413) {
-                        validation['templateFileInput'] = {variant: 'danger', note: 'Template file is too large and cannot be processed by the server'};
+                        validation['templateFileInput'] = {note: 'Template file is too large and cannot be processed by the server'};
                     } else {
-                        validation['templateFileInput'] = {variant: 'danger', note: 'There was an unknown error while processing your file upload'};
+                        validation['templateFileInput'] = {note: 'There was an unknown error while processing your file upload'};
                     }
-                    this.setState({validation: validation, disableModalButtons: false})
+                    this.setState({validation: validation})
                 })
         } else {
             this.setState({validation: validation})
+
+            // move focus to the first invalid form element
+            var invalidInputs = $("input[aria-invalid='true']");
+            if (invalidInputs.length > 0) {
+                invalidInputs.first().focus();
+            }
         }
     }
 
     dialogSaved = (notificationText) => {
         this.props.notificationHandler({display: true, text: notificationText})
-        this.setState({editTemplateModalOpen: false, validation: {}, inputKey: Date.now(), templateForEdit: null, disableModalButtons: false})
+        this.setState({validation: {}, inputKey: Date.now(), templateForEdit: null})
+    }
+
+    focusOnAlert() {
+        var notification = document.querySelector('.rvt-alert');
+        if (notification) {
+            notification.focus();
+        }
     }
 
     lookupTemplate = (templateId) => {
@@ -159,16 +173,43 @@ class SelectedTemplate extends React.Component {
         });
     }
 
+    handleModalOpening = (triggerId, dialogId) => {
+       // since multiple buttons trigger the same modal, we have to remove the data-rvt-dialog-trigger attribute
+       // from all buttons except the one clicked to ensure rivet focuses on the correct button when the
+       // modal is cancelled
+       var triggerButtons = $('button[data-rvt-dialog-trigger="' + dialogId + '"]');
+       triggerButtons.removeAttr("data-rvt-dialog-trigger");
+
+       // add it back to the trigger
+       $("#" + triggerId).attr('data-rvt-dialog-trigger', dialogId);
+
+       // move focus to the modal title
+       var dialogHeading = $('[data-rvt-dialog="' + dialogId + '"]').find("h1.rvt-dialog__title").first();
+       dialogHeading.focus();
+    }
+
     handleEditTemplateModalOpen = (event) => {
         var templateId = event.target.getAttribute("data-id");
         var templateForEdit = this.lookupTemplate(templateId);
-        this.setState({editTemplateModalOpen: true, templateForEdit: templateForEdit, validation: {}})
+
+        const triggerId = "edit-" + templateId;
+        const dialogId = "edit-template-dialog";
+
+        this.handleModalOpening(triggerId, dialogId);
+
+        this.setState({templateForEdit: templateForEdit, validation: {}})
     }
 
     handleDeleteDialogOpen = () => {
         const templateId = event.target.getAttribute("data-id");
         var templateForDelete = this.lookupTemplate(templateId);
-        this.setState({deleteModalOpen: true, deleteData: {templateId: templateId, displayName: templateForDelete.displayName,
+
+        const triggerId = "delete-" + templateId;
+        const dialogId = "delete-template-dialog"
+
+        this.handleModalOpening(triggerId, dialogId);
+
+        this.setState({deleteData: {templateId: templateId, displayName: templateForDelete.displayName,
                 nodeName: this.props.selectedNode, isdefault: templateForDelete.defaultTemplate}})
     }
 
@@ -179,9 +220,14 @@ class SelectedTemplate extends React.Component {
         axios.post("/app/tool/template/delete", formData)
             .then(response => response.data)
             .then((data) => {
-                this.setState({deleteModalOpen: false, deleteData: {}})    
+                this.setState({deleteData: {}})
                 this.props.notificationHandler({display: true, text: "The template was deleted from the " + this.props.selectedNode + " account."})
                 this.props.refreshHandler();
+
+                const deleteDialog = document.querySelector('[data-rvt-dialog="delete-template-dialog"]');
+                deleteDialog.close();
+
+                this.focusOnAlert();
             })
     }
 
@@ -189,8 +235,13 @@ class SelectedTemplate extends React.Component {
         const templateId = event.target.getAttribute("data-id");
         var templateForDefaultChanges = this.lookupTemplate(templateId);
 
+        const triggerId = "default-" + templateId;
+        const dialogId = "change-default-dialog";
+
+        this.handleModalOpening(triggerId, dialogId);
+
         const nodehasdefault = event.target.getAttribute("data-nodehasdefault");
-        this.setState({defaultModalOpen: true, defaultData: {templateId: templateId, displayName: templateForDefaultChanges.displayName,
+        this.setState({defaultData: {templateId: templateId, displayName: templateForDefaultChanges.displayName,
                 nodeName: this.props.selectedNode, disabling: templateForDefaultChanges.defaultTemplate, nodehasdefault: nodehasdefault}})
     }
 
@@ -201,21 +252,19 @@ class SelectedTemplate extends React.Component {
         axios.post("/app/tool/template/defaultchange", formData)
             .then(response => response.data)
             .then((data) => {
-                this.setState({defaultModalOpen: false, defaultData: {}})
+                this.setState({defaultData: {}})
                 this.props.notificationHandler({display: true, text: "Default settings were updated."})
                 this.props.refreshHandler();
+
+                const defaultDialog = document.querySelector('[data-rvt-dialog="change-default-dialog"]');
+                defaultDialog.close();
+
+                this.focusOnAlert();
             })
     }
 
-    handleModalCancel(triggerId) {
-        this.setState({editTemplateModalOpen: false, deleteModalOpen: false, deleteData: {}, defaultModalOpen: false,
-                defaultData: {}, templateForEdit: null, validation: {}, inputKey: Date.now()})
-     
-        // return focus to the trigger element
-        var trigger = document.getElementById(triggerId);
-        if (trigger) {
-            trigger.focus();
-        }
+    handleModalCancel = () => {
+        this.setState({deleteData: {}, defaultData: {}, templateForEdit: null, validation: {}, inputKey: Date.now()})
     }
 
     handleMoreClick = (event) => {
@@ -245,37 +294,106 @@ class SelectedTemplate extends React.Component {
                 nodeHasDefault={nodeHasDefault} />
         ))
 
-        let editModal;
-        if (this.state.templateForEdit) {
-            editModal =
-                <ConfirmationModal isOpen={this.state.editTemplateModalOpen} handleConfirm={this.handleEditTemplateModalSave}
-                    title="Edit Template" onDismiss={() => this.handleModalCancel("edit-" + this.state.templateForEdit.id)} yesLabel="Submit" noLabel="Cancel" 
-                    showLoading={this.state.disableModalButtons} focusId="editDisplayName">
-                    <Form id="editTemplateForm">
-                        <Input key={`templateId_${this.state.inputKey}`} id="editTemplateId" type="hidden" defaultValue={this.state.templateForEdit.id} />
-                        <Input key={`displayName_${this.state.inputKey}`} id="editDisplayName" type="text" label="Display Name (required)" margin={{bottom: 'sm'}}
-                            defaultValue={this.state.templateForEdit.displayName} {...this.state.validation.displayName} />
-                        <Input key={`sponsor_${this.state.inputKey}`} id="editSponsor" type="text" label="Sponsor (required)" margin={{bottom: 'sm'}}
-                            defaultValue={this.state.templateForEdit.sponsor} {...this.state.validation.sponsor} />
-                        <Input key={`contactName_${this.state.inputKey}`} id="editContactName" type="text" label="Contact Name (required)" margin={{bottom: 'sm'}}
-                            defaultValue={this.state.templateForEdit.contactName} {...this.state.validation.contactName} />
-                        <Input key={`contactUsername_${this.state.inputKey}`} id="editContactUsername" type="text" label="Contact Username (required)" margin={{bottom: 'sm'}}
-                            defaultValue={this.state.templateForEdit.contactUsername} {...this.state.validation.contactUsername} />
-                        <Input key={`sourceCourseId_${this.state.inputKey}`} id="editSourceCourseId" type="text" label="Source Course ID (required)" margin={{bottom: 'sm'}}
-                            defaultValue={this.state.templateForEdit.sourceCourseId} {...this.state.validation.sourceCourseId} />
-                        <Input key={`ccUrl_${this.state.inputKey}`} id="editCcUrl" type="text" label="Preview URL (optional)" margin={{bottom: 'sm'}}
-                            defaultValue={this.state.templateForEdit.canvasCommonsUrl} />
-                        <Textarea key={`description_${this.state.inputKey}`} id="editDescription" label="Description (required)" margin={{bottom: 'sm'}}
-                            defaultValue={this.state.templateForEdit.description} {...this.state.validation.description} />
-                        <File key={`file_${this.state.inputKey}`} id="editTemplateFileInput" margin={{bottom: 'sm'}} />
-                    </Form>
-                </ConfirmationModal>
+        let displayNameAlert = null
+        let displayNameProps = {};
+        if (this.state.validation.displayName) {
+            displayNameAlert = <InlineError errorId="displayNameError" message={this.state.validation.displayName.note}></InlineError>
+            displayNameProps = {'aria-describedby': 'displayNameError', 'aria-invalid': "true"};
         }
-    
+
+        let sponsorAlert = null
+        let sponsorProps = {};
+        if (this.state.validation.sponsor) {
+            sponsorAlert = <InlineError errorId="sponsorError" message={this.state.validation.sponsor.note}></InlineError>
+            sponsorProps = {'aria-describedby': 'sponsorError', 'aria-invalid': "true"};
+        }
+
+        let contactNameAlert = null
+        let contactNameProps = {};
+        if (this.state.validation.contactName) {
+            contactNameAlert = <InlineError errorId="contactNameError" message={this.state.validation.contactName.note}></InlineError>
+            contactNameProps = {'aria-describedby': 'contactNameError', 'aria-invalid': "true"};
+        }
+
+        let contactUsernameAlert = null
+        let contactUsernameProps = {};
+        if (this.state.validation.contactUsername) {
+            contactUsernameAlert = <InlineError errorId="contactUsernameError" message={this.state.validation.contactUsername.note}></InlineError>
+            contactUsernameProps = {'aria-describedby': 'contactUsernameError', 'aria-invalid': "true"};
+        }
+
+        let sourceCourseIdAlert = null
+        let sourceCourseIdProps = {};
+        if (this.state.validation.sourceCourseId) {
+            sourceCourseIdAlert = <InlineError errorId="sourceCourseIdError" message={this.state.validation.sourceCourseId.note}></InlineError>
+            sourceCourseIdProps = {'aria-describedby': 'sourceCourseIdError', 'aria-invalid': "true"};
+        }
+
+        let descriptionAlert = null
+        let descriptionProps = {};
+        if (this.state.validation.description) {
+            descriptionAlert = <InlineError errorId="descriptionError" message={this.state.validation.description.note}></InlineError>
+            descriptionProps = {'aria-describedby': 'descriptionError', 'aria-invalid': "true"};
+        }
+
+        let editModal =
+            <ConfirmationModal handleConfirm={this.handleEditTemplateModalSave} dialogId="edit-template"
+                title="Edit Template" onDismiss={() => this.handleModalCancel("edit-" + this.state.templateForEdit?.id)} yesLabel="Submit" noLabel="Cancel">
+                <form id="editTemplateForm">
+                    <input type="hidden" id="editTemplateId" key={`templateId_${this.state.inputKey}`} defaultValue={this.state.templateForEdit?.id} />
+
+                    <label for="editDisplayName" className="rvt-label rvt-ts-16 rvt-m-top-sm">Display Name (required)</label>
+                    <input key={`displayName_${this.state.inputKey}`} id="editDisplayName" type="text" className="rvt-text-input"
+                        defaultValue={this.state.templateForEdit?.displayName} {...displayNameProps} />
+                    {displayNameAlert}
+
+                    <label for="editSponsor" className="rvt-label rvt-ts-16 rvt-m-top-sm">Sponsor (required)</label>
+                    <input key={`sponsor_${this.state.inputKey}`} id="editSponsor" type="text" className="rvt-text-input"
+                        defaultValue={this.state.templateForEdit?.sponsor} {...sponsorProps} />
+                    {sponsorAlert}
+
+                    <label for="editContactName" className="rvt-label rvt-ts-16 rvt-m-top-sm">Contact Name (required)</label>
+                    <input key={`contactName_${this.state.inputKey}`} id="editContactName" type="text" className="rvt-text-input"
+                        defaultValue={this.state.templateForEdit?.contactName} {...contactNameProps} />
+                    {contactNameAlert}
+
+                    <label for="editContactUsername" className="rvt-label rvt-ts-16 rvt-m-top-sm">Contact Username (required)</label>
+                    <input key={`contactUsername_${this.state.inputKey}`} id="editContactUsername" type="text" className="rvt-text-input"
+                        defaultValue={this.state.templateForEdit?.contactUsername} {...contactUsernameProps} />
+                    {contactUsernameAlert}
+
+                    <label for="editSourceCourseId" className="rvt-label rvt-ts-16 rvt-m-top-sm">Source Course ID (required)</label>
+                    <input key={`sourceCourseId_${this.state.inputKey}`} id="editSourceCourseId" type="text" className="rvt-text-input"
+                        defaultValue={this.state.templateForEdit?.sourceCourseId} {...sourceCourseIdProps} />
+                    {sourceCourseIdAlert}
+
+                    <label for="editCcUrl" className="rvt-label rvt-ts-16 rvt-m-top-sm">Preview URL (optional)</label>
+                    <input key={`ccUrl_${this.state.inputKey}`} id="editCcUrl" type="text" className="rvt-text-input"
+                        defaultValue={this.state.templateForEdit?.canvasCommonsUrl} />
+
+                    <label for="editDescription" className="rvt-label rvt-ts-16 rvt-m-top-sm">Description (required)</label>
+                    <textarea key={`description_${this.state.inputKey}`} id="editDescription" className="rvt-textarea"
+                        defaultValue={this.state.templateForEdit?.description} {...descriptionProps} />
+                    {descriptionAlert}
+
+                    <div className="rvt-file rvt-m-top-md" data-rvt-file-input="editTemplateFileInput" key={`file_${this.state.inputKey}`} >
+                      <input type="file" data-rvt-file-input-button="editTemplateFileInput" id="editTemplateFileInput"
+                        aria-describedby="edit-file-description" />
+                      <label for="editTemplateFileInput" className="rvt-button">
+                        <span>Upload a file</span>
+                        <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="M2 1h8.414L14 4.586V15H2V1Zm2 2v10h8V7.5H7.5V3H4Zm5.5 0v2.5H12v-.086L9.586 3H9.5Z"></path></svg>
+                      </label>
+                      <div className="rvt-file__preview" data-rvt-file-input-preview="editTemplateFileInput" id="edit-file-description">
+                        No file selected
+                      </div>
+                    </div>
+                </form>
+            </ConfirmationModal>
+
         return (
             <div>
-                <table id="templateTable">
-                    <caption className="sr-only">Templates for the selected node</caption>
+                <table id="templateTable" className="rvt-table">
+                    <caption className="rvt-sr-only">Templates for the selected node</caption>
                     <thead>
                         <tr className="rvt-vertical-center">
                             <th scope="col" className="tableColumnWidthOverride">Display Name</th>
@@ -290,17 +408,20 @@ class SelectedTemplate extends React.Component {
                     </tbody>
                 </table>
 
-                {editModal}
+                <div>
+                    {editModal}
+                </div>
 
-                <ConfirmationModal isOpen={this.state.deleteModalOpen} handleConfirm={this.handleModalDelete}
-                    title="Delete Template" onDismiss={() => this.handleModalCancel("delete-" + this.state.deleteData.templateId)} 
-                    yesLabel="Delete" noLabel="Cancel" focusId={"delete-instr-" + this.state.deleteData.templateId}>
+                <ConfirmationModal handleConfirm={this.handleModalDelete} dialogId="delete-template"
+                    title="Delete Template" onDismiss={() => this.handleModalCancel("delete-" + this.state.deleteData.templateId)}
+                    yesLabel="Delete" noLabel="Cancel" loadingText="Deleting template">
                     <DeleteModalText deleteData={this.state.deleteData} />
                 </ConfirmationModal>
 
-                <ConfirmationModal isOpen={this.state.defaultModalOpen} handleConfirm={this.handleModalDefault}
-                    title="Change Default Status" focusId={"default-instr-" + this.state.defaultData.templateId}
-                    onDismiss={() => this.handleModalCancel("default-" + this.state.defaultData.templateId)}>
+                <ConfirmationModal handleConfirm={this.handleModalDefault}
+                    title="Change Default Status"
+                    onDismiss={() => this.handleModalCancel("default-" + this.state.defaultData.templateId)}
+                    dialogId="change-default" loadingText="Changing default status">
                     <DefaultModalText defaultData={this.state.defaultData} />
                 </ConfirmationModal>
             </div>
@@ -327,7 +448,7 @@ class SelectedTemplate extends React.Component {
 function CanvasCommonsUrl(props) {
     if (props.url != null && props.url.trim().length > 0) {
         return (
-            <a href={props.url} target="_blank">{props.url}</a>
+            <a href={props.url} target="_blank" rel="noopener noreferrer">{props.url}</a>
         )
     } else {
         return "No URL available";
@@ -342,27 +463,30 @@ function Template(props) {
                 <td className="tableColumnWidthOverride"><a href={props.templateData.fileUrl} className="rvt-link-bold">{props.templateData.fileName}</a></td>
                 <td className="defaultColumnWidthOverride">{props.templateData.defaultTemplate ? 'Yes' : 'No'}</td>
                 <td>
-                    <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm" onClick={props.handleEditTemplateModalOpen}
-                            data-id={props.templateData.id} id={"edit-" + props.templateData.id}>
-                        <span className="rvt-sr-only">Edit entry</span>
-                        <span>Edit</span>
+                    <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm"
+                            data-id={props.templateData.id} id={"edit-" + props.templateData.id}
+                            data-rvt-dialog-trigger="edit-template-dialog" onClick={props.handleEditTemplateModalOpen}>
+                        Edit <span className="rvt-sr-only">{props.templateData.displayName}</span>
                     </button>
-                    <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm rvt-m-top-sm rvt-m-top-none-xl-up"
-                        onClick={props.handleDeleteDialogOpen} data-id={props.templateData.id} id={"delete-" + props.templateData.id}>
-                        <span>Delete</span>
+                    <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm"
+                        data-id={props.templateData.id} id={"delete-" + props.templateData.id}
+                        onClick={props.handleDeleteDialogOpen}  data-rvt-dialog-trigger="delete-template-dialog">
+                        Delete <span className="rvt-sr-only">{props.templateData.displayName}</span>
                     </button>
-                    <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm rvt-m-top-sm rvt-m-top-none-xl-up"
+                    <button type="button" className="rvt-button rvt-button--secondary rvt-m-right-sm"
                         onClick={props.handleDefaultModalOpen} data-id={props.templateData.id} data-nodehasdefault={props.nodeHasDefault}
-                        id={"default-" + props.templateData.id}>
+                        id={"default-" + props.templateData.id} data-rvt-dialog-trigger="change-default-dialog">
                         <span>{props.templateData.defaultTemplate ? 'Disable Default' : 'Enable Default'}</span>
+                        <span className="rvt-sr-only"> for {props.templateData.displayName}</span>
                     </button>
-                    <button type="button" className="rvt-button rvt-button--secondary rvt-m-top-sm rvt-m-top-none-xl-up" onClick={props.handleMoreClick}
+                    <button type="button" className="rvt-button rvt-button--secondary" onClick={props.handleMoreClick}
                             aria-expanded="false" aria-controls={props.templateData.id}>
-                        <span>More Details</span>
+                        <span>More Details </span>
+                        <span className="rvt-sr-only"> for {props.templateData.displayName}</span>
                     </button>
                 </td>
                 <td role="cell" id={props.templateData.id} hidden>
-                    <dl className="detailsflex">
+                    <dl className="detailsflex -rvt-m-top-md">
                         <dt>Sponsor</dt>
                         <dd>{props.templateData.sponsor}</dd>
                         <dt>Contact Name</dt>

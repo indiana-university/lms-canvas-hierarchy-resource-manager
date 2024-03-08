@@ -86,6 +86,7 @@ table#templateTable td:last-child {
     padding: 0 10px 0 0;
     margin: 0;
     text-align: right;
+    font-weight: bold;
 }
 
 .detailsflex dt:after {
@@ -136,6 +137,18 @@ button > * {
 
 .tox-tinymce {
     border-radius: 0.25rem !important;
+}
+
+/* If our self-hosted tinymce is unavailable for some reason, it will try to get it from the
+    cloud and display a warning. This hides that warning if that happens */
+.tox-notifications-container{
+    display:none !important;
+}
+
+.external-link-icon {
+    margin-left: 0.2rem;
+    padding: 0.07rem;
+    vertical-align: middle;
 }
 
 

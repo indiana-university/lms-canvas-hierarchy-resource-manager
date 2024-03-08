@@ -36,11 +36,13 @@ import { Editor } from '@tinymce/tinymce-react';
 export default function TextEditor(props) {
   const editorRef = useRef(null);
   const handleFilePickerCallback = props.filePickerCallback;
+  const scriptSrc = process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'
   const ariaText = props.ariaText;
 
   return (
     <>
       <Editor
+        tinymceScriptSrc='/app/webjars/tinymce/tinymce.min.js'
         value={props.value}
         id={props.id}
         onEditorChange={props.onEditorChange}

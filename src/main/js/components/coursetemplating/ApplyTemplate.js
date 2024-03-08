@@ -40,7 +40,6 @@ import Collapsible from 'rivet-collapsible/dist/js/rivet-collapsible.min.js';
 import './ApplyTemplate.css';
 import Loading from 'components/Loading.js';
 import ConfirmationModal from 'components/ConfirmationModal.js';
-import { Alert } from 'rivet-react'
 import RvtSvg from 'components/RvtSvg'
 
 class ApplyTemplate extends React.Component {
@@ -51,7 +50,6 @@ class ApplyTemplate extends React.Component {
             nodeHierarchy: [],
             coursePublished: true,
             loading: true,
-            applyModalOpen: false,
             modalData: {},
             notificationDisplay: false
         }
@@ -88,30 +86,49 @@ class ApplyTemplate extends React.Component {
         const templateId = event.target.getAttribute("data-template-id");
         const templateName = event.target.getAttribute("data-template-name");
         const nodeName = event.target.getAttribute("data-node-name");
+        const triggerId = "apply-" + templateId;
 
-        this.setState({applyModalOpen: true, modalData: {templateId: templateId, templateName: templateName, nodeName: nodeName}})
+        // move focus to the dialog heading
+        var dialogHeading = $("#apply-template-dialog").find("h1.rvt-dialog__title").first();
+        dialogHeading.focus();
+
+        // When the rivet dialog closes, it always is the last event.  So when we try to manually move
+        // the focus on cancel, it gets overridden when the modal closes (the first instance of data-rvt-dialog-trigger always gets focus).
+        // To combat this, we remove the trigger from every button except the one that was just clicked. We trick rivet so it
+        // returns focus to the correct button
+
+        // remove the data-rvt-dialog-trigger from all buttons
+        var triggerButtons = $('button[data-rvt-dialog-trigger="apply-template-dialog"]');
+        triggerButtons.removeAttr("data-rvt-dialog-trigger");
+
+        // add it back to the trigger
+        $("#" + triggerId).attr('data-rvt-dialog-trigger', 'apply-template-dialog');
+
+        this.setState({modalData: {templateId: templateId, templateName: templateName, nodeName: nodeName}})
     }
 
-    handleModalCancel(triggerId) {
-        this.setState({applyModalOpen: false, modalData: {}})
-        
-        // return focus to the trigger element
-        var trigger = document.getElementById(triggerId);
-        if (trigger) {
-            trigger.focus();
-        }
+    handleModalCancel() {
+        this.setState({modalData: {}})
     }
 
     handleModalApply = () => {
         axios.post(`/app/tool/template/apply/${courseId}/${this.state.modalData.templateId}`)
             .then(response => response.data)
             .then((data) => {
+
+                const applyTemplateDialog = document.querySelector('[data-rvt-dialog="apply-template-dialog"]');
+                applyTemplateDialog.close();
+
                 this.dialogSaved();
+
+                const notificationText = "Your request to apply the template has been submitted. These changes may take some time to propagate through your Canvas course. You will need to refresh the page for the changes to appear."
+                this.props.notificationHandler({display: true, text: notificationText});
+
             })
     }
 
     dialogSaved = () => {
-        this.setState({notificationDisplay: true, applyModalOpen: false, modalData: {}})
+        this.setState({notificationDisplay: true, modalData: {}})
     }
 
     render() {
@@ -126,22 +143,21 @@ class ApplyTemplate extends React.Component {
 
             return (
                 <React.Fragment>
-                    <Alert variant="success" title="Success!" isOpen={this.state.notificationDisplay} className="rvt-m-bottom-md"
-                                        onDismiss={() => this.setState({notificationDisplay: false})}>
-                        Your request to apply the template has been submitted. These changes may take some time to propagate through your Canvas course. You will need to refresh the page for the changes to appear.
-                    </Alert>
-                    <p className="limitContentWidth">
+                    <p>
                         The following templates are available for you to apply to your course.
                         Templates are grouped by the sponsoring unit (e.g., university, campus, school, department).
-                        To preview a template in Canvas Commons before applying it to your course, click the "Preview" button, if available.
+                        Some templates may be previewed by clicking the template name, though not all templates have previews.
                         When you are ready to apply a template to your course, click the corresponding <span className="rvt-text-bold">Apply Template</span> button.
                     </p>
-                    {nodes}
-                    <ConfirmationModal isOpen={this.state.applyModalOpen} handleConfirm={this.handleModalApply} title="Apply Template"
-                                       onDismiss={() => this.handleModalCancel("apply-" + this.state.modalData.templateId)}
-                                       yesLabel="Apply" noLabel="Cancel" focusId="templateWarning">
+                    <div className="rvt-accordion rvt-m-top-xs" data-rvt-accordion="template-accordion">
+                        {nodes}
+                    </div>
+
+                    <ConfirmationModal handleConfirm={this.handleModalApply} title="Apply Template"
+                               onDismiss={() => this.handleModalCancel()} yesLabel="Apply" noLabel="Cancel"
+                               dialogId="apply-template" showLoading loadingText="Applying template">
                         <React.Fragment>
-                            <div id="templateWarning" tabindex="-1">
+                            <div id="templateWarning">
                                 <span className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
                                 <p>
                                     Please note that this action may make changes to your course navigation (including removing the IU
@@ -151,8 +167,9 @@ class ApplyTemplate extends React.Component {
                                 </p>
                                 <p>
                                     For more information, see <a href="https://kb.iu.edu/d/bgry" target="_blank">
-                                    <cite>Apply a template to your Canvas course</cite> <RvtSvg icon="rvt-icon-link-external" ariahide="true" />
-                                    <span className="sr-only">Opens in new window</span></a> in the IU Knowledge Base.
+                                    Apply a template to your Canvas course
+                                    <RvtSvg icon="rvt-icon-link-external" classes="external-link-icon" title="Opens in new window"/>
+                                    </a> in the IU Knowledge Base.
                                 </p>
                             </div>
                         </React.Fragment>
@@ -173,32 +190,38 @@ class ApplyTemplate extends React.Component {
     const nodeId = kebabCase(props.nodeName)
 
     return (
-        <div className="rvt-collapsible rvt-collapsible--panel limitContentWidth rvt-m-top-xs">
-            <h2 className="rvt-collapsible__title">
-                <button id={`${nodeId}-label`} data-collapsible={nodeId} aria-expanded="false">
-                    <svg role="img" aria-labelledby={`${nodeId}-name`} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                        <path fill="currentColor" d="M5.5,15a1,1,0,0,1-.77-1.64L9.2,8,4.73,2.64A1,1,0,0,1,6.27,1.36L11.13,7.2a1.25,1.25,0,0,1,0,1.61L6.27,14.64A1,1,0,0,1,5.5,15ZM9.6,8.48h0Zm0-1h0Z"></path>
+        <>
+        <h2 className="rvt-accordion__summary">
+            <button id={`${nodeId}-label`} className="rvt-accordion__toggle" data-rvt-accordion-trigger={`${nodeId}-accordion`}>
+                <span className="rvt-accordion__toggle-text" id={`${nodeId}-name`}>{props.nodeName}</span>
+                <span className="rvt-accordion__toggle-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                      <g fill="currentColor">
+                        <path className="rvt-accordion__icon-bar" d="M8,15a1,1,0,0,1-1-1V2A1,1,0,0,1,9,2V14A1,1,0,0,1,8,15Z" />
+                        <path d="M14,9H2A1,1,0,0,1,2,7H14a1,1,0,0,1,0,2Z" />
+                      </g>
                     </svg>
-                    <span id={`${nodeId}-name`}>{props.nodeName}</span>
-                </button>
-            </h2>
-            <div className="rvt-collapsible__content rvt-p-top-sm" id={nodeId} aria-hidden="true" aria-labelledby={`${nodeId}-label`}>
-                <table id={`${nodeId}-table`}>
-                    <caption className="sr-only">{`${props.nodeName} templates`}</caption>
-                    <thead>
-                    <tr>
-                        <th scope="col" className="nameColWidth">Template Name</th>
-                        <th scope="col" className="descriptionColWidth">Description</th>
-                        <th scope="col" className="defaultColWidth">Default</th>
-                        <th scope="col" className="buttonColWidth">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                </span>
+            </button>
+        </h2>
+        <div className="rvt-accordion__panel"
+            id={`${nodeId}-accordion`} data-rvt-accordion-panel={`${nodeId}-accordion`}>
+            <table id={`${nodeId}-table`}>
+                <caption className="rvt-sr-only">{`${props.nodeName} templates`}</caption>
+                <thead>
+                <tr>
+                    <th scope="col" className="nameColWidth">Template Name</th>
+                    <th scope="col" className="descriptionColWidth">Description</th>
+                    <th scope="col" className="defaultColWidth">Default</th>
+                    <th scope="col" className="buttonColWidth">Action</th>
+                </tr>
+                </thead>
+                <tbody>
                     {templates}
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
         </div>
+        </>
     );
   }
 
@@ -206,12 +229,13 @@ class ApplyTemplate extends React.Component {
     if (props.templateData) {
         return (
             <tr>
-                <th scope="row">{props.templateData.displayName}</th>
+                <th scope="row">
+                    <PreviewLink templateName={props.templateData.displayName} previewUrl={props.templateData.canvasCommonsUrl} />
+                </th>
                 <td>{props.templateData.description}</td>
                 <td>{props.templateData.defaultTemplate ? 'Yes' : 'No'}</td>
                 <td>
-                    <ApplyButton templateData={props.templateData} handleApply={props.handleApply} coursePublished={props.coursePublished}/>
-                    <PreviewButton url={props.templateData.canvasCommonsUrl} handlePreview={props.handlePreview} />
+                    <ApplyButton templateData={props.templateData} handleApply={props.handleApply} coursePublished={props.coursePublished} />
                 </td>
             </tr>
         )
@@ -220,11 +244,18 @@ class ApplyTemplate extends React.Component {
     }
   }
 
-  function PreviewButton(props) {
-    if (props.url) {
-        return (<button className="rvt-button rvt-button--secondary rvt-m-top-sm rvt-m-top-none-lg-up" value={props.url} onClick={props.handlePreview}>Preview</button>)
+  function PreviewLink(props) {
+    if (props.previewUrl) {
+        return (
+            <>
+               <a href={props.previewUrl} target="_blank" rel="noopener noreferrer">
+                   {props.templateName}
+                   <RvtSvg icon="rvt-icon-link-external" classes="external-link-icon" title="Preview opens in new window"/>
+               </a>
+            </>
+        )
     } else {
-        return null;
+        return props.templateName;
     }
   }
 
@@ -233,7 +264,8 @@ class ApplyTemplate extends React.Component {
         <button className="rvt-button rvt-button--secondary rvt-m-right-sm" data-template-id={props.templateData.id}
             data-template-name={props.templateData.displayName} data-node-name={props.templateData.node}
             onClick={props.handleApply} disabled={props.coursePublished}
-            id={"apply-" + props.templateData.id}>Apply Template</button>
+            id={"apply-" + props.templateData.id}
+            data-rvt-dialog-trigger="apply-template-dialog">Apply Template <span className="rvt-sr-only">{props.templateData.displayName}</span></button>
     )
   }
 

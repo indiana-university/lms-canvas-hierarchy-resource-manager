@@ -146,7 +146,7 @@ class ApplyTemplate extends React.Component {
                     <p>
                         The following templates are available for you to apply to your course.
                         Templates are grouped by the sponsoring unit (e.g., university, campus, school, department).
-                        To preview a template in Canvas Commons before applying it to your course, click the template name, if available.
+                        Some templates may be previewed by clicking the template name, though not all templates have previews.
                         When you are ready to apply a template to your course, click the corresponding <span className="rvt-text-bold">Apply Template</span> button.
                     </p>
                     <div className="rvt-accordion rvt-m-top-xs" data-rvt-accordion="template-accordion">

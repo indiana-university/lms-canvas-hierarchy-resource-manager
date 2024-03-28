@@ -157,7 +157,7 @@ class ApplyTemplate extends React.Component {
                                dialogId="apply-template" showLoading loadingText="Applying template">
                         <React.Fragment>
                             <div id="templateWarning">
-                                <span d="dialog-focus" tabindex="-1" className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
+                                <span id="dialog-focus" tabindex="-1" className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
                                 <p>
                                     Please note that this action may make changes to your course navigation (including removing the IU
                                     eTexts tool from the navigation of courses that use eTexts), course settings, and/or course content.

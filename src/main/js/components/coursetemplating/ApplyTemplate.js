@@ -88,8 +88,9 @@ class ApplyTemplate extends React.Component {
         const nodeName = event.target.getAttribute("data-node-name");
         const triggerId = "apply-" + templateId;
 
-        // move focus to the first paragraph
-        var dialogHeading = $("#dialog-focus").focus();
+        // move focus to the dialog heading
+        var dialogHeading = $("#apply-template-dialog").find("h1.rvt-dialog__title").first();
+        dialogHeading.focus();
 
         // When the rivet dialog closes, it always is the last event.  So when we try to manually move
         // the focus on cancel, it gets overridden when the modal closes (the first instance of data-rvt-dialog-trigger always gets focus).
@@ -157,7 +158,7 @@ class ApplyTemplate extends React.Component {
                                dialogId="apply-template" showLoading loadingText="Applying template">
                         <React.Fragment>
                             <div id="templateWarning">
-                                <span id="dialog-focus" tabindex="-1" className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
+                                <span className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
                                 <p>
                                     Please note that this action may make changes to your course navigation (including removing the IU
                                     eTexts tool from the navigation of courses that use eTexts), course settings, and/or course content.

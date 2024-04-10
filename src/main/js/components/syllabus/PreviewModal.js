@@ -72,6 +72,7 @@ class PreviewModal extends React.Component {
                 data-rvt-dialog-modal
                 data-rvt-dialog-darken-page
                 data-rvt-dialog-disable-page-interaction
+                aria-modal="true"
                 hidden>
               <header className="rvt-dialog__header">
                 <h1 className="rvt-dialog__title" id="preview-dialog-title" tabindex="-1">Supplements Preview</h1>

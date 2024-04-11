@@ -125,6 +125,7 @@ class ConfirmationModal extends React.Component {
                 data-rvt-dialog={`${this.props.dialogId}-dialog`}
                 data-rvt-dialog-darken-page
                 data-rvt-dialog-disable-page-interaction
+                aria-modal="true"
                 hidden>
 
               <h1 className="rvt-dialog__header rvt-dialog__title" id={`${this.props.dialogId}-title`} tabIndex="-1">{this.props.title}</h1>

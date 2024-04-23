@@ -46,8 +46,10 @@ public class DecoratedSyllabus {
    private String nodeName;
    private String contactUsername = "";
    private String contactEmail = "";
+   private boolean uiDisclosureOpenByDefault = false;
 
    public DecoratedSyllabus(SyllabusSupplement syllabusSupplement) {
+      this.uiDisclosureOpenByDefault = syllabusSupplement.isUiDisclosureOpenByDefault();
       this.syllabusTitle = syllabusSupplement.getTitle();
       this.syllabusContent = syllabusSupplement.getContent();
       this.nodeName = syllabusSupplement.getNode();

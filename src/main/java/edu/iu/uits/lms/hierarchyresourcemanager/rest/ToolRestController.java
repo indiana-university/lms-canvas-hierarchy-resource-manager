@@ -290,6 +290,7 @@ public class ToolRestController extends HierarchyResourceManagerController {
        }
 
        syllabusSupplement.setTitle(form.getSyllabus().getSyllabusTitle());
+       syllabusSupplement.setUiDisclosureOpenByDefault(form.getSyllabus().isUiDisclosureOpenByDefault());
        syllabusSupplement.setContent(form.getSyllabus().getSyllabusContent());
        syllabusSupplement.setContactUsername(form.getSyllabus().getContactUsername());
        syllabusSupplement.setContactEmail(form.getSyllabus().getContactEmail());

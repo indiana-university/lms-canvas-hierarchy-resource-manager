@@ -68,6 +68,9 @@ public class SyllabusSupplement {
    @Column(nullable = false)
    private String strm;
 
+   @Column(name = "ui_disclosure_open_by_default")
+   private boolean uiDisclosureOpenByDefault;
+
    @Column(name = "contactusername")
    private String contactUsername;
 

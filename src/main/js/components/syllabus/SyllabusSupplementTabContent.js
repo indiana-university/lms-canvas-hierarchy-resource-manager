@@ -50,8 +50,8 @@ class SyllabusSupplementTabContent extends React.Component {
             selectedNode: "",
             selectedTerm: "9999",
             selectedTermName: "Default",
-            syllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
-            initialSyllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
+            syllabus: {uiDisclosureOpenByDefault: false, syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
+            initialSyllabus: {uiDisclosureOpenByDefault: false, syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
             cancelDisabled: true,
             deleteDisabled: true,
             saveDisabled: true,
@@ -68,6 +68,7 @@ class SyllabusSupplementTabContent extends React.Component {
         this.handleHierarchyOptionChange.bind(this)
         this.handleTermOptionChange.bind(this)
         this.handleTextInputChange.bind(this)
+        this.handleCheckboxInputChange.bind(this)
         this.handleEditorChange.bind(this)
         this.handleModalSave.bind(this)
         this.handleModalDelete.bind(this)
@@ -139,8 +140,8 @@ class SyllabusSupplementTabContent extends React.Component {
                 });
         } else {
             // reset all the stuff in the form
-            this.setState({syllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
-                initialSyllabus: {syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
+            this.setState({syllabus: {uiDisclosureOpenByDefault: false, syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
+                initialSyllabus: {uiDisclosureOpenByDefault: false, syllabusTitle: "", syllabusContent: "", contactUsername: "", contactEmail: ""},
                 inputsDisabled: true});
         }
     }
@@ -175,6 +176,16 @@ class SyllabusSupplementTabContent extends React.Component {
             syllabus.contactEmail = inputValue
             this.state.emailLengthError = !this.isInputValid(syllabus.contactEmail)
         }
+
+        this.setState({ saveDisabled: !this.canSave(syllabus, this.state.initialSyllabus),
+                        cancelDisabled: this.canCancel(syllabus, this.state.initialSyllabus),
+                        syllabus: syllabus})
+    }
+
+    handleCheckboxInputChange = (event) => {
+        var syllabus = this.cloneObject(this.state.syllabus)
+        
+        syllabus.uiDisclosureOpenByDefault = event.target.checked
 
         this.setState({ saveDisabled: !this.canSave(syllabus, this.state.initialSyllabus),
                         cancelDisabled: this.canCancel(syllabus, this.state.initialSyllabus),
@@ -225,7 +236,8 @@ class SyllabusSupplementTabContent extends React.Component {
     }
 
     syllabusIsUpdated(syllabus, initialSyllabus) {
-        return syllabus.syllabusTitle !== initialSyllabus.syllabusTitle ||
+        return syllabus.uiDisclosureOpenByDefault !== initialSyllabus.uiDisclosureOpenByDefault ||
+               syllabus.syllabusTitle !== initialSyllabus.syllabusTitle ||
                syllabus.contactUsername !== initialSyllabus.contactUsername ||
                syllabus.contactEmail !== initialSyllabus.contactEmail ||
                syllabus.syllabusContent !== initialSyllabus.syllabusContent;
@@ -234,7 +246,8 @@ class SyllabusSupplementTabContent extends React.Component {
     canCancel = (syllabus, initialSyllabus) => {
         var cancelDisabled = false
         //Disable the cancel button if the fields are unchanged
-        if (syllabus.syllabusTitle === initialSyllabus.syllabusTitle &&
+        if (syllabus.uiDisclosureOpenByDefault === initialSyllabus.uiDisclosureOpenByDefault &&
+            syllabus.syllabusTitle === initialSyllabus.syllabusTitle &&
             syllabus.syllabusContent === initialSyllabus.syllabusContent &&
             syllabus.contactUsername === initialSyllabus.contactUsername &&
             syllabus.contactEmail === initialSyllabus.contactEmail) {
@@ -399,11 +412,22 @@ render() {
                     onChange={this.handleTermOptionChange} defaultValue={this.props.terms[0]} classNamePrefix="node-rivet" />
             </div>
 
-            <label for="text-input-default" className="rvt-label rvt-ts-16">Supplement Title (required)</label>
-            <input type="text" id="text-input-default" name={this.titleInput} className="rvt-text-input"
-                disabled={this.state.inputsDisabled} value={this.state.syllabus.syllabusTitle}
-                onChange={this.handleTextInputChange} {...inputProps} />
-            {noteNode}
+            <div className="rvt-checkbox rvt-m-bottom-md">
+                <input type="checkbox" id="disclosure-checkbox-input" name="uiDisclosureOpenByDefault"
+                       disabled={this.state.inputsDisabled} checked={this.state.syllabus.uiDisclosureOpenByDefault}
+                       onChange={this.handleCheckboxInputChange} />
+                <label for="disclosure-checkbox-input" className="rvt-label rvt-ts-16">UI disclosure to be open by default
+                    <span className="rvt-sr-only">Select if this supplement will have its UI disclosure in Canvas open by default.</span>
+                </label>
+            </div>
+
+            <div>
+                <label for="text-input-default" className="rvt-label rvt-ts-16">Supplement Title (required)</label>
+                <input type="text" id="text-input-default" name={this.titleInput} className="rvt-text-input"
+                       disabled={this.state.inputsDisabled} value={this.state.syllabus.syllabusTitle}
+                       onChange={this.handleTextInputChange} {...inputProps} />
+                {noteNode}
+            </div>
 
 
             <label htmlFor="supplementText" className="rvt-label rvt-ts-16 rvt-m-top-md">Supplement Text (required)</label>

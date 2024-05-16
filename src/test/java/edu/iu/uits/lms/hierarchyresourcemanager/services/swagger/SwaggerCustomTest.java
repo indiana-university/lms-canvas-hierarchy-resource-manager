@@ -33,14 +33,12 @@ package edu.iu.uits.lms.hierarchyresourcemanager.services.swagger;
  * #L%
  */
 
-import edu.iu.uits.lms.hierarchyresourcemanager.WebApplication;
-import edu.iu.uits.lms.hierarchyresourcemanager.config.SecurityConfig;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerCustomTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-@SpringBootTest(classes = {WebApplication.class, SecurityConfig.class}, properties = {"lms.rabbitmq.queue_env_suffix = test"})
+@SpringBootTest(classes = {HrmSwaggerConfig.class}, properties = {"lms.rabbitmq.queue_env_suffix = test"})
 public class SwaggerCustomTest extends AbstractSwaggerCustomTest {
 
    @Override

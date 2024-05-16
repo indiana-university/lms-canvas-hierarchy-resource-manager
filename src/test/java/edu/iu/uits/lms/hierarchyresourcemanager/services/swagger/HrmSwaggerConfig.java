@@ -4,7 +4,7 @@ package edu.iu.uits.lms.hierarchyresourcemanager.services.swagger;
  * #%L
  * lms-lti-hierarchyresourcemanager
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2024 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,16 +33,15 @@ package edu.iu.uits.lms.hierarchyresourcemanager.services.swagger;
  * #L%
  */
 
-import edu.iu.uits.lms.lti.swagger.AbstractSwaggerUiCustomTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import edu.iu.uits.lms.hierarchyresourcemanager.WebApplication;
+import edu.iu.uits.lms.hierarchyresourcemanager.config.SecurityConfig;
+import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 
-import java.util.List;
+@Import({WebApplication.class, SecurityConfig.class})
+public class HrmSwaggerConfig {
+   @MockBean
+   private BufferingApplicationStartup bufferingApplicationStartup;
 
-@SpringBootTest(classes = {HrmSwaggerConfig.class}, properties = {"lms.rabbitmq.queue_env_suffix = test"})
-public class SwaggerUiCustomTest extends AbstractSwaggerUiCustomTest {
-
-   @Override
-   protected List<String> getEmbeddedSwaggerToolPaths() {
-      return SwaggerTestUtil.getEmbeddedSwaggerToolPaths(super.getEmbeddedSwaggerToolPaths());
-   }
 }

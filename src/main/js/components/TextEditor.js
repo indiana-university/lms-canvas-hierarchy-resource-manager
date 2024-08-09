@@ -61,7 +61,8 @@ export default function TextEditor(props) {
           file_picker_types: 'image',
           file_picker_callback: handleFilePickerCallback,
           iframe_aria_text: ariaText,
-          promotion: false
+          promotion: false,
+          extended_valid_elements: 'svg[*],path[*]'
         }}
       />
     </>

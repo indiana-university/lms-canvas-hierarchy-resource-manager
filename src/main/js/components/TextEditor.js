@@ -54,7 +54,7 @@ export default function TextEditor(props) {
             'advlist', 'lists', 'link', 'image', 'code', 'table', 'wordcount'
           ],
           toolbar: 'undo redo | styleselect | bold italic forecolor | alignleft aligncenter ' +
-            'alignright alignjustify | link image table | bullist numlist outdent indent | code | opensInNew hiddenSRText ariaDescribedBy',
+            'alignright alignjustify | link image table | bullist numlist outdent indent | code | opensInNew',
           content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
           image_title: true,
           automatic_uploads: true,
@@ -69,18 +69,6 @@ export default function TextEditor(props) {
                 tooltip: 'Insert Opens in New Window image',
                 icon: 'new-tab',
                 onAction: () => tinyMCE.execCommand('mceInsertContent', false, '<svg aria-hidden="true" fill="currentColor" focusable="false" height="12" viewBox="0 0 16 16" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M15 1H9v2h2.586l-3 3L10 7.414l3-3V7h2V1Z"></path><path d="M7 3H1v12h12V9h-2v4H3V5h4V3Z"></path></svg>')
-            });
-            editor.ui.registry.addButton("hiddenSRText", {
-                text: 'Hidden SR text',
-                tooltip: 'Insert hidden SR text once per document.',
-                icon: 'preview',
-                onAction: () => tinyMCE.execCommand('mceInsertContent', false, '<span id="sr-new-window" hidden>Opens in new window</span>')
-            });
-            editor.ui.registry.addButton("ariaDescribedBy", {
-                text: 'aria-describedby',
-                tooltip: 'Add aria-describedby to link',
-                icon: 'accessibility-check',
-                onAction: () => tinyMCE.execCommand('mceInsertContent', false, 'aria-describedby="sr-new-window"')
             });
           }
 

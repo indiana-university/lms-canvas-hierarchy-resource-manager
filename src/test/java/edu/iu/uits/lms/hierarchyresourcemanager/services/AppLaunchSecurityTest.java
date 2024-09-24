@@ -57,7 +57,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = HierarchyResourceManagerController.class, properties = {"oauth.tokenprovider.url=http://foo"})
-//@Import({ToolConfig.class, CanvasClientTestConfig.class, IuClientTestConfig.class, LtiClientTestConfig.class})
 @ContextConfiguration(classes = {HierarchyResourceManagerController.class, SecurityConfig.class, ToolConfig.class})
 public class AppLaunchSecurityTest {
 

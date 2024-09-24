@@ -72,7 +72,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = HierarchyResourceManagerRestController.class, properties = {"oauth.tokenprovider.url=http://foo", "lms.swagger.cors.origin=asdf", "lms.js.cors.origin=http://www.someurl.com"})
-//@Import(ToolConfig.class)
 @ContextConfiguration(classes = {HierarchyResourceManagerRestController.class, SecurityConfig.class, ToolConfig.class})
 @Slf4j
 @ActiveProfiles("swagger")

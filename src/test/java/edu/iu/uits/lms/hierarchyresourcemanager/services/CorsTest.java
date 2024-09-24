@@ -35,25 +35,31 @@ package edu.iu.uits.lms.hierarchyresourcemanager.services;
 
 import edu.iu.uits.lms.common.test.CommonTestUtils;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessageSender;
+import edu.iu.uits.lms.hierarchyresourcemanager.config.SecurityConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
+import edu.iu.uits.lms.hierarchyresourcemanager.rest.HierarchyResourceManagerRestController;
 import edu.iu.uits.lms.iuonly.model.HierarchyResource;
+import edu.iu.uits.lms.iuonly.repository.FileStorageRepository;
+import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
 import edu.iu.uits.lms.lti.config.TestUtils;
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -65,8 +71,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(properties = {"oauth.tokenprovider.url=http://foo", "lms.swagger.cors.origin=asdf", "lms.js.cors.origin=http://www.someurl.com"})
-@Import(ToolConfig.class)
+@WebMvcTest(controllers = HierarchyResourceManagerRestController.class, properties = {"oauth.tokenprovider.url=http://foo", "lms.swagger.cors.origin=asdf", "lms.js.cors.origin=http://www.someurl.com"})
+//@Import(ToolConfig.class)
+@ContextConfiguration(classes = {HierarchyResourceManagerRestController.class, SecurityConfig.class, ToolConfig.class})
 @Slf4j
 @ActiveProfiles("swagger")
 public class CorsTest {
@@ -77,16 +84,25 @@ public class CorsTest {
    private MockMvc mvc;
 
    @MockBean
-   private NodeHierarchyRealtimeService nodeHierarchyRealtimeService;
+   private UserRepository userRepository;
 
    @MockBean
-   private UserRepository userRepository;
+   private HierarchyResourceRepository hierarchyResourceRepository;
+
+   @MockBean
+   private FileStorageRepository fileStorageRepository;
 
    @MockBean
    private NodeManagerService hierarchyResourceService;
 
    @MockBean
    private CourseTemplateMessageSender courseTemplateMessageSender;
+
+   @MockBean
+   private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+
+   @MockBean
+   private ClientRegistrationRepository clientRegistrationRepository;
 
    public static String DISPLAY_NAME = "Foobar";
    public static String DESCRIPTION = "DESCRIPTION";

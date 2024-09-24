@@ -35,8 +35,6 @@ import React, { Component } from 'react'
 import { groupBy, kebabCase, sortBy } from 'lodash';
 
 import axios from 'axios';
-import 'rivet-collapsible/dist/css/rivet-collapsible.min.css';
-import Collapsible from 'rivet-collapsible/dist/js/rivet-collapsible.min.js';
 import './ApplyTemplate.css';
 import Loading from 'components/Loading.js';
 import ConfirmationModal from 'components/ConfirmationModal.js';
@@ -74,7 +72,6 @@ class ApplyTemplate extends React.Component {
             });
           });
 
-      Collapsible.init();
     }
 
     handlePreviewClick(event) {

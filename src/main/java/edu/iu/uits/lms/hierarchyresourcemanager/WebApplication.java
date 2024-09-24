@@ -43,7 +43,6 @@ import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.iuonly.config.EnableIuOnlyClient;
 import edu.iu.uits.lms.lti.config.EnableGlobalErrorHandler;
 import edu.iu.uits.lms.lti.config.EnableLtiClient;
-import edu.iu.uits.lms.redis.config.EnableRedisConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -60,7 +59,6 @@ import java.util.Date;
 @EnableCanvasClient
 @EnableIuOnlyClient
 @EnableEmailClient
-@EnableRedisConfiguration
 @EnableCookieFilter(ignoredRequestPatterns = {"/rest/**"})
 @EnableLtiClient(toolKeys = {"lms_lti_hrm_apply", "lms_lti_hrm_manager", "lms_lti_hrm_reapply"})
 @EnableConfigurationProperties(GitRepositoryState.class)

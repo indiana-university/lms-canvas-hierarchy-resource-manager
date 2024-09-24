@@ -33,23 +33,23 @@ package edu.iu.uits.lms.hierarchyresourcemanager.services;
  * #L%
  */
 
-import edu.iu.uits.lms.canvas.config.CanvasClientTestConfig;
-import edu.iu.uits.lms.email.service.EmailService;
+import edu.iu.uits.lms.common.server.ServerInfo;
+import edu.iu.uits.lms.hierarchyresourcemanager.config.SecurityConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.controller.HierarchyResourceManagerController;
 import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
-import edu.iu.uits.lms.iuonly.jarexport.IuClientTestConfig;
 import edu.iu.uits.lms.lti.LTIConstants;
-import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.lti.config.TestUtils;
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
@@ -57,23 +57,27 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = HierarchyResourceManagerController.class, properties = {"oauth.tokenprovider.url=http://foo"})
-@Import({ToolConfig.class, CanvasClientTestConfig.class, IuClientTestConfig.class, LtiClientTestConfig.class})
+//@Import({ToolConfig.class, CanvasClientTestConfig.class, IuClientTestConfig.class, LtiClientTestConfig.class})
+@ContextConfiguration(classes = {HierarchyResourceManagerController.class, SecurityConfig.class, ToolConfig.class})
 public class AppLaunchSecurityTest {
 
    @Autowired
    private MockMvc mvc;
 
    @MockBean
-   private EmailService emailService;
-
-   @MockBean
    private UserRepository userRepository;
 
    @MockBean
-   private NodeHierarchyRealtimeService nodeHierarchyRealtimeService;
+   private NodeManagerService nodeManagerService;
 
    @MockBean
-   private NodeManagerService nodeManagerService;
+   private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+
+   @MockBean
+   private ClientRegistrationRepository clientRegistrationRepository;
+
+   @MockBean(name = ServerInfo.BEAN_NAME)
+   private ServerInfo serverInfo;
 
    @Test
    public void appNoAuthnLaunch() throws Exception {

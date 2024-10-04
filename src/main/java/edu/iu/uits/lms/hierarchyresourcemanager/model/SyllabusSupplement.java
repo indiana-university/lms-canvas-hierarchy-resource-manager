@@ -35,20 +35,18 @@ package edu.iu.uits.lms.hierarchyresourcemanager.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import edu.iu.uits.lms.common.date.DateFormatUtil;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import java.util.Date;
 
 @Entity
@@ -80,9 +78,7 @@ public class SyllabusSupplement {
    @Column(nullable = false)
    private String title;
 
-   @Lob
-   @Type(type="text")
-   @Column(nullable = false)
+   @Column(nullable = false, columnDefinition = "text")
    private String content;
 
    @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)

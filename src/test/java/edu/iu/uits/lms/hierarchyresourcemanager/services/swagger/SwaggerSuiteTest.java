@@ -4,7 +4,7 @@ package edu.iu.uits.lms.hierarchyresourcemanager.services.swagger;
  * #%L
  * lms-lti-hierarchyresourcemanager
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2024 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,16 +33,46 @@ package edu.iu.uits.lms.hierarchyresourcemanager.services.swagger;
  * #L%
  */
 
+import edu.iu.uits.lms.lti.swagger.AbstractSwaggerCustomTest;
+import edu.iu.uits.lms.lti.swagger.AbstractSwaggerDisabledTest;
+import edu.iu.uits.lms.lti.swagger.AbstractSwaggerEmbeddedToolTest;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerUiCustomTest;
+import org.junit.jupiter.api.Nested;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.NestedTestConfiguration;
 
-import java.util.List;
+import static edu.iu.uits.lms.email.EmailConstants.EMAILREST_PROFILE;
+import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
+import static org.springframework.test.context.NestedTestConfiguration.EnclosingConfiguration.INHERIT;
 
-@SpringBootTest(classes = {HrmSwaggerConfig.class}, properties = {"lms.rabbitmq.queue_env_suffix = test"})
-public class SwaggerUiCustomTest extends AbstractSwaggerUiCustomTest {
 
-   @Override
-   protected List<String> getEmbeddedSwaggerToolPaths() {
-      return SwaggerTestUtil.getEmbeddedSwaggerToolPaths(super.getEmbeddedSwaggerToolPaths());
-   }
+@NestedTestConfiguration(INHERIT)
+public class SwaggerSuiteTest {
+
+
+    @Nested
+    @SpringBootTest(classes = {HrmSwaggerConfig.class})
+    public class SwaggerCustomTest extends AbstractSwaggerCustomTest {
+
+    }
+
+    @Nested
+    @SpringBootTest(classes = {HrmSwaggerConfig.class})
+    public class SwaggerDisabledTest extends AbstractSwaggerDisabledTest {
+
+    }
+
+    @Nested
+    @SpringBootTest(classes = {HrmSwaggerConfig.class})
+    @ActiveProfiles({IUCUSTOMREST_PROFILE, EMAILREST_PROFILE})
+    public class SwaggerEmbeddedToolTest extends AbstractSwaggerEmbeddedToolTest {
+
+    }
+
+    @Nested
+    @SpringBootTest(classes = {HrmSwaggerConfig.class})
+    public class SwaggerUiCustomTest extends AbstractSwaggerUiCustomTest {
+
+    }
 }

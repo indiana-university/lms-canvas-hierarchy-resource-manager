@@ -37,6 +37,7 @@ import edu.iu.uits.lms.hierarchyresourcemanager.services.NodeManagerService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
 import edu.iu.uits.lms.lti.service.OidcTokenUtils;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -48,8 +49,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
-
-import javax.servlet.http.HttpSession;
 
 @Controller
 @Slf4j

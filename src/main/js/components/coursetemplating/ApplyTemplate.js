@@ -35,8 +35,6 @@ import React, { Component } from 'react'
 import { groupBy, kebabCase, sortBy } from 'lodash';
 
 import axios from 'axios';
-import 'rivet-collapsible/dist/css/rivet-collapsible.min.css';
-import Collapsible from 'rivet-collapsible/dist/js/rivet-collapsible.min.js';
 import './ApplyTemplate.css';
 import Loading from 'components/Loading.js';
 import ConfirmationModal from 'components/ConfirmationModal.js';
@@ -74,7 +72,6 @@ class ApplyTemplate extends React.Component {
             });
           });
 
-      Collapsible.init();
     }
 
     handlePreviewClick(event) {
@@ -165,7 +162,7 @@ class ApplyTemplate extends React.Component {
                                     making a copy of your course before proceeding.
                                 </p>
                                 <p>
-                                    For more information, see <a href="https://kb.iu.edu/d/bgry" target="_blank">
+                                    For more information, see <a href="https://servicenow.iu.edu/kb?id=kb_article_view&sysparm_article=KB0025425" target="_blank">
                                     Apply a template to your Canvas course
                                     <RvtSvg icon="rvt-icon-link-external" classes="external-link-icon" title="Opens in new window"/>
                                     </a> in the IU Knowledge Base.

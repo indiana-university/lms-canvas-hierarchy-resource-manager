@@ -33,8 +33,8 @@ package edu.iu.uits.lms.hierarchyresourcemanager.config;
  * #L%
  */
 
-import edu.iu.uits.lms.hierarchyresourcemanager.model.User;
-import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
+import edu.iu.uits.lms.iuonly.model.acl.AuthorizedUser;
+import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
@@ -49,11 +49,13 @@ import java.util.List;
 
 @Slf4j
 public class CustomRoleMapper extends LmsDefaultGrantedAuthoritiesMapper {
-    private UserRepository userRepository;
+    private AuthorizedUserService authorizedUserService;
 
-    public CustomRoleMapper(DefaultInstructorRoleRepository defaultInstructorRoleRepository, UserRepository userRepository) {
+    private static String AUTH_USER_TOOL_PERMISSION = "HRM";
+
+    public CustomRoleMapper(DefaultInstructorRoleRepository defaultInstructorRoleRepository, AuthorizedUserService authorizedUserService) {
       super(defaultInstructorRoleRepository);
-      this.userRepository = userRepository;
+      this.authorizedUserService = authorizedUserService;
    }
 
    @Override
@@ -75,9 +77,9 @@ public class CustomRoleMapper extends LmsDefaultGrantedAuthoritiesMapper {
 
                String rolesString = "NotAuthorized";
 
-               User user = userRepository.findByUsername(userId);
+               AuthorizedUser user = authorizedUserService.findByUsernameAndToolPermission(userId, AUTH_USER_TOOL_PERMISSION);
 
-               if (user != null && user.isAuthorizedUser()) {
+               if (user != null) {
                    rolesString = LTIConstants.CANVAS_INSTRUCTOR_ROLE;
                }
 

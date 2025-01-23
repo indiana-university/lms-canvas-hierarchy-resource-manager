@@ -37,11 +37,11 @@ import edu.iu.uits.lms.common.test.CommonTestUtils;
 import edu.iu.uits.lms.hierarchyresourcemanager.amqp.CourseTemplateMessageSender;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.SecurityConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
-import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
 import edu.iu.uits.lms.hierarchyresourcemanager.rest.HierarchyResourceManagerRestController;
 import edu.iu.uits.lms.iuonly.model.HierarchyResource;
 import edu.iu.uits.lms.iuonly.repository.FileStorageRepository;
 import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
+import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
 import edu.iu.uits.lms.lti.config.TestUtils;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +83,7 @@ public class CorsTest {
    private MockMvc mvc;
 
    @MockBean
-   private UserRepository userRepository;
+   private AuthorizedUserService authorizedUserService;
 
    @MockBean
    private HierarchyResourceRepository hierarchyResourceRepository;

@@ -37,7 +37,7 @@ import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.SecurityConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.ToolConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.controller.HierarchyResourceManagerController;
-import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
+import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.TestUtils;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
@@ -64,7 +64,7 @@ public class AppLaunchSecurityTest {
    private MockMvc mvc;
 
    @MockBean
-   private UserRepository userRepository;
+   private AuthorizedUserService authorizedUserService;
 
    @MockBean
    private NodeManagerService nodeManagerService;

@@ -36,8 +36,8 @@ package edu.iu.uits.lms.hierarchyresourcemanager.services.swagger;
 import edu.iu.uits.lms.email.config.EmailRestConfiguration;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.SecurityConfig;
 import edu.iu.uits.lms.hierarchyresourcemanager.config.SwaggerConfig;
-import edu.iu.uits.lms.hierarchyresourcemanager.repository.UserRepository;
 import edu.iu.uits.lms.iuonly.config.IuCustomRestConfiguration;
+import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
 import edu.iu.uits.lms.iuonly.services.CanvasDataServiceImpl;
 import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.lti.config.LtiRestConfiguration;
@@ -72,7 +72,7 @@ public class HrmSwaggerConfig {
    private CanvasDataServiceImpl canvasDataService;
 
    @MockBean
-   private UserRepository userRepository;
+   private AuthorizedUserService authorizedUserService;
 
    @MockBean
    private BufferingApplicationStartup bufferingApplicationStartup;

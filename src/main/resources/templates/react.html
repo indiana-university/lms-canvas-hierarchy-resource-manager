@@ -36,6 +36,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link th:replace="~{commonFragments/favicon :: favicon}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Canvas Node Manager</title>
     <link rel="stylesheet" type="text/css" th:href="@{/app/css/hrm.css}"/>
@@ -46,9 +47,7 @@
 
 <div id="root" data-rvt-dialog-mount></div>
 
-<footer class="rvt-ts-12 rvt-container-xl rvt-m-top-lg">
-    <div id="footer" th:text="${@serverInfo}"></div>
-</footer>
+<div th:replace="~{commonFragments/layouts :: footer(${hideFooter}, ${@serverInfo.elements})}" ></div>
 
 <script th:inline="javascript">
       /*<![CDATA[*/

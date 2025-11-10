@@ -68,8 +68,7 @@
         <lms-team-spring-boot-it12>6.5.2_2</lms-team-spring-boot-it12>
 
         <lombok.version>1.18.42</lombok.version>
-        <nodejs.version>v20.15.0</nodejs.version>
-        <npm.version>10.7.0</npm.version>
+        <nodejs.version>v22.18.0</nodejs.version>
         <plugins.compiler.version>3.14.1</plugins.compiler.version>
         <plugins.license.version>2.7.0</plugins.license.version>
         <plugins.release.version>3.1.1</plugins.release.version>
@@ -345,7 +344,6 @@
                 <version>${frontend-maven-plugin.version}</version>
                 <configuration>
                     <nodeVersion>${nodejs.version}</nodeVersion>
-                    <npmVersion>${npm.version}</npmVersion>
                     <installDirectory>${project.build.directory}/js</installDirectory>
                 </configuration>
                 <executions>

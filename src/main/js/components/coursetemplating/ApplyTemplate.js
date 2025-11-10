@@ -164,7 +164,7 @@ class ApplyTemplate extends React.Component {
                                 <p>
                                     For more information, see <a href="https://servicenow.iu.edu/kb?id=kb_article_view&sysparm_article=KB0025425" target="_blank" rel="noopener noreferrer">
                                     Apply a template to your Canvas course
-                                    <RvtSvg icon="rvt-icon-link-external" classes="external-link-icon" title="Opens in new window"/>
+                                    <RvtSvg icon="link-external" className="external-link-icon" title="Opens in new window"/>
                                     </a> in the IU Knowledge Base.
                                 </p>
                             </div>
@@ -246,7 +246,7 @@ class ApplyTemplate extends React.Component {
             <>
                <a href={props.previewUrl} target="_blank" rel="noopener noreferrer">
                    {props.templateName}
-                   <RvtSvg icon="rvt-icon-link-external" classes="external-link-icon" title="Preview opens in new window"/>
+                   <RvtSvg icon="link-external" className="external-link-icon" title="Preview opens in new window"/>
                </a>
             </>
         )

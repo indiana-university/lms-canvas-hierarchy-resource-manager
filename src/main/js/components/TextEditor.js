@@ -42,6 +42,7 @@ export default function TextEditor(props) {
   return (
     <>
       <Editor
+        licenseKey='gpl'
         tinymceScriptSrc='/app/webjars/tinymce/tinymce.min.js'
         value={props.value}
         id={props.id}

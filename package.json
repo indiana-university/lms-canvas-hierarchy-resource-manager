@@ -7,32 +7,32 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.5",
+    "@babel/core": "^7.29.0",
     "@babel/plugin-proposal-class-properties": "^7.12.14",
-    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-env": "^7.29.2",
     "@babel/preset-react": "^7.28.5",
     "@babel/runtime": "^7.28.4",
-    "babel-loader": "^10.0.0",
-    "copy-webpack-plugin": "^13.0.1",
-    "css-loader": "^7.1.2",
+    "babel-loader": "^10.1.1",
+    "copy-webpack-plugin": "^14.0.0",
+    "css-loader": "^7.1.4",
     "file-loader": "^6.2.0",
     "imports-loader": "^5.0.0",
     "path": "^0.12.7",
     "style-loader": "^4.0.0",
-    "webpack": "^5.102.1",
-    "webpack-dev-server": "^5.2.2",
-    "webpack-cli": "^6.0.1"
+    "webpack": "^5.106.2",
+    "webpack-dev-server": "^5.2.3",
+    "webpack-cli": "^7.0.2"
   },
   "dependencies": {
     "@tinymce/tinymce-react": "^6.3.0",
-    "axios": "^1.13.2",
-    "core-js": "^3.46.0",
-    "lodash": "^4.17.21",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "axios": "^1.15.0",
+    "core-js": "^3.49.0",
+    "lodash": "^4.18.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "react-select": "^5.8.1",
     "regenerator-runtime": "^0.14.1",
-    "styled-components": "^6.1.19"
+    "styled-components": "^6.4.0"
   },
   "comments": {
     "dependencies": {}

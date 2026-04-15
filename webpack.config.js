@@ -2,7 +2,6 @@
 const webpack = require('webpack')
 const path = require('path')
 var packageJSON = require('./package.json');
-var copyWebpackPlugin = require('copy-webpack-plugin');
 
 const paths = {
   src: path.join(__dirname, '/src/main/js'),
@@ -33,14 +32,6 @@ module.exports = {
       'process.env': {
         // NODE_ENV: JSON.stringify('production')
       }
-    }),
-    new copyWebpackPlugin({
-      patterns: [
-        { from: paths.node + '/tinymce/plugins', to: './plugins' },
-        { from: paths.node + '/tinymce/themes', to: './themes' },
-        { from: paths.node + '/tinymce/skins', to: './skins' },
-        { from: paths.node + '/tinymce/icons', to: './icons' }
-      ]
     })
   ],
   module: {
@@ -75,22 +66,6 @@ module.exports = {
             }
           }
         ]
-       }, {
-        test: require.resolve('tinymce/tinymce'),
-        use: [{
-          loader: 'imports-loader',
-          options: {
-            wrapper: 'window'
-          }
-        }]
-      }, {
-        test: /tinymce\/(themes|plugins)\//,
-        use: [{
-          loader: 'imports-loader',
-          options: {
-            wrapper: 'window'
-          }
-        }]
       }
     ]
   }

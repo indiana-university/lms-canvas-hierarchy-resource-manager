@@ -2,7 +2,7 @@
  * #%L
  * lms-lti-hierarchyresourcemanager
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -342,36 +342,36 @@ class SelectedTemplate extends React.Component {
                 <form id="editTemplateForm">
                     <input type="hidden" id="editTemplateId" key={`templateId_${this.state.inputKey}`} defaultValue={this.state.templateForEdit?.id} />
 
-                    <label for="editDisplayName" className="rvt-label rvt-ts-16 rvt-m-top-sm">Display Name (required)</label>
+                    <label htmlFor="editDisplayName" className="rvt-label rvt-ts-16 rvt-m-top-sm">Display Name (required)</label>
                     <input key={`displayName_${this.state.inputKey}`} id="editDisplayName" type="text" className="rvt-text-input"
                         defaultValue={this.state.templateForEdit?.displayName} {...displayNameProps} />
                     {displayNameAlert}
 
-                    <label for="editSponsor" className="rvt-label rvt-ts-16 rvt-m-top-sm">Sponsor (required)</label>
+                    <label htmlFor="editSponsor" className="rvt-label rvt-ts-16 rvt-m-top-sm">Sponsor (required)</label>
                     <input key={`sponsor_${this.state.inputKey}`} id="editSponsor" type="text" className="rvt-text-input"
                         defaultValue={this.state.templateForEdit?.sponsor} {...sponsorProps} />
                     {sponsorAlert}
 
-                    <label for="editContactName" className="rvt-label rvt-ts-16 rvt-m-top-sm">Contact Name (required)</label>
+                    <label htmlFor="editContactName" className="rvt-label rvt-ts-16 rvt-m-top-sm">Contact Name (required)</label>
                     <input key={`contactName_${this.state.inputKey}`} id="editContactName" type="text" className="rvt-text-input"
                         defaultValue={this.state.templateForEdit?.contactName} {...contactNameProps} />
                     {contactNameAlert}
 
-                    <label for="editContactUsername" className="rvt-label rvt-ts-16 rvt-m-top-sm">Contact Username (required)</label>
+                    <label htmlFor="editContactUsername" className="rvt-label rvt-ts-16 rvt-m-top-sm">Contact Username (required)</label>
                     <input key={`contactUsername_${this.state.inputKey}`} id="editContactUsername" type="text" className="rvt-text-input"
                         defaultValue={this.state.templateForEdit?.contactUsername} {...contactUsernameProps} />
                     {contactUsernameAlert}
 
-                    <label for="editSourceCourseId" className="rvt-label rvt-ts-16 rvt-m-top-sm">Source Course ID (required)</label>
+                    <label htmlFor="editSourceCourseId" className="rvt-label rvt-ts-16 rvt-m-top-sm">Source Course ID (required)</label>
                     <input key={`sourceCourseId_${this.state.inputKey}`} id="editSourceCourseId" type="text" className="rvt-text-input"
                         defaultValue={this.state.templateForEdit?.sourceCourseId} {...sourceCourseIdProps} />
                     {sourceCourseIdAlert}
 
-                    <label for="editCcUrl" className="rvt-label rvt-ts-16 rvt-m-top-sm">Preview URL (optional)</label>
+                    <label htmlFor="editCcUrl" className="rvt-label rvt-ts-16 rvt-m-top-sm">Preview URL (optional)</label>
                     <input key={`ccUrl_${this.state.inputKey}`} id="editCcUrl" type="text" className="rvt-text-input"
                         defaultValue={this.state.templateForEdit?.canvasCommonsUrl} />
 
-                    <label for="editDescription" className="rvt-label rvt-ts-16 rvt-m-top-sm">Description (required)</label>
+                    <label htmlFor="editDescription" className="rvt-label rvt-ts-16 rvt-m-top-sm">Description (required)</label>
                     <textarea key={`description_${this.state.inputKey}`} id="editDescription" className="rvt-textarea"
                         defaultValue={this.state.templateForEdit?.description} {...descriptionProps} />
                     {descriptionAlert}
@@ -379,7 +379,7 @@ class SelectedTemplate extends React.Component {
                     <div className="rvt-file rvt-m-top-md" data-rvt-file-input="editTemplateFileInput" key={`file_${this.state.inputKey}`} >
                       <input type="file" data-rvt-file-input-button="editTemplateFileInput" id="editTemplateFileInput"
                         aria-describedby="edit-file-description" />
-                      <label for="editTemplateFileInput" className="rvt-button">
+                      <label htmlFor="editTemplateFileInput" className="rvt-button">
                         <span>Upload a file</span>
                         <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="M2 1h8.414L14 4.586V15H2V1Zm2 2v10h8V7.5H7.5V3H4Zm5.5 0v2.5H12v-.086L9.586 3H9.5Z"></path></svg>
                       </label>
@@ -520,7 +520,7 @@ function DefaultModalText(props) {
         }
     }
     return (
-        <div tabindex="-1" id={"default-instr-" + props.defaultData.templateId}>
+        <div tabIndex="-1" id={"default-instr-" + props.defaultData.templateId}>
             {defaultInfoText}
             {bonusDefaultText}
         </div>
@@ -535,7 +535,7 @@ function DeleteModalText(props) {
         bonusDeleteText = <p>Deleting this template will also remove the default template for this node.</p>
     }
     return (
-        <div tabindex="-1" id={"delete-instr-" + props.deleteData.templateId}>
+        <div tabIndex="-1" id={"delete-instr-" + props.deleteData.templateId}>
             <p>
                 Are you sure you wish to delete the template <span className="rvt-text-bold">{props.deleteData.displayName}</span> from the <span className="rvt-text-bold">{props.deleteData.nodeName}</span> account?
             </p>

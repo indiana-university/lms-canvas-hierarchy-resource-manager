@@ -2,7 +2,7 @@
  * #%L
  * lms-lti-hierarchyresourcemanager
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -77,15 +77,6 @@ class SyllabusSupplementTabContent extends React.Component {
         this.filePickerCallback.bind(this)
     }
     
-    componentDidMount() {
-        // unfortunately, the best we can do to identify the node input is to find the first id
-        // that starts with "react-select" because a random integer is appended to the id. At this time,
-        // react-select is not used anywhere else
-        var nodeSelect = document.querySelector('*[id^="react-select"]');
-        if (nodeSelect) {
-            nodeSelect.setAttribute('aria-labelledby', 'selectNodeLabel');
-        }
-    }
 
     handleInit = (event) => {
         {/* This is needed so that the tinymce header doesn't get a higher z-index than the react dropdown input */}
@@ -396,19 +387,19 @@ render() {
   return (
         <div id="syllabusTabDiv">
             <span className="rvt-ts-26 rvt-text-bold rvt-display-block rvt-m-bottom-md">Add, update, or delete a syllabus supplement</span>
-            <label id="selectNodeLabel">Node:
+            <label htmlFor="hierNodeName">Node:
                 <span className="rvt-sr-only">Select a node to add, update, or delete its syllabus supplement.</span>
             </label>
             <div className="rvt-m-bottom-md">
-                <Select options={this.props.hierarchy} id="hierNodeName" name="hierNodeName" isSearchable={true} isClearable={true} placeholder="Select Node" className="node-select"
+                <Select options={this.props.hierarchy} inputId="hierNodeName" name="hierNodeName" isSearchable={true} isClearable={true} placeholder="Select Node" className="node-select"
                     onChange={this.handleHierarchyOptionChange} classNamePrefix="node-rivet"/>
             </div>
 
-            <label id="selectTermLabel">Term:
+            <label htmlFor="termId">Term:
                 <span className="rvt-sr-only">Select the specific term to add, update, or delete its syllabus supplement.</span>
             </label>
             <div className="rvt-m-bottom-md">
-                <Select options={this.props.terms} id="termId" name="termId" isSearchable={true} isClearable={false} className="node-select"
+                <Select options={this.props.terms} inputId="termId" name="termId" isSearchable={true} isClearable={false} className="node-select"
                     onChange={this.handleTermOptionChange} defaultValue={this.props.terms[0]} classNamePrefix="node-rivet" />
             </div>
 
@@ -416,13 +407,13 @@ render() {
                 <input type="checkbox" id="disclosure-checkbox-input" name="uiDisclosureOpenByDefault"
                        disabled={this.state.inputsDisabled} checked={this.state.syllabus.uiDisclosureOpenByDefault}
                        onChange={this.handleCheckboxInputChange} />
-                <label for="disclosure-checkbox-input" className="rvt-label rvt-ts-16">UI disclosure to be open by default
+                <label htmlFor="disclosure-checkbox-input" className="rvt-label rvt-ts-16">UI disclosure to be open by default
                     <span className="rvt-sr-only">Select if this supplement will have its UI disclosure in Canvas open by default.</span>
                 </label>
             </div>
 
             <div>
-                <label for="text-input-default" className="rvt-label rvt-ts-16">Supplement Title (required)</label>
+                <label htmlFor="text-input-default" className="rvt-label rvt-ts-16">Supplement Title (required)</label>
                 <input type="text" id="text-input-default" name={this.titleInput} className="rvt-text-input"
                        disabled={this.state.inputsDisabled} value={this.state.syllabus.syllabusTitle}
                        onChange={this.handleTextInputChange} {...inputProps} />
@@ -438,14 +429,14 @@ render() {
             </div>
             {contentNote}
             
-            <label for="contact-username" className="rvt-label rvt-ts-16 rvt-m-top-md">Contact Username (required)</label>
+            <label htmlFor="contact-username" className="rvt-label rvt-ts-16 rvt-m-top-md">Contact Username (required)</label>
             <input id="contact-username" type="text" name={this.usernameInput} className="rvt-text-input"
                 disabled={this.state.inputsDisabled} value={this.state.syllabus.contactUsername}
                 onChange={this.handleTextInputChange} {...contactUserProps}
                 maxLength="255" />
             {contactUserNote}
 
-            <label for="contact-email" className="rvt-label rvt-ts-16 rvt-m-top-md">Contact Email (required)</label>
+            <label htmlFor="contact-email" className="rvt-label rvt-ts-16 rvt-m-top-md">Contact Email (required)</label>
             <input id="contact-email" type="text" name={this.emailInput} className="rvt-text-input"
                 disabled={this.state.inputsDisabled} value={this.state.syllabus.contactEmail}
                 onChange={this.handleTextInputChange} {...contactEmailProps}

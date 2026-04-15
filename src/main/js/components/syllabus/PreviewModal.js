@@ -2,7 +2,7 @@
  * #%L
  * lms-lti-hierarchyresourcemanager
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -64,7 +64,7 @@ class PreviewModal extends React.Component {
                 </div>
             ))
         } else {
-            items = <p id="preview-title" tabindex="-1">No supplements apply to this course.</p>
+            items = <p id="preview-title" tabIndex="-1">No supplements apply to this course.</p>
         }
         return (
             <div className="rvt-dialog" id="preview-dialog" role="dialog" aria-labelledby="preview-dialog-title"
@@ -75,7 +75,7 @@ class PreviewModal extends React.Component {
                 aria-modal="true"
                 hidden>
               <header className="rvt-dialog__header">
-                <h1 className="rvt-dialog__title" id="preview-dialog-title" tabindex="-1">Supplements Preview</h1>
+                <h1 className="rvt-dialog__title" id="preview-dialog-title" tabIndex="-1">Supplements Preview</h1>
               </header>
               <div className="rvt-dialog__body">
                 <div id="loading-section" aria-live="polite">

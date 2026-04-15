@@ -2,7 +2,7 @@
  * #%L
  * lms-lti-hierarchyresourcemanager
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -154,7 +154,7 @@ class ApplyTemplate extends React.Component {
                                dialogId="apply-template" showLoading loadingText="Applying template">
                         <React.Fragment>
                             <div id="templateWarning">
-                                <span id="dialog-focus" tabindex="-1" className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
+                                <span id="dialog-focus" tabIndex="-1" className="rvt-text-bold">{this.state.modalData.nodeName} - {this.state.modalData.templateName}</span>
                                 <p>
                                     Please note that this action may make changes to your course navigation (including removing the IU
                                     eTexts tool from the navigation of courses that use eTexts), course settings, and/or course content.
@@ -188,7 +188,7 @@ class ApplyTemplate extends React.Component {
     return (
         <>
         <h2 className="rvt-accordion__summary">
-            <button id={`${nodeId}-label`} className="rvt-accordion__toggle" data-rvt-accordion-trigger={`${nodeId}-accordion`}>
+            <button id={`${nodeId}-accordion-label`} className="rvt-accordion__toggle" data-rvt-accordion-trigger={`${nodeId}-accordion`}>
                 <span className="rvt-accordion__toggle-text" id={`${nodeId}-name`}>{props.nodeName}</span>
                 <span className="rvt-accordion__toggle-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">

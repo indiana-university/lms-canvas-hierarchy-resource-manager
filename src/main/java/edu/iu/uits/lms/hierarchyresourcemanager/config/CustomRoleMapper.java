@@ -4,7 +4,7 @@ package edu.iu.uits.lms.hierarchyresourcemanager.config;
  * #%L
  * lms-lti-hierarchyresourcemanager
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,7 +33,6 @@ package edu.iu.uits.lms.hierarchyresourcemanager.config;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.acl.AuthorizedUser;
 import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
@@ -77,9 +76,7 @@ public class CustomRoleMapper extends LmsDefaultGrantedAuthoritiesMapper {
 
                String rolesString = "NotAuthorized";
 
-               AuthorizedUser user = authorizedUserService.findByActiveUsernameAndToolPermission(userId, AUTH_USER_TOOL_PERMISSION);
-
-               if (user != null) {
+               if (authorizedUserService.isAuthorized(userId, AUTH_USER_TOOL_PERMISSION)) {
                    rolesString = LTIConstants.CANVAS_INSTRUCTOR_ROLE;
                }
 

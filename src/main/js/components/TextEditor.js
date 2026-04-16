@@ -30,19 +30,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-import React, { useRef } from 'react';
+import React from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 
 export default function TextEditor(props) {
-  const editorRef = useRef(null);
   const handleFilePickerCallback = props.filePickerCallback;
-  const scriptSrc = process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'
   const ariaText = props.ariaText;
 
   return (
     <>
       <Editor
         licenseKey='gpl'
+        // Keep TinyMCE sourced from WebJar here so we do not duplicate template script tags.
         tinymceScriptSrc='/app/webjars/tinymce/tinymce.min.js'
         value={props.value}
         id={props.id}

@@ -2,7 +2,7 @@
  * #%L
  * lms-lti-hierarchyresourcemanager
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -250,10 +250,10 @@ class TemplatingTabContent extends React.Component {
   return (
         <div>
             <span className="rvt-ts-26 rvt-text-bold rvt-display-block rvt-m-bottom-md">Manage templates</span>
-            <label id="nodeSelectCourseTemplate" className="rvt-label rvt-ts-16">Node</label>
+            <label htmlFor="nodeSelectCourseTemplate" className="rvt-label rvt-ts-16">Node</label>
             <div className="rvt-m-bottom-md">
-                <Select options={this.props.hierarchy} isSearchable={true} isClearable={true} placeholder="Select Node" className="node-select"
-                    onChange={this.handleHierarchyOptionChange} classNamePrefix="node-rivet" aria-labelledby="nodeSelectCourseTemplate" />
+                <Select options={this.props.hierarchy} inputId="nodeSelectCourseTemplate" isSearchable={true} isClearable={true} placeholder="Select Node" className="node-select"
+                    onChange={this.handleHierarchyOptionChange} classNamePrefix="node-rivet" />
             </div>
 
             <button id="addNewTemplate" className="rvt-button rvt-button--secondary rvt-m-bottom-sm" onClick={this.handleNewTemplateModalOpen}
@@ -271,37 +271,37 @@ class TemplatingTabContent extends React.Component {
                     title="New Template" onDismiss={this.handleNewTemplateModalCancel} yesLabel="Submit" noLabel="Cancel"
                     loadingText="Saving template" dialogId="new-template">
                     <form id="newTemplateForm">
-                        <label for="newDisplayName" className="rvt-label rvt-ts-16">Display Name (required)</label>
+                        <label htmlFor="newDisplayName" className="rvt-label rvt-ts-16">Display Name (required)</label>
                         <input id="newDisplayName" type="text" className="rvt-text-input" {...displayNameProps} />
                         {displayNameAlert}
 
-                        <label for="newSponsor" className="rvt-label rvt-ts-16 rvt-m-top-sm">Sponsor (required)</label>
+                        <label htmlFor="newSponsor" className="rvt-label rvt-ts-16 rvt-m-top-sm">Sponsor (required)</label>
                         <input id="newSponsor" type="text" className="rvt-text-input" {...sponsorProps} />
                         {sponsorAlert}
 
-                        <label for="newContactName" className="rvt-label rvt-ts-16 rvt-m-top-sm">Contact Name (required)</label>
+                        <label htmlFor="newContactName" className="rvt-label rvt-ts-16 rvt-m-top-sm">Contact Name (required)</label>
                         <input id="newContactName" type="text" className="rvt-text-input" {...contactNameProps} />
                         {contactNameAlert}
 
-                        <label for="newContactUsername" className="rvt-label rvt-ts-16 rvt-m-top-sm">Contact Username (required)</label>
+                        <label htmlFor="newContactUsername" className="rvt-label rvt-ts-16 rvt-m-top-sm">Contact Username (required)</label>
                         <input id="newContactUsername" type="text" className="rvt-text-input" {...contactUsernameProps} />
                         {contactUsernameAlert}
 
-                        <label for="newSourceCourseId" className="rvt-label rvt-ts-16 rvt-m-top-sm">Source Course ID (required)</label>
+                        <label htmlFor="newSourceCourseId" className="rvt-label rvt-ts-16 rvt-m-top-sm">Source Course ID (required)</label>
                         <input id="newSourceCourseId" type="text" className="rvt-text-input" {...sourceCourseIdProps} />
                         {sourceCourseIdAlert}
 
-                        <label for="newCcUrl" className="rvt-label rvt-ts-16 rvt-m-top-sm">Preview URL (optional)</label>
+                        <label htmlFor="newCcUrl" className="rvt-label rvt-ts-16 rvt-m-top-sm">Preview URL (optional)</label>
                         <input id="newCcUrl" type="text" className="rvt-text-input" />
 
-                        <label for="newDescription" className="rvt-label rvt-ts-16 rvt-m-top-sm">Description (required)</label>
+                        <label htmlFor="newDescription" className="rvt-label rvt-ts-16 rvt-m-top-sm">Description (required)</label>
                         <textarea id="newDescription" className="rvt-textarea" {...descriptionProps} />
                         {descriptionAlert}
 
                         <div className="rvt-file rvt-m-top-sm" data-rvt-file-input="newTemplateFileInput" key={this.state.fileInputKey} >
                           <input type="file" data-rvt-file-input-button="newTemplateFileInput" id="newTemplateFileInput" aria-describedby="new-file-description"
                               {...fileAttributes} />
-                          <label for="newTemplateFileInput" className="rvt-button">
+                          <label htmlFor="newTemplateFileInput" className="rvt-button">
                             <span>Upload a file</span>
                             <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="M2 1h8.414L14 4.586V15H2V1Zm2 2v10h8V7.5H7.5V3H4Zm5.5 0v2.5H12v-.086L9.586 3H9.5Z"></path></svg>
                           </label>

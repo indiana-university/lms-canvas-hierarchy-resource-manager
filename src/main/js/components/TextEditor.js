@@ -2,22 +2,22 @@
  * #%L
  * lms-lti-hierarchyresourcemanager
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- *
+ * 
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * 3. Neither the name of the Indiana University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -30,19 +30,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-import React, { useRef } from 'react';
+import React from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 
 export default function TextEditor(props) {
-  const editorRef = useRef(null);
   const handleFilePickerCallback = props.filePickerCallback;
-  const scriptSrc = process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'
   const ariaText = props.ariaText;
 
   return (
     <>
       <Editor
         licenseKey='gpl'
+        // Keep TinyMCE sourced from WebJar here so we do not duplicate template script tags.
         tinymceScriptSrc='/app/webjars/tinymce/tinymce.min.js'
         value={props.value}
         id={props.id}

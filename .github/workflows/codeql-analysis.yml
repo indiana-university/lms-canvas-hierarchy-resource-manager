@@ -20,7 +20,7 @@ on:
 
 jobs:
   analyze:
-    uses: iu-uits-lt/lms-githubaction-library/.github/workflows/codeql-analysis.yml@v1
+    uses: indiana-university/lms-githubaction-library/.github/workflows/codeql-analysis.yml@v1
     with:
       java_version: 25
       languages: "[ 'java', 'javascript' ]"

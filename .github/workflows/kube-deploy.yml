@@ -41,7 +41,7 @@ on:
 
 jobs:
   mvn_build_deploy:
-    uses: iu-uits-lt/lms-githubaction-library/.github/workflows/kube-deploy.yml@v1
+    uses: indiana-university/lms-githubaction-library/.github/workflows/kube-deploy.yml@v1
     with:
       java_version: 25
       server_env: ${{ github.event.inputs.server_env }}
